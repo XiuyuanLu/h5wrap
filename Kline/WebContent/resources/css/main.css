@@ -1,0 +1,21 @@
+body{
+	font-family: "Microsoft YaHei","÷ÚÌו","ËÎÌו",sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.head{
+	background: #e44d42;
+	text-align: center;
+}
+
+.head .head-content img{
+	width: 80vw;
+	margin-top: 3vh;
+	margin-bottom: 1vh;
+}
+
+.containter{
+	width: 100%;
+}
+
