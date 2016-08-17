@@ -16,7 +16,7 @@
 
 .container .search{
 	width: 100%;
-	height: 15vh;
+	height: 7vh;
 	text-align: center;
 	padding-top: 2vh;
 }
@@ -30,19 +30,48 @@
 	height: 50vh;
 }
 
+.container .middle .chart-title{
+	width: 100%;
+	height: 10vh;
+}
+
+.container .middle .chart-title .main-value{
+	width: 20%;
+	height: 100%;
+	display: inline-block;
+	float: left;
+	text-align: center;
+}
+
+.container .middle .chart-title .other-value{
+	width: 80%;
+	height: 100%;
+	display: inline-block;
+	float: left;
+}
+
+.container .middle .chart-title .other-value table{
+	margin-left: 3vw;
+	margin-top: 0.3vh;
+}
+
+.container .middle .chart-title .other-value table td{
+	width: 24vw;
+}
+
 .container .middle .chart{
-	width: 90vw;
-	height: 40vh;
-	position: absolute;
-	top: 20vh;
-	left: 5vw;
+	width: 93vw;
+	height: 50vh;
+	display: inline-block;
+	float: left;
+	margin-left: 1vw;
 }
 
 .container .middle .right-bar{
 	height: 30vh;
 	width: 5vw;
-	position: absolute;
-	right: 2vw;
+	display: inline-block;
+	float: right;
 }
 
 .container .middle .right-bar span{
@@ -60,6 +89,26 @@
     		<input type="text" placeholder="股票代码"/>
     	</div>
     	<div class="middle">
+    		<div class="chart-title">
+    			<div class="main-value">
+    				<span class="big-value green-value">3109.55</span>
+    				<span class="small-value green-value">-0.48&nbsp;-0.02%</span>
+    			</div>
+    			<div class="other-value">
+    				<table>
+    					<tr>
+    						<td class="medium-value">高&nbsp;<span class="red-value">3114.26</span></td>
+    						<td class="medium-value">开&nbsp;<span class="green-value">3106.99</span></td>
+    						<td class="medium-value">换手&nbsp;<span>1.05%</span></td>
+    					</tr>
+    					<tr>
+    						<td class="medium-value">低&nbsp;<span class="green-value">3090.28</span></td>
+    						<td class="medium-value">额&nbsp;<span>2434亿</span></td>
+    						<td class="medium-value">量比&nbsp;<span class="red-value">1.00</span></td>
+    					</tr>
+    				</table>
+    			</div>
+    		</div>
 	    	<div class="chart" id="chart"></div>
 	    	<div class="right-bar">
 		    	<span>沪</span>
@@ -74,6 +123,11 @@
 			chartInit();
 		}
 		
+		var textStyle = {
+				fontSize: 40,
+				fontWeight: 'normal'
+		};
+		
 		function chartInit(){
 			var myChart = document.getElementById('chart');
 			var xAxisData = [];
@@ -86,30 +140,79 @@
 			}
 
 			option = {
-			    title: {
-			        text: '柱状图动画延迟'
-			    },
-			    tooltip: {},
-			    xAxis: {
+			   	grid:[{
+			   			left: 0,
+			   			height: '70%',
+			   			containLabel: true
+			   		},{
+			   			left: 0,
+			   			height: '16%',
+			   			top: '78%',
+			   			containLabel: true
+			   		}
+			   	],
+			    xAxis: [{
 			        data: xAxisData,
-			        silent: false,
-			        splitLine: {
-			            show: false
-			        }
-			    },
-			    yAxis: {
-			    },
+			        splitNumber: 3,
+			    	axisLabel:{
+			    		show: false
+			    	},
+			    	axisTick:{
+			    		interval: 20
+			    	},
+			    	splitLine:{
+			    		show: true,
+			    		interval: 20
+			    	}
+			    },{
+			    	gridIndex: 1,
+			    	data: xAxisData,
+			        splitNumber: 3,
+			        axisLine:{
+			    		onZero: false
+			    	},
+			    	axisLabel:{
+			    		show: false
+			    	},
+			    	axisTick:{
+			    		interval: 20
+			    	},
+			    	splitLine:{
+			    		show: true,
+			    		interval: 20
+			    	}
+			    }],
+			    yAxis: [{
+			    	splitNumber: 3,
+			    	axisLine:{},
+			    	axisLabel:{
+			    		inside: true,
+			    		textStyle:{
+			    			fontSize: 25
+			    		}
+			    	},
+			    	axisTick:{},
+			    	splitLine:{}
+			    },{
+	                scale: true,
+	                gridIndex: 1,
+	                splitNumber: 2,
+	                axisLabel: {inside: true,show: false},
+	                axisLine: {show: false},
+	                axisTick: {show: false},
+	                splitLine: {show: false}
+	            }],
 			    series: [{
-			        name: 'bar',
-			        type: 'bar',
+			        type: 'line',
 			        data: data1,
 			        animationDelay: function (idx) {
 			            return idx * 10;
 			        }
 			    }, {
-			        name: 'bar2',
 			        type: 'bar',
 			        data: data2,
+			        xAxisIndex: 1,
+			        yAxisIndex: 1,
 			        animationDelay: function (idx) {
 			            return idx * 10 + 100;
 			        }
