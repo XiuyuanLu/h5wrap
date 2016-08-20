@@ -31,8 +31,9 @@
 }
 
 .container .middle .chart-title{
-	width: 100%;
+	width: 98vw;
 	height: 10vh;
+	margin-left: 2vw;
 }
 
 .container .middle .chart-title .main-value{
@@ -64,18 +65,22 @@
 	height: 50vh;
 	display: inline-block;
 	float: left;
-	margin-left: 1vw;
 }
 
 .container .middle .right-bar{
-	height: 30vh;
-	width: 5vw;
+	height: 10vh;
+	width: 6vw;
 	display: inline-block;
 	float: right;
+	margin-top: 5vh;
 }
 
 .container .middle .right-bar span{
-	font-size: 3em;
+	font-size: 3.5em;
+}
+
+.container .middle .right-bar span a{
+	text-decoration: none;
 }
 
 </style>
@@ -111,13 +116,18 @@
     		</div>
 	    	<div class="chart" id="chart"></div>
 	    	<div class="right-bar">
-		    	<span>沪</span>
-		    	<span>深</span>
-		    	<span>创</span>
+		    	<span><a href="">沪</a></span>
+	    	</div>
+	    	<div class="right-bar">
+		    	<span><a href="">深</a></span>
+	    	</div>
+	    	<div class="right-bar">
+		    	<span><a href="">创</a></span>
 	    	</div>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
+    <input id="tradeTime" type="hidden" value="${tradeTime}"/>
 	<script>
 		function onLoad(){
 			chartInit();
@@ -130,14 +140,6 @@
 		
 		function chartInit(){
 			var myChart = document.getElementById('chart');
-			var xAxisData = [];
-			var data1 = [];
-			var data2 = [];
-			for (var i = 0; i < 100; i++) {
-			    xAxisData.push('类目' + i);
-			    data1.push((Math.sin(i / 5) * (i / 5 -10) + i / 6) * 5);
-			    data2.push((Math.cos(i / 5) * (i / 5 -10) + i / 6) * 5);
-			}
 
 			option = {
 			   	grid:[{
@@ -152,8 +154,8 @@
 			   		}
 			   	],
 			    xAxis: [{
-			        data: xAxisData,
-			        splitNumber: 3,
+			        data: document.getElementById('tradeTime').value,
+			        splitNumber: 5,
 			    	axisLabel:{
 			    		show: false
 			    	},
@@ -162,11 +164,11 @@
 			    	},
 			    	splitLine:{
 			    		show: true,
-			    		interval: 20
+			    		interval: 60
 			    	}
 			    },{
 			    	gridIndex: 1,
-			    	data: xAxisData,
+			    	data: document.getElementById('tradeTime').value,
 			        splitNumber: 3,
 			        axisLine:{
 			    		onZero: false
@@ -204,13 +206,13 @@
 	            }],
 			    series: [{
 			        type: 'line',
-			        data: data1,
+			        data: [],
 			        animationDelay: function (idx) {
 			            return idx * 10;
 			        }
 			    }, {
 			        type: 'bar',
-			        data: data2,
+			        data: [],
 			        xAxisIndex: 1,
 			        yAxisIndex: 1,
 			        animationDelay: function (idx) {
