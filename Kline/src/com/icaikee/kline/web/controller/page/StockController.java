@@ -7,14 +7,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.icaikee.kline.WebConstants;
 
 @Controller
-@RequestMapping(WebConstants.PAGE + "/home")
-public class HomeController {
+@RequestMapping(WebConstants.PAGE + "/stock")
+public class StockController {
 
-	private static final String PAGE_HOME = "home/home";
+	private static final String PAGE_STOCK = "stock/stock";
 
 	@RequestMapping
-	public ModelAndView home() {
-		ModelAndView mv = new ModelAndView(PAGE_HOME);
+	public ModelAndView stock() {
+		ModelAndView mv = new ModelAndView(PAGE_STOCK);
 		return mv;
 	}
 

@@ -9,31 +9,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>缠论K线</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/font-awesome/css/font-awesome.css" />
 <script src="resources/js/jquery-1.9.1.min.js"></script>
 <script src="resources/js/common.js"></script>
 <script src="resources/js/echarts.js"></script>
 <style>
 
-.container .search{
-	width: 100%;
-	height: 7vh;
-	text-align: center;
-	padding-top: 2vh;
-}
-
-.container .search input{
-	font-size: 3em;
-}
-
 .container .middle{
 	width: 100%;
-	height: 50vh;
+	height: 78vh;
 }
 
 .container .middle .chart-title{
 	width: 98vw;
-	height: 10vh;
-	padding-left: 2vw;
+	height: 8vh;
 }
 
 .container .middle .chart-title .main-value{
@@ -42,10 +31,11 @@
 	display: inline-block;
 	float: left;
 	text-align: center;
+	margin-left: 3vw;
 }
 
 .container .middle .chart-title .other-value{
-	width: 80%;
+	width: 70%;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -61,26 +51,26 @@
 }
 
 .container .middle .chart{
-	width: 93vw;
-	height: 50vh;
-	display: inline-block;
+	width: 100vw;
+	height: 70vh;
 	float: left;
 }
 
-.container .middle .right-bar{
-	height: 10vh;
-	width: 6vw;
-	display: inline-block;
-	float: right;
-	margin-top: 5vh;
+.container .options{
+	width: 100%;
+	height: 5vh;
+	background: #2c2c2c;
 }
 
-.container .middle .right-bar span{
-	font-size: 3.5em;
+.container .options span{
+	font-size: 3em;
+	color: #aaa;
+	margin-left: 3vw;
+	margin-right: 3vw;
 }
 
-.container .middle .right-bar span a{
-	text-decoration: none;
+.container .sub-options{
+	display: none;
 }
 
 </style>
@@ -88,11 +78,12 @@
 </head>
 
 <body>
-    <%@include file="/WEB-INF/pages/common/header.jsp" %>
+    <div class="head">
+		<div class="head-content">
+			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
+		</div>
+	</div>
     <div class="container">
-    	<div class="search">
-    		<input type="text" placeholder="股票代码"/>
-    	</div>
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -114,16 +105,20 @@
     				</table>
     			</div>
     		</div>
-	    	<div class="chart" id="chart" onclick="jump()"></div>
-	    	<div class="right-bar">
-		    	<span><a href="">沪</a></span>
-	    	</div>
-	    	<div class="right-bar">
-		    	<span><a href="">深</a></span>
-	    	</div>
-	    	<div class="right-bar">
-		    	<span><a href="">创</a></span>
-	    	</div>
+    		<div class="chart" id="chart"></div>
+    	</div>
+    	<div id="minites" class="sub-options">
+    		<span>5Min</span>
+    		<span>30Min</span>
+    		<span>60Min</span>
+    	</div>
+    	<div class="options">
+    		<span style="color: #f74242">分时</span>
+    		<span onclick="toKline()">日</span>
+    		<span>周</span>
+    		<span>月</span>
+    		<span>分钟</span>
+    		<span style="float:right">指标</span>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -149,6 +144,7 @@
 		};
 		
 		function chartInit(){
+			var myChart = document.getElementById('chart');
 			var data = new Array();
 			for(var i =0;i<242;i++)
 				data.push(i);
@@ -183,7 +179,8 @@
 			    		textStyle:{
 			    			fontSize:24
 			    		}
-			    	}
+			    	},
+			    	z: 999
 			    },{
 			    	type: 'category',
 			    	gridIndex: 1,
@@ -239,12 +236,11 @@
 			        return idx * 5;
 			    }
 			};
-			var myChart = echarts.init(document.getElementById('chart'));
-			myChart.setOption(option);
+			echarts.init(myChart).setOption(option);
 		}
 		
-		function jump(){
-			location.href="page/composite";
+		function toKline(){
+			location.href="page/composite/kline";
 		}
 	</script>
 </body>

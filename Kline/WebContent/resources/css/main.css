@@ -6,15 +6,28 @@ body{
 }
 
 .head{
-	background: #e44d42;
+	background:  #2c2c2c;
 	text-align: center;
 	width: 100%;
 }
 
+.head .head-content{
+	padding-top: 1vh;
+	padding-bottom: 0.4vh;
+}
+
 .head .head-content img{
 	width: 80vw;
-	margin-top: 3vh;
-	margin-bottom: 1vh;
+}
+
+.head .head-content span{
+	color: #fff;
+	font-size: 4em;
+}
+
+.head .head-content a{
+	margin-left: 7vw;
+	margin-right: 7vw;
 }
 
 .container{
@@ -29,6 +42,15 @@ body{
 	bottom: 0;
 }
 
+.footer .foot-logos{
+	padding-top: 0.5vh;
+}
+
+.footer .foot-logos img{
+	height: 9vh;
+	margin-left: 3.1vw;
+	margin-right: 3.1vw;
+}
 
 .big-value{
 	font-size: 3.3em;
@@ -49,5 +71,9 @@ body{
 
 .red-value{
 	color: red;
+}
+
+.span-selected{
+	color: #f74242;	
 }
 
