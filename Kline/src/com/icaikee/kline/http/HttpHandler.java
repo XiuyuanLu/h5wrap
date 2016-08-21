@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URLDecoder;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -86,28 +85,47 @@ public class HttpHandler {
 	 *            路径
 	 * @return
 	 */
-	public static JSONObject httpGet(String url) {
-		// get请求返回结果
+	public static JSONObject httpGet(String url, JSONObject jsonParam) {
+		// post请求返回结果
+		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 		JSONObject jsonResult = null;
+		HttpGet method = new HttpGet(url + "?" + jsonParam);
 		try {
-			CloseableHttpClient client = HttpClientBuilder.create().build();
-			// 发送get请求
-			HttpGet request = new HttpGet(url);
-			HttpResponse response = client.execute(request);
-
+			HttpResponse result = httpClient.execute(method);
+			url = URLDecoder.decode(url, "UTF-8");
 			/** 请求发送成功，并得到响应 **/
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				/** 读取服务器返回过来的json字符串数据 **/
-				String strResult = EntityUtils.toString(response.getEntity());
-				/** 把json字符串转换成json对象 **/
-				jsonResult = JSONObject.fromObject(strResult);
-				url = URLDecoder.decode(url, "UTF-8");
-			} else {
-				logger.error("get请求提交失败:" + url);
+			if (result.getStatusLine().getStatusCode() == 200) {
+				String str = "";
+				try {
+					/** 读取服务器返回过来的json字符串数据 **/
+					str = EntityUtils.toString(result.getEntity());
+					/** 把json字符串转换成json对象 **/
+					jsonResult = JSONObject.fromObject(str);
+				} catch (Exception e) {
+					logger.error("post请求提交失败:" + url, e);
+				}
 			}
 		} catch (IOException e) {
-			logger.error("get请求提交失败:" + url, e);
+			logger.error("post请求提交失败:" + url, e);
 		}
 		return jsonResult;
 	}
+
+	public static String parseJosnParams(JSONObject jsonParam) {
+		if (jsonParam == null || jsonParam.size() == 0)
+			return "";
+		StringBuilder sb = new StringBuilder();
+		sb.append("?");
+		int count = 0;
+		for (Object key : jsonParam.keySet()) {
+			count++;
+			Object value = jsonParam.get(key);
+			sb.append(key + "=" + value);
+			if (count < jsonParam.size())
+				sb.append("&");
+		}
+
+		return sb.toString();
+	}
+
 }
