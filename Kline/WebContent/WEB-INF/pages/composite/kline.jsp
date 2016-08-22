@@ -145,14 +145,16 @@
 		var tradeTime;
 		function onLoad(){
 			$.ajax({
-				url:"api/composite/tradeTime",
+				url:"api/composite/kline",
 				data:{
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					tradeTime = data.message;
-					chartInit();
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					chartInit(data.message);
 				}
 			});
 		}
@@ -162,68 +164,74 @@
 				fontWeight: 'normal'
 		};
 		
-		function chartInit(){
+		function splitData(rawData) {
+		    var categoryData = [];
+		    var values = []
+		    for (var i = 0; i < rawData.length; i++) {
+		        categoryData.push(rawData[i].splice(0, 1)[0]);
+		        values.push(rawData[i])
+		    }
+		    return {
+		        categoryData: categoryData,
+		        values: values
+		    };
+		}
+		
+		function calculateMA(dayCount,data0) {
+		    var result = [];
+		    for (var i = 0, len = data0.values.length; i < len; i++) {
+		        if (i < dayCount) {
+		            result.push('-');
+		            continue;
+		        }
+		        var sum = 0;
+		        for (var j = 0; j < dayCount; j++) {
+		            sum += data0.values[i - j][1];
+		        }
+		        result.push(sum / dayCount);
+		    }
+		    return result;
+		}
+		
+		function chartInit(data){
 			var myChart = document.getElementById('chart');
-			var data = new Array();
-			for(var i =0;i<242;i++)
-				data.push(i);
-
+			var ks = new Array();
+			for(var i=0;i<data.length;i++){
+				ks.push([data[i].timeStamp,data[i].openPrice,data[i].closePrice,data[i].lowPrice,data[i].highPrice]);
+			}
+			var data0 = splitData(ks);
 			option = {
 			   	grid:[{
 			   			left: 30,
 			   			height: '70%',
 			   			containLabel: true
-			   		},{
-			   			left: 30,
-			   			height: '16%',
-			   			top: '78%',
-			   			containLabel: true
 			   		}
 			   	],
+			   	tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'cross'
+			        },
+			        textStyle: textStyle
+			    },
 			    xAxis: [{
 			    	type: 'category',
-			        data: tradeTime,
+			    	data: data0.categoryData,
 			    	axisTick:{
-			    		interval: 60
+			    		show: false
 			    	},
 			    	splitLine:{
-			    		show: true,
-			    		interval: 60
+			    		show: false
 			    	},
 			    	axisLabel:{
-			    		interval: function(index,value){
-			    			if(index==0 || index==120 || index==241)
-			    				return true;
-			    		},
-			    		textStyle:{
-			    			fontSize:24
-			    		}
+			    		show: false
 			    	},
 			    	z: 999
-			    },{
-			    	type: 'category',
-			    	gridIndex: 1,
-			    	data: tradeTime,
-			        splitNumber: 3,
-			        axisLine:{
-			    		onZero: false
-			    	},
-			    	axisLabel:{
-			    	},
-			    	axisTick:{
-			    		interval: 60
-			    	},
-			    	splitLine:{
-			    		show: true,
-			    		interval: 60,
-			    		lineStyle:{
-			    			width: 0.5,
-			    			color: ['#000']
-			    		}
-			    	}
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
+			    	max: 3,
+			    	min: -1,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
@@ -236,24 +244,27 @@
 			    	axisTick:{},
 			    	splitLine:{
 			    	}
-			    },{
-	                scale: true,
-	                gridIndex: 1,
-	                splitNumber: 2,
-	                axisLabel: {inside: true,show: false},
-	                axisLine: {},
-	                axisTick: {show: false},
-	                splitLine: {show: false}
-	            }],
-			    series: [{
-			    	type: 'line',
-			    	data: data
-			    }
+			    }],
+			    dataZoom: [
+			       {
+			          type: 'inside',
+			          filterMode: 'filter',
+			          start: 90,
+			          end: 100
+			       }
 			    ],
-			    animationEasing: 'elasticOut',
-			    animationDelayUpdate: function (idx) {
-			        return idx * 5;
-			    }
+			    series: [{
+			    	type: 'candlestick',
+			    	data: data0.values
+			    },{
+		            name: 'MA5',
+		            type: 'line',
+		            data: calculateMA(5,data0),
+		            smooth: true,
+		            lineStyle: {
+		                normal: {opacity: 0.5}
+		            }
+		        },]
 			};
 			echarts.init(myChart).setOption(option);
 		}
