@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.icaikee.kline.biz.DataGenerator;
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
+import com.icaikee.kline.util.TimeUtil;
 
 @Service
 public class CompositeService {
@@ -17,8 +18,10 @@ public class CompositeService {
 		return null;
 	}
 
-	public List<Candlesticks> getCandlesticks(String stockCode, String candlePeriod, String candleMode, Date startDate,
-			Date endDate) throws ParseException {
-		return DataGenerator.getK(null, "2", null, null, null);
+	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)
+			throws ParseException {
+		Date date = new Date();
+		return DataGenerator.getK(code, candlePeriod, null, new Date(),
+				TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
 	}
 }

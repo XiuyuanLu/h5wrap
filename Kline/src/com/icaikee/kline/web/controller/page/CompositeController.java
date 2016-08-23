@@ -2,6 +2,7 @@ package com.icaikee.kline.web.controller.page;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.icaikee.kline.WebConstants;
@@ -21,8 +22,10 @@ public class CompositeController {
 	}
 
 	@RequestMapping("/kline")
-	public ModelAndView kline() {
+	public ModelAndView kline(@RequestParam(name = "code") String code, @RequestParam(name = "type") String type) {
 		ModelAndView mv = new ModelAndView(PAGE_KLINE);
+		mv.addObject("code", code);
+		mv.addObject("type", type);
 		return mv;
 	}
 

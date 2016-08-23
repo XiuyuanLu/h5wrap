@@ -52,7 +52,7 @@
 
 .container .middle .chart{
 	width: 100vw;
-	height: 70vh;
+	height: 65vh;
 	float: left;
 }
 
@@ -71,6 +71,17 @@
 
 .container .sub-options{
 	display: none;
+	position: absolute;
+	bottom: 14.6vh;
+	width: 100%;
+	background: #2c2c3c;
+}
+
+.container .sub-options span{
+	font-size: 3em;
+	color: #aaa;
+	margin-left: 3vw;
+	margin-right: 3vw;
 }
 
 </style>
@@ -78,6 +89,7 @@
 </head>
 
 <body>
+	<input id="code" type="hidden" value="000001" />
     <div class="head">
 		<div class="head-content">
 			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
@@ -108,18 +120,20 @@
     		<div class="chart" id="chart"></div>
     	</div>
     	<div id="minites" class="sub-options">
-    		<span>5Min</span>
-    		<span>30Min</span>
-    		<span>60Min</span>
+    		<span id="oneM" onclick="toKline('1')">1Min</span>
+    		<span id="fiveM" onclick="toKline('2')">5Min</span>
+    		<span id="qutrM" onclick="toKline('3')">15Min</span>
+    		<span id="thtyM" onclick="toKline('4')">30Min</span>
+    		<span id="sxtyM" onclick="toKline('5')">60Min</span>
     	</div>
     	<div class="options">
-    		<span style="color: #f74242">分时</span>
-    		<span onclick="toKline()">日</span>
-    		<span>周</span>
-    		<span>月</span>
-    		<span>分钟</span>
-    		<span style="float:right">指标</span>
-    	</div>
+	    	<span style="color: #f74242">分时</span>
+	    	<span onclick="toKline('6')">日</span>
+	    	<span onclick="toKline('7')">周</span>
+	    	<span onclick="toKline('8')">月</span>
+	    	<span onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
+	    	<span style="float:right">指标</span>
+	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
@@ -239,8 +253,22 @@
 			echarts.init(myChart).setOption(option);
 		}
 		
-		function toKline(){
-			location.href="page/composite/kline";
+		function toKline(type){
+			location.href="page/composite/kline?code="+document.getElementById('code').value+"&type="+type;
+		}
+		
+		function showMinites(){
+			var status = document.getElementById('minites').style.display;
+			if(status=="block"){
+				document.getElementById('minites').style.display="none";
+				$('#minites-arrow').removeClass('fa-chevron-down');
+				$('#minites-arrow').addClass('fa-chevron-up');
+			}
+			else{
+				document.getElementById('minites').style.display="block";
+				$('#minites-arrow').removeClass('fa-chevron-up');
+				$('#minites-arrow').addClass('fa-chevron-down');
+			}
 		}
 	</script>
 </body>

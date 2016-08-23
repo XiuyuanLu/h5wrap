@@ -88,6 +88,17 @@
 
 .container .sub-options{
 	display: none;
+	position: absolute;
+	bottom: 14.6vh;
+	width: 100%;
+	background: #2c2c3c;
+}
+
+.container .sub-options span{
+	font-size: 3em;
+	color: #aaa;
+	margin-left: 3vw;
+	margin-right: 3vw;
 }
 
 </style>
@@ -95,6 +106,8 @@
 </head>
 
 <body>
+	<input id="code" type="hidden" value="${code}" />
+    <input id="type" type="hidden" value="${type}" />
     <div class="head">
 		<div class="head-content">
 			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
@@ -131,12 +144,18 @@
 	    	</div>
 	    	<div class="index-type"></div>
     	</div>
+    	<div id="minites" class="sub-options">
+    		<span>1Min</span>
+    		<span>5Min</span>
+    		<span>30Min</span>
+    		<span>60Min</span>
+    	</div>
     	<div class="options">
-	    	<span style="color: #f74242">分时</span>
-	    	<span onclick="toKline()">日</span>
-	    	<span>周</span>
-	    	<span>月</span>
-	    	<span>分钟</span>
+	    	<span onclick="toRealtime()">分时</span>
+	    	<span id="day" onclick="toKline('6')">日</span>
+	    	<span id="week" onclick="toKline('7')">周</span>
+	    	<span id="month" onclick="toKline('8')">月</span>
+	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
 	    	<span style="float:right">指标</span>
 	    </div>
     </div>
@@ -144,15 +163,28 @@
 	<script>
 		var tradeTime;
 		function onLoad(){
+			var type=document.getElementById('type').value;
+			
+			if(type=='6')
+				document.getElementById('day').style.color='#f74242';
+			else if(type=='7')
+				document.getElementById('week').style.color='#f74242';
+			else if(type=='8')
+				document.getElementById('month').style.color='#f74242';
+			
 			$.ajax({
-				url:"api/composite/tradeTime",
+				url:"api/composite/kline",
 				data:{
+					code: document.getElementById('code').value,
+					type: type
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					tradeTime = data.message;
-					chartInit();
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					chartInit(data.message);
 				}
 			});
 		}
@@ -162,68 +194,74 @@
 				fontWeight: 'normal'
 		};
 		
-		function chartInit(){
+		function splitData(rawData) {
+		    var categoryData = [];
+		    var values = []
+		    for (var i = 0; i < rawData.length; i++) {
+		        categoryData.push(rawData[i].splice(0, 1)[0]);
+		        values.push(rawData[i])
+		    }
+		    return {
+		        categoryData: categoryData,
+		        values: values
+		    };
+		}
+		
+		function calculateMA(dayCount,data0) {
+		    var result = [];
+		    for (var i = 0, len = data0.values.length; i < len; i++) {
+		        if (i < dayCount) {
+		            result.push('-');
+		            continue;
+		        }
+		        var sum = 0;
+		        for (var j = 0; j < dayCount; j++) {
+		            sum += data0.values[i - j][1];
+		        }
+		        result.push(sum / dayCount);
+		    }
+		    return result;
+		}
+		
+		function chartInit(data){
 			var myChart = document.getElementById('chart');
-			var data = new Array();
-			for(var i =0;i<242;i++)
-				data.push(i);
-
+			var ks = new Array();
+			for(var i=0;i<data.length;i++){
+				ks.push([data[i].timeStamp,data[i].openPrice,data[i].closePrice,data[i].lowPrice,data[i].highPrice]);
+			}
+			var data0 = splitData(ks);
 			option = {
 			   	grid:[{
 			   			left: 30,
 			   			height: '70%',
 			   			containLabel: true
-			   		},{
-			   			left: 30,
-			   			height: '16%',
-			   			top: '78%',
-			   			containLabel: true
 			   		}
 			   	],
+			   	tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'cross'
+			        },
+			        textStyle: textStyle
+			    },
 			    xAxis: [{
 			    	type: 'category',
-			        data: tradeTime,
+			    	data: data0.categoryData,
 			    	axisTick:{
-			    		interval: 60
+			    		show: false
 			    	},
 			    	splitLine:{
-			    		show: true,
-			    		interval: 60
+			    		show: false
 			    	},
 			    	axisLabel:{
-			    		interval: function(index,value){
-			    			if(index==0 || index==120 || index==241)
-			    				return true;
-			    		},
-			    		textStyle:{
-			    			fontSize:24
-			    		}
+			    		show: false
 			    	},
 			    	z: 999
-			    },{
-			    	type: 'category',
-			    	gridIndex: 1,
-			    	data: tradeTime,
-			        splitNumber: 3,
-			        axisLine:{
-			    		onZero: false
-			    	},
-			    	axisLabel:{
-			    	},
-			    	axisTick:{
-			    		interval: 60
-			    	},
-			    	splitLine:{
-			    		show: true,
-			    		interval: 60,
-			    		lineStyle:{
-			    			width: 0.5,
-			    			color: ['#000']
-			    		}
-			    	}
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
+			    	max: 3,
+			    	min: -1,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
@@ -236,26 +274,51 @@
 			    	axisTick:{},
 			    	splitLine:{
 			    	}
-			    },{
-	                scale: true,
-	                gridIndex: 1,
-	                splitNumber: 2,
-	                axisLabel: {inside: true,show: false},
-	                axisLine: {},
-	                axisTick: {show: false},
-	                splitLine: {show: false}
-	            }],
-			    series: [{
-			    	type: 'line',
-			    	data: data
-			    }
+			    }],
+			    dataZoom: [
+			       {
+			          type: 'inside',
+			          filterMode: 'filter',
+			          start: 90,
+			          end: 100
+			       }
 			    ],
-			    animationEasing: 'elasticOut',
-			    animationDelayUpdate: function (idx) {
-			        return idx * 5;
-			    }
+			    series: [{
+			    	type: 'candlestick',
+			    	data: data0.values
+			    },{
+		            name: 'MA5',
+		            type: 'line',
+		            data: calculateMA(5,data0),
+		            smooth: true,
+		            lineStyle: {
+		                normal: {opacity: 0.5}
+		            }
+		        },]
 			};
 			echarts.init(myChart).setOption(option);
+		}
+		
+		function toKline(type){
+			location.href="page/composite/kline?code="+document.getElementById('code').value+"&type="+type;
+		}
+		
+		function toRealtime(){
+			location.href="page/composite";
+		}
+		
+		function showMinites(){
+			var status = document.getElementById('minites').style.display;
+			if(status=="block"){
+				document.getElementById('minites').style.display="none";
+				$('#minites-arrow').removeClass('fa-chevron-down');
+				$('#minites-arrow').addClass('fa-chevron-up');
+			}
+			else{
+				document.getElementById('minites').style.display="block";
+				$('#minites-arrow').removeClass('fa-chevron-up');
+				$('#minites-arrow').addClass('fa-chevron-down');
+			}
 		}
 	</script>
 </body>
