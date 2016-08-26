@@ -325,7 +325,7 @@
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          start: 90,
+			          start: 95,
 			          end: 100
 			       }
 			    ],
@@ -334,6 +334,12 @@
 			    	data: data0.values,
 			    	markLine:{
 			    		data: markLine
+			    	},
+			    	itemStyle:{
+			    		normal:{
+			    			color: '#e51818',
+			    			color0: '#179b09'
+			    		}
 			    	}
 			    },{
 		            name: 'MA5',

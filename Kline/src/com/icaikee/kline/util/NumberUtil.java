@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class NumberUtil {
 
-	public static double getRandom() {
+	public static double getRandom(int x) {
 		Random random = new Random();
-		return random.nextDouble() * random.nextInt(3);
+		return random.nextDouble() * random.nextInt(x);
 	}
 
 }

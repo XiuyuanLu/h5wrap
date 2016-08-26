@@ -68,6 +68,8 @@ public class RealtimeQuote {
 
 	private Double compositeNonweightIndex;
 
+	private String color;
+
 	public String getStockCode() {
 		return stockCode;
 	}
@@ -322,6 +324,14 @@ public class RealtimeQuote {
 
 	public void setCompositeNonweightIndex(Double compositeNonweightIndex) {
 		this.compositeNonweightIndex = compositeNonweightIndex;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 }

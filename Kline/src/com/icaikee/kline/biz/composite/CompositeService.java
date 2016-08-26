@@ -14,8 +14,8 @@ import com.icaikee.kline.util.TimeUtil;
 @Service
 public class CompositeService {
 
-	public List<RealtimeQuote> getRealtimeQuote(String stockCode) {
-		return null;
+	public List<RealtimeQuote> getRealtimeQuote(String stockCode) throws ParseException {
+		return DataGenerator.getRealTime(stockCode);
 	}
 
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)

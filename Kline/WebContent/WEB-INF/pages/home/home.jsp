@@ -133,12 +133,13 @@
 			$.ajax({
 				url:"api/composite/tradeTime",
 				data:{
+					code: '000001'
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					tradeTime = data.message;
-					chartInit();
+					//tradeTime = data.message;
+					chartInit(data.message);
 				}
 			});
 		}
@@ -148,11 +149,21 @@
 				fontWeight: 'normal'
 		};
 		
-		function chartInit(){
-			var data = new Array();
-			for(var i =0;i<242;i++)
-				data.push(i);
-
+		function chartInit(data){
+			var myChart = document.getElementById('chart');
+			var category = new Array();
+			var posValues = new Array();
+			var negValues = new Array();
+			for(var i =0;i<data.length;i++){
+				category.push(data[i].timeStamp);
+				if(data[i].color=='red'){
+					posValues.push(data[i].businessAmount);
+					negValues.push(0);
+				}else{
+					posValues.push(0);
+					negValues.push(data[i].businessAmount);
+				}
+			}
 			option = {
 			   	grid:[{
 			   			left: 30,
@@ -167,7 +178,7 @@
 			   	],
 			    xAxis: [{
 			    	type: 'category',
-			        data: tradeTime,
+			        data: category,
 			    	axisTick:{
 			    		interval: 60
 			    	},
@@ -183,11 +194,12 @@
 			    		textStyle:{
 			    			fontSize:24
 			    		}
-			    	}
+			    	},
+			    	z: 999
 			    },{
 			    	type: 'category',
 			    	gridIndex: 1,
-			    	data: tradeTime,
+			    	data: category,
 			        splitNumber: 3,
 			        axisLine:{
 			    		onZero: false
@@ -210,6 +222,8 @@
 			    	splitNumber: 3,
 			    	axisLine:{
 			    	},
+			    	max: 6,
+			    	min: -6,
 			    	gridIndex: 0,
 			    	axisLabel:{
 			    		inside: true,
@@ -230,17 +244,24 @@
 	                splitLine: {show: false}
 	            }],
 			    series: [{
-			    	type: 'line',
-			    	data: data
-			    }
+		            name: 'bar',
+		            type: 'bar',
+		            stack: 'one',
+		            data: posValues
+		        },
+		        {
+		            name: 'bar2',
+		            type: 'bar',
+		            stack: 'one',
+		            data: negValues
+		        }
 			    ],
 			    animationEasing: 'elasticOut',
 			    animationDelayUpdate: function (idx) {
 			        return idx * 5;
 			    }
 			};
-			var myChart = echarts.init(document.getElementById('chart'));
-			myChart.setOption(option);
+			echarts.init(myChart).setOption(option);
 		}
 		
 		function jump(){

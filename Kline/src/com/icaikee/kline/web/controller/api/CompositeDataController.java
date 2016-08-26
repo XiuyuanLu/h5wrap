@@ -29,8 +29,13 @@ public class CompositeDataController {
 	private WrapService wrapService;
 
 	@RequestMapping("/tradeTime")
-	public Message getTradeTime() {
-		return new Message(commonService.getTradeTime());
+	public Message getTradeTime(@RequestParam(name = "code") String code) {
+		// return new Message(commonService.getTradeTime());
+		try {
+			return new Message(compositeService.getRealtimeQuote(code));
+		} catch (ParseException e) {
+			return new Message("error");
+		}
 	}
 
 	@RequestMapping("/kline")
