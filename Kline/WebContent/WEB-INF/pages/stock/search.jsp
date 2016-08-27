@@ -72,7 +72,7 @@
 		}
 		
 		function jump(){
-			location.href="page/stock";
+			location.href="page/stock?stockcode="+'000001';
 		}
 	</script>
 </body>

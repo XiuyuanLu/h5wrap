@@ -12,6 +12,8 @@ public class TimeUtil {
 
 	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
 
+	public static final String TIME_PATTERN = "hh:mm:ss";
+
 	public static final int MINITE = 12;
 
 	public static final int DAY = 5;

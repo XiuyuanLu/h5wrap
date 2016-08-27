@@ -8,6 +8,7 @@ import java.util.List;
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
 import com.icaikee.kline.biz.common.model.WrapPen;
+import com.icaikee.kline.biz.common.model.WrapSegment;
 import com.icaikee.kline.util.NumberUtil;
 import com.icaikee.kline.util.TimeUtil;
 
@@ -15,11 +16,11 @@ public class DataGenerator {
 
 	public static List<RealtimeQuote> getRealTime(String stockCode) throws ParseException {
 		List<RealtimeQuote> result = new ArrayList<RealtimeQuote>();
-		Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+		Date now = TimeUtil.parse("2016-08-22 09:30:00", TimeUtil.DATE_TIME_PATTERN);
 		double lastPrice = NumberUtil.getRandom(3);
-		for (int j = 0; j < 240; j++) {
+		for (int j = 0; j < 241; j++) {
 			RealtimeQuote rq = new RealtimeQuote();
-			rq.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+			rq.setTimeStamp(TimeUtil.format(now, TimeUtil.TIME_PATTERN));
 			rq.setLastClosePrice(lastPrice);
 			double newPrice = NumberUtil.getRandom(3);
 			rq.setLastPrice(newPrice);
@@ -30,7 +31,7 @@ public class DataGenerator {
 				rq.setColor("green");
 				rq.setBusinessAmount(-NumberUtil.getRandom(3));
 			}
-			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -1);
+			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 1);
 			result.add(rq);
 		}
 		return result;
@@ -73,6 +74,28 @@ public class DataGenerator {
 					wrapPen.setValue(NumberUtil.getRandom(3));
 					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -20);
 					result.add(wrapPen);
+				}
+				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+			}
+			return result;
+		} else
+			return null;
+
+	}
+
+	public static List<WrapSegment> getW2(String stockCode, String candlePeriod, String candleMode, Date startDate,
+			Date endDate) throws ParseException {
+		List<WrapSegment> result = new ArrayList<WrapSegment>();
+		if (Integer.parseInt(candlePeriod) >= 6) {
+			Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 6; j++) {
+					WrapSegment wrapSegment = new WrapSegment();
+					wrapSegment.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+					wrapSegment.setValue(NumberUtil.getRandom(3));
+					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40);
+					result.add(wrapSegment);
 				}
 				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
 				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);

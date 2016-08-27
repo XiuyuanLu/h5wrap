@@ -17,7 +17,7 @@
 
 .container .middle{
 	width: 100%;
-	height: 50vh;
+	height: 78vh;
 }
 
 .container .middle .chart-title{
@@ -88,6 +88,17 @@
 
 .container .sub-options{
 	display: none;
+	position: absolute;
+	bottom: 14.6vh;
+	width: 100%;
+	background: #2c2c3c;
+}
+
+.container .sub-options span{
+	font-size: 3em;
+	color: #aaa;
+	margin-left: 3vw;
+	margin-right: 3vw;
 }
 
 </style>
@@ -95,9 +106,10 @@
 </head>
 
 <body>
+	<input id="pageCode" type="hidden" value="${code}"/>
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>${code}<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">
@@ -132,28 +144,34 @@
 	    		<div class="tab-detail"></div>
 	    	</div>
     	</div>
-	    <div class="options">
+	    <div id="minites" class="sub-options">
+    		<span id="oneM" onclick="toKline('1')">1Min</span>
+    		<span id="fiveM" onclick="toKline('2')">5Min</span>
+    		<span id="qutrM" onclick="toKline('3')">15Min</span>
+    		<span id="thtyM" onclick="toKline('4')">30Min</span>
+    		<span id="sxtyM" onclick="toKline('5')">60Min</span>
+    	</div>
+    	<div class="options">
 	    	<span style="color: #f74242">分时</span>
-	    	<span onclick="toKline()">日</span>
-	    	<span>周</span>
-	    	<span>月</span>
-	    	<span>分钟</span>
+	    	<span onclick="toKline('6')">日</span>
+	    	<span onclick="toKline('7')">周</span>
+	    	<span onclick="toKline('8')">月</span>
+	    	<span onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
 	    	<span style="float:right">指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
-		var tradeTime;
 		function onLoad(){
 			$.ajax({
-				url:"api/composite/tradeTime",
+				url:"api/stock/realtime",
 				data:{
+					stockcode: '000001'
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					tradeTime = data.message;
-					chartInit();
+					chartInit(data.message);
 				}
 			});
 		}
@@ -163,13 +181,28 @@
 				fontWeight: 'normal'
 		};
 		
-		function chartInit(){
+		function chartInit(data){
+			if(data=='error'){
+				alert(data);
+				return;
+			}
 			var myChart = document.getElementById('chart');
-			var data = new Array();
-			for(var i =0;i<242;i++)
-				data.push(i);
-
-			option = {
+			var category = new Array();
+			var posValues = new Array();
+			var negValues = new Array();
+			var prices = new Array();
+			for(var i =0;i<data.length;i++){
+				category.push(data[i].timeStamp);
+				if(data[i].color=='red'){
+					posValues.push(data[i].businessAmount);
+					negValues.push(0);
+				}else{
+					posValues.push(0);
+					negValues.push(data[i].businessAmount);
+				}
+				prices.push(data[i].lastPrice);
+			}
+			var option = {
 			   	grid:[{
 			   			left: 30,
 			   			height: '70%',
@@ -183,7 +216,7 @@
 			   	],
 			    xAxis: [{
 			    	type: 'category',
-			        data: tradeTime,
+			        data: category,
 			    	axisTick:{
 			    		interval: 60
 			    	},
@@ -204,7 +237,7 @@
 			    },{
 			    	type: 'category',
 			    	gridIndex: 1,
-			    	data: tradeTime,
+			    	data: category,
 			        splitNumber: 3,
 			        axisLine:{
 			    		onZero: false
@@ -225,6 +258,8 @@
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
+			    	min: 0,
+			    	max: 10,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
@@ -248,7 +283,7 @@
 	            }],
 			    series: [{
 			    	type: 'line',
-			    	data: data
+			    	data: prices
 			    }
 			    ],
 			    animationEasing: 'elasticOut',
@@ -258,6 +293,25 @@
 			};
 			echarts.init(myChart).setOption(option);
 		}
+		
+		function showMinites(){
+			var status = document.getElementById('minites').style.display;
+			if(status=="block"){
+				document.getElementById('minites').style.display="none";
+				$('#minites-arrow').removeClass('fa-chevron-down');
+				$('#minites-arrow').addClass('fa-chevron-up');
+			}
+			else{
+				document.getElementById('minites').style.display="block";
+				$('#minites-arrow').removeClass('fa-chevron-up');
+				$('#minites-arrow').addClass('fa-chevron-down');
+			}
+		}
+		
+		function toKline(type){
+			location.href="page/stock/kline?stockcode="+document.getElementById('pageCode').value+"&type="+type;
+		}
+		
 	</script>
 </body>
 </html>

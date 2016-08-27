@@ -156,6 +156,7 @@
 		var tradeTime;
 		var candlesticks;
 		var wrapPen;
+		var wrapSegment;
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -189,7 +190,7 @@
 			$.ajax({
 				url:"api/composite/kline",
 				data:{
-					code: document.getElementById('code').value,
+					stockcode: document.getElementById('code').value,
 					type: type
 				},
 				type: 'POST',
@@ -198,23 +199,10 @@
 					var msg = data.message;
 					if(msg=="error")
 						alert(msg);
-					candlesticks=data.message;
-					$.ajax({
-						url:"api/composite/wrap",
-						data:{
-							code: document.getElementById('code').value,
-							type: type
-						},
-						type: 'POST',
-						dataType: 'json',
-						success:function(data){
-							var msg = data.message;
-							if(msg=="error")
-								alert(msg);
-							wrapPen = data.message;
-							chartInit();
-						}
-					});
+					candlesticks=data.message[0];
+					wrapPen=data.message[1];
+					wrapSegment=data.message[2];
+					chartInit();
 				}
 			});
 			
@@ -261,13 +249,37 @@
 				ks.push([candlesticks[i].timeStamp,candlesticks[i].openPrice,candlesticks[i].closePrice,candlesticks[i].lowPrice,candlesticks[i].highPrice]);
 			}
 			
-			var markLine = new Array();
+			var penLine = new Array();
 			for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
 				var end=wrapPen[i+1];
-				markLine.push([{
+				penLine.push([{
 					coord:[start.timeStamp+'',start.value],
-					value:start.value
+					value:start.value,
+					lineStyle:{
+						normal:{
+							color: '#5e069d',
+							type: 'solid'
+						}
+					}
+				},{
+					coord:[end.timeStamp+'',end.value],
+					value:end.value
+				}]);
+			}
+			
+			for(var i=0;i<wrapSegment.length-1;i++){
+				var start=wrapSegment[i];
+				var end=wrapSegment[i+1];
+				penLine.push([{
+					coord:[start.timeStamp+'',start.value],
+					value:start.value,
+					lineStyle:{
+						normal:{
+							color: '#3b3d3e',
+							type: 'solid'
+						}
+					}
 				},{
 					coord:[end.timeStamp+'',end.value],
 					value:end.value
@@ -320,6 +332,17 @@
 			    	axisTick:{},
 			    	splitLine:{
 			    	}
+			    },{
+			    	max: 3,
+			    	min: -1,
+			    	axisLine:{show: false},
+			    	gridIndex: 0,
+			    	axisLabel:{
+			    		show: false,
+			    		inside: true
+			    	},
+			    	axisTick:{show: false},
+			    	splitLine:{show: false}
 			    }],
 			    dataZoom: [
 			       {
@@ -333,7 +356,7 @@
 			    	type: 'candlestick',
 			    	data: data0.values,
 			    	markLine:{
-			    		data: markLine
+			    		data: penLine
 			    	},
 			    	itemStyle:{
 			    		normal:{
@@ -355,7 +378,7 @@
 		}
 		
 		function toKline(type){
-			location.href="page/composite/kline?code="+document.getElementById('code').value+"&type="+type;
+			location.href="page/composite/kline?stockcode="+document.getElementById('code').value+"&type="+type;
 		}
 		
 		function toRealtime(){

@@ -16,13 +16,16 @@ public class CompositeController {
 	private static final String PAGE_KLINE = "composite/kline";
 
 	@RequestMapping
-	public ModelAndView composite() {
+	public ModelAndView composite(@RequestParam(name = "stockcode", required = false) String code) {
+		if (code == null || "".equals(code))
+			code = "000001";
 		ModelAndView mv = new ModelAndView(PAGE_COMPOSITE);
+		mv.addObject("code", code);
 		return mv;
 	}
 
 	@RequestMapping("/kline")
-	public ModelAndView kline(@RequestParam(name = "code") String code, @RequestParam(name = "type") String type) {
+	public ModelAndView kline(@RequestParam(name = "stockcode") String code, @RequestParam(name = "type") String type) {
 		ModelAndView mv = new ModelAndView(PAGE_KLINE);
 		mv.addObject("code", code);
 		mv.addObject("type", type);

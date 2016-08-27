@@ -1,6 +1,8 @@
 package com.icaikee.kline.web.controller.api;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.icaikee.kline.WebConstants;
-import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.composite.CompositeService;
 import com.icaikee.kline.biz.wrap.WrapService;
 import com.icaikee.kline.core.message.Message;
@@ -20,37 +21,29 @@ import com.icaikee.kline.core.message.Message;
 public class CompositeDataController {
 
 	@Autowired
-	private CommonService commonService;
-
-	@Autowired
 	private CompositeService compositeService;
 
 	@Autowired
 	private WrapService wrapService;
 
-	@RequestMapping("/tradeTime")
-	public Message getTradeTime(@RequestParam(name = "code") String code) {
-		// return new Message(commonService.getTradeTime());
+	@RequestMapping("/realtime")
+	public Message realtime(@RequestParam(name = "stockcode") String code) {
 		try {
 			return new Message(compositeService.getRealtimeQuote(code));
 		} catch (ParseException e) {
+			// TODO Auto-generated catch block
 			return new Message("error");
 		}
 	}
 
 	@RequestMapping("/kline")
-	public Message getKline(@RequestParam(name = "code") String code, @RequestParam(name = "type") String type) {
+	public Message getKline(@RequestParam(name = "stockcode") String code, @RequestParam(name = "type") String type) {
 		try {
-			return new Message(compositeService.getCandlesticks(code, type, null));
-		} catch (ParseException e) {
-			return new Message("error");
-		}
-	}
-
-	@RequestMapping("/wrap")
-	public Message getWrap(@RequestParam(name = "code") String code, @RequestParam(name = "type") String type) {
-		try {
-			return new Message(wrapService.getWrap(code, type, null));
+			List<Object> data = new ArrayList<Object>();
+			data.add(compositeService.getCandlesticks(code, type, null));
+			data.add(wrapService.getWrapPen(code, type, null));
+			data.add(wrapService.getWrapSegment(code, type, null));
+			return new Message(data);
 		} catch (ParseException e) {
 			return new Message("error");
 		}

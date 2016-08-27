@@ -89,6 +89,7 @@
 
 <body>
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
+    <input id="code" type="hidden" value="${code}"/>
     <div class="container">
     	<div class="search">
     		<input type="text" placeholder="股票代码" onclick="toSearch()"/>
@@ -114,31 +115,29 @@
     				</table>
     			</div>
     		</div>
-	    	<div class="chart" id="chart" onclick="jump()"></div>
+	    	<div class="chart" id="chart" onclick="jump('${code}')"></div>
 	    	<div class="right-bar">
-		    	<span><a href="">沪</a></span>
+		    	<span><a href="page/home?stockcode=000001">沪</a></span>
 	    	</div>
 	    	<div class="right-bar">
-		    	<span><a href="">深</a></span>
+		    	<span><a href="page/home?stockcode=399001">深</a></span>
 	    	</div>
 	    	<div class="right-bar">
-		    	<span><a href="">创</a></span>
+		    	<span><a href="page/home?stockcode=399006">创</a></span>
 	    	</div>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
-		var tradeTime;
-		function onLoad(){
-			$.ajax({
-				url:"api/composite/tradeTime",
+	function onLoad(){
+		$.ajax({
+				url:"api/composite/realtime",
 				data:{
-					code: '000001'
+					stockcode: document.getElementById('code').value
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					//tradeTime = data.message;
 					chartInit(data.message);
 				}
 			});
@@ -219,7 +218,6 @@
 			    	}
 			    }],
 			    yAxis: [{
-			    	splitNumber: 3,
 			    	axisLine:{
 			    	},
 			    	max: 6,
@@ -264,8 +262,8 @@
 			echarts.init(myChart).setOption(option);
 		}
 		
-		function jump(){
-			location.href="page/composite";
+		function jump(code){
+			location.href="page/composite?stockcode="+code;
 		}
 		
 		function toSearch(){

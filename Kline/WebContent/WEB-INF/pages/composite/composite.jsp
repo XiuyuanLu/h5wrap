@@ -89,10 +89,10 @@
 </head>
 
 <body>
-	<input id="code" type="hidden" value="000001" />
+	<input id="code" type="hidden" value="${code}" />
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>指数(${code})<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">
@@ -137,17 +137,15 @@
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
-		var tradeTime;
 		function onLoad(){
 			$.ajax({
-				url:"api/composite/tradeTime",
+				url:"api/composite/realtime",
 				data:{
-					code: '000001'
+					stockcode: document.getElementById('code').value
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					//tradeTime = data.message;
 					chartInit(data.message);
 				}
 			});
@@ -199,7 +197,7 @@
 			    	},
 			    	axisLabel:{
 			    		interval: function(index,value){
-			    			if(index==0 || index==120 || index==241)
+			    			if(index==0 || index==120 || index==240)
 			    				return true;
 			    		},
 			    		textStyle:{
@@ -286,7 +284,7 @@
 		}
 		
 		function toKline(type){
-			location.href="page/composite/kline?code="+document.getElementById('code').value+"&type="+type;
+			location.href="page/composite/kline?stockcode="+document.getElementById('code').value+"&type="+type;
 		}
 		
 		function showMinites(){
