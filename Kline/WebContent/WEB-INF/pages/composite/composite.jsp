@@ -176,10 +176,12 @@
 			option = {
 			   	grid:[{
 			   			left: 30,
+			   			right: 20,
 			   			height: '70%',
 			   			containLabel: true
 			   		},{
 			   			left: 30,
+			   			right: 20,
 			   			height: '16%',
 			   			top: '78%',
 			   			containLabel: true
@@ -256,13 +258,23 @@
 		            name: 'bar',
 		            type: 'bar',
 		            stack: 'one',
-		            data: posValues
+		            data: posValues,
+		            itemStyle:{
+		            	normal:{
+		            		color: '#e51818'
+		            	}
+		            }
 		        },
 		        {
 		            name: 'bar2',
 		            type: 'bar',
 		            stack: 'one',
-		            data: negValues
+		            data: negValues,
+		            itemStyle:{
+		            	normal:{
+		            		color: '#179b09'
+		            	}
+		            }
 		        }
 			    ],
 			    animationEasing: 'elasticOut',

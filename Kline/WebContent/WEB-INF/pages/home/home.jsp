@@ -91,7 +91,7 @@
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <div class="container">
     	<div class="search">
-    		<input type="text" placeholder="股票代码"/>
+    		<input type="text" placeholder="股票代码" onclick="toSearch()"/>
     	</div>
     	<div class="middle">
     		<div class="chart-title">
@@ -266,6 +266,10 @@
 		
 		function jump(){
 			location.href="page/composite";
+		}
+		
+		function toSearch(){
+			location.href="page/stock/search";
 		}
 	</script>
 </body>
