@@ -196,6 +196,22 @@
 				fontWeight: 'normal'
 		};
 		
+		function calculateMA(dayCount,data0) {
+		    var result = [];
+		    for (var i = 0, len = data0.length; i < len; i++) {
+		        if (i < dayCount) {
+		            result.push('-');
+		            continue;
+		        }
+		        var sum = 0;
+		        for (var j = 0; j < dayCount; j++) {
+		            sum += data0[i - j];
+		        }
+		        result.push(sum / dayCount);
+		    }
+		    return result;
+		}
+		
 		function chartInit(data){
 			if(data=='error'){
 				alert(data);
@@ -218,6 +234,7 @@
 				}
 				prices.push(data[i].lastPrice);
 			}
+			var ma = calculateMA(5,prices);
 			var option = {
 			   	grid:[{
 			   			left: 30,
@@ -300,6 +317,9 @@
 			    series: [{
 			    	type: 'line',
 			    	data: prices
+			    },{
+			    	type:'line',
+			    	data: ma
 			    }
 			    ],
 			    animationEasing: 'elasticOut',

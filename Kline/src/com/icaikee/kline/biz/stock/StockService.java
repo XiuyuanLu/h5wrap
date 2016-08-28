@@ -5,15 +5,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.icaikee.kline.biz.DataGenerator;
+import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
 import com.icaikee.kline.util.TimeUtil;
 
 @Service
 public class StockService {
+
+	@Autowired
+	private CommonService commonService;
 
 	public List<String> fuzzyQuery() {
 		List<String> result = new ArrayList<String>();
@@ -23,7 +28,18 @@ public class StockService {
 	}
 
 	public List<RealtimeQuote> getStockRealtime(String code) throws ParseException {
-		return DataGenerator.getRealTime(code);
+		List<RealtimeQuote> result = DataGenerator.getRealTime(code);
+		if (result.size() < 241) {
+			List<String> timeList = commonService.getTradeTime();
+			for (int i = 0; i < 241; i++) {
+				if (i >= result.size()) {
+					RealtimeQuote rq = new RealtimeQuote();
+					rq.setTimeStamp(timeList.get(i));
+					result.add(rq);
+				}
+			}
+		}
+		return result;
 	}
 
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)

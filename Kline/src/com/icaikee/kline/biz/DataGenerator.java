@@ -20,7 +20,7 @@ public class DataGenerator {
 		List<RealtimeQuote> result = new ArrayList<RealtimeQuote>();
 		Date now = TimeUtil.parse("2016-08-22 09:30:00", TimeUtil.DATE_TIME_PATTERN);
 		double lastPrice = NumberUtil.getRandom(3);
-		for (int j = 0; j < 241; j++) {
+		for (int j = 0; j < 120; j++) {
 			RealtimeQuote rq = new RealtimeQuote();
 			rq.setTimeStamp(TimeUtil.format(now, TimeUtil.TIME_PATTERN));
 			rq.setLastClosePrice(lastPrice);
