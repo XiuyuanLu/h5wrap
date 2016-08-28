@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
+import com.icaikee.kline.biz.common.model.WrapCenter;
 import com.icaikee.kline.biz.common.model.WrapPen;
 import com.icaikee.kline.biz.common.model.WrapSegment;
 import com.icaikee.kline.util.NumberUtil;
@@ -22,6 +24,8 @@ public class DataGenerator {
 			RealtimeQuote rq = new RealtimeQuote();
 			rq.setTimeStamp(TimeUtil.format(now, TimeUtil.TIME_PATTERN));
 			rq.setLastClosePrice(lastPrice);
+			rq.setBidGroup(CommonService.splitGrp("卖一 6.66,卖二 6.67,卖三 6.68,卖四 5.69,卖五 6.70"));
+			rq.setOfferGroup(CommonService.splitGrp("买一 6.74,买二 6.73,买三 6.72,买四 5.71,买五 6.70"));
 			double newPrice = NumberUtil.getRandom(3);
 			rq.setLastPrice(newPrice);
 			if (newPrice >= lastPrice) {
@@ -96,6 +100,31 @@ public class DataGenerator {
 					wrapSegment.setValue(NumberUtil.getRandom(3));
 					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40);
 					result.add(wrapSegment);
+				}
+				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+			}
+			return result;
+		} else
+			return null;
+
+	}
+
+	public static List<WrapCenter> getW3(String stockCode, String candlePeriod, String candleMode, Date startDate,
+			Date endDate) throws ParseException {
+		List<WrapCenter> result = new ArrayList<WrapCenter>();
+		if (Integer.parseInt(candlePeriod) >= 6) {
+			Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 3; j++) {
+					WrapCenter wrapCenter = new WrapCenter();
+					wrapCenter.setStartTime(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+					wrapCenter.setEndTime(TimeUtil.format(TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40),
+							TimeUtil.DATE_TIME_PATTERN));
+					wrapCenter.setLow(NumberUtil.getRandom(1));
+					wrapCenter.setHigh(NumberUtil.getRandom(6));
+					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80);
+					result.add(wrapCenter);
 				}
 				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
 				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);

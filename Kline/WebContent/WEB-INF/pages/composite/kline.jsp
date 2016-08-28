@@ -110,7 +110,7 @@
     <input id="type" type="hidden" value="${type}" />
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>上证指数(000001)<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>${code}<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">
@@ -123,11 +123,11 @@
     			<div class="other-value">
     				<table>
     					<tr>
-    						<td class="medium-value">高&nbsp;<span class="red-value">3114.26</span></td>
-    						<td class="medium-value">开&nbsp;<span class="green-value">3106.99</span></td>
+    						<td class="medium-value">高&nbsp;<span id="high" class="red-value">3114.26</span></td>
+    						<td class="medium-value">开&nbsp;<span id="open" class="green-value">3106.99</span></td>
     					</tr>
     					<tr>
-    						<td class="medium-value">低&nbsp;<span class="green-value">3090.28</span></td>
+    						<td class="medium-value">低&nbsp;<span id="low" class="green-value">3090.28</span></td>
     						<td class="medium-value">额&nbsp;<span>2434亿</span></td>
     					</tr>
     				</table>
@@ -157,6 +157,7 @@
 		var candlesticks;
 		var wrapPen;
 		var wrapSegment;
+		var wrapPenCenter;
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -202,6 +203,7 @@
 					candlesticks=data.message[0];
 					wrapPen=data.message[1];
 					wrapSegment=data.message[2];
+					wrapPenCenter=data.message[3];
 					chartInit();
 				}
 			});
@@ -243,7 +245,6 @@
 		}
 		
 		function chartInit(){
-			var myChart = document.getElementById('chart');
 			var ks = new Array();
 			for(var i=0;i<candlesticks.length;i++){
 				ks.push([candlesticks[i].timeStamp,candlesticks[i].openPrice,candlesticks[i].closePrice,candlesticks[i].lowPrice,candlesticks[i].highPrice]);
@@ -259,7 +260,8 @@
 					lineStyle:{
 						normal:{
 							color: '#5e069d',
-							type: 'solid'
+							type: 'solid',
+							width: 2
 						}
 					}
 				},{
@@ -277,13 +279,25 @@
 					lineStyle:{
 						normal:{
 							color: '#3b3d3e',
-							type: 'solid'
+							type: 'solid',
+							width: 2
 						}
 					}
 				},{
 					coord:[end.timeStamp+'',end.value],
 					value:end.value
 				}]);
+			}
+			
+			var markArea = new Array();
+			for(var i=0;i<wrapPenCenter.length;i++){
+				markArea.push(
+					[{
+						coord:[wrapPenCenter[i].endTime+'',wrapPenCenter[i].high]
+					},{
+						coord:[wrapPenCenter[i].startTime+'',wrapPenCenter[i].low]
+					}]
+				);
 			}
 			
 			var data0 = splitData(ks);
@@ -298,9 +312,14 @@
 			   	tooltip: {
 			        trigger: 'axis',
 			        axisPointer: {
-			            type: 'cross'
+			            type: 'cross',
+			            crossStyle:{
+			            	color: '#000',
+			            	width: 2,
+			            	type: 'solid'
+			            }
 			        },
-			        textStyle: textStyle
+			        showContent: false
 			    },
 			    xAxis: [{
 			    	type: 'category',
@@ -319,22 +338,23 @@
 			    yAxis: [{
 			    	splitNumber: 3,
 			    	max: 3,
-			    	min: -1,
+			    	min: 0,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
 			    	axisLabel:{
 			    		inside: true,
-			    		textStyle:{
-			    			fontSize: 25
-			    		}
+			    		show: false
 			    	},
 			    	axisTick:{},
 			    	splitLine:{
+			    		lineStyle:{
+			    			color: ['#000']
+			    		}
 			    	}
 			    },{
 			    	max: 3,
-			    	min: -1,
+			    	min: 0,
 			    	axisLine:{show: false},
 			    	gridIndex: 0,
 			    	axisLabel:{
@@ -356,7 +376,22 @@
 			    	type: 'candlestick',
 			    	data: data0.values,
 			    	markLine:{
-			    		data: penLine
+			    		data: penLine,
+			    		label:{
+			    			normal:{
+			    				show: false
+			    			}
+			    		}
+			    	},
+			    	markArea:{
+			    		data: markArea,
+			    		itemStyle:{
+			    			normal:{
+			    				borderColor: '#000',
+			    				borderWidth: 1,
+			    				opacity: 1
+			    			}
+			    		}
 			    	},
 			    	itemStyle:{
 			    		normal:{
@@ -374,7 +409,15 @@
 		            }
 		        }]
 			};
-			echarts.init(myChart).setOption(option);
+			var myChart = echarts.init(document.getElementById('chart'));
+			myChart.setOption(option);
+			myChart.on('click', function (params) {
+				if(typeof(params.value)=='undefined')
+					return;
+			    document.getElementById('open').innerHTML=params.value[0];
+			    document.getElementById('high').innerHTML=params.value[3];
+			    document.getElementById('low').innerHTML=params.value[2];
+			});
 		}
 		
 		function toKline(type){

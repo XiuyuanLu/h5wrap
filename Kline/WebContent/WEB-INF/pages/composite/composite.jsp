@@ -92,7 +92,7 @@
 	<input id="code" type="hidden" value="${code}" />
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>指数(${code})<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>${name}(${code})<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">

@@ -35,4 +35,14 @@ public class CommonService {
 		return dailyTradeTime;
 	}
 
+	public static List<String> splitGrp(String grp) {
+		List<String> result = new ArrayList<String>();
+		if (grp == null || "".equals(grp))
+			return result;
+		String[] strs = grp.split(",");
+		for (String s : strs)
+			result.add(s);
+		return result;
+	}
+
 }

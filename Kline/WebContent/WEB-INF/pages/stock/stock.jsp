@@ -73,6 +73,15 @@
 .container .middle .right-data .tab-detail{
 }
 
+.container .middle .right-data .tab-detail table{
+	margin-top: 2vh;
+	border-bottom: 1px solid #000;
+}
+
+.container .middle .right-data .tab-detail table td{
+	font-size: 3em;
+}
+
 .container .options{
 	width: 100%;
 	height: 5vh;
@@ -141,7 +150,12 @@
 	    			<span>明细</span>
 	    			<span>成交</span>
 	    		</div>
-	    		<div class="tab-detail"></div>
+	    		<div class="tab-detail">
+	    			<div id="bids">
+	    			</div>
+	    			<div id="detl" style="display:none"></div>
+	    			<div id="deal" style="display:none"></div>
+	    		</div>
 	    	</div>
     	</div>
 	    <div id="minites" class="sub-options">
@@ -172,6 +186,7 @@
 				dataType: 'json',
 				success:function(data){
 					chartInit(data.message);
+					drawTable(data.message);
 				}
 			});
 		}
@@ -186,6 +201,7 @@
 				alert(data);
 				return;
 			}
+			
 			var myChart = document.getElementById('chart');
 			var category = new Array();
 			var posValues = new Array();
@@ -292,6 +308,33 @@
 			    }
 			};
 			echarts.init(myChart).setOption(option);
+		}
+		
+		function drawTable(data){
+			if(data=='error'){
+				alert(data);
+				return;
+			}
+			var html = '';
+			var len = data.length;
+			if(typeof(len)=='undefined' || len==0)
+				return;
+			if(typeof(data[len-1].bidGroup)!='undefined'){
+				html += '<table>';
+				for(var i=0;i<data[len-1].bidGroup.length;i++){
+					html+='<tr><td>'+data[len-1].bidGroup[i]+'</td></tr>';
+				}
+				html+='</table>';
+			}
+			
+			if(typeof(data[len-1].offerGroup)!='undefined'){
+				html += '<table>';
+				for(var i=0;i<data[len-1].offerGroup.length;i++){
+					html+='<tr><td>'+data[len-1].offerGroup[i]+'</td></tr>';
+				}
+				html+='</table>';
+			}
+			document.getElementById('bids').innerHTML=html;
 		}
 		
 		function showMinites(){

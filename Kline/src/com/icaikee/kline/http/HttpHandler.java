@@ -89,7 +89,7 @@ public class HttpHandler {
 		// post请求返回结果
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 		JSONObject jsonResult = null;
-		HttpGet method = new HttpGet(url + "?" + jsonParam);
+		HttpGet method = new HttpGet(url + parseJosnParams(jsonParam));
 		try {
 			HttpResponse result = httpClient.execute(method);
 			url = URLDecoder.decode(url, "UTF-8");

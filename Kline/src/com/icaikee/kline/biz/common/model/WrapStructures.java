@@ -1,16 +1,18 @@
 package com.icaikee.kline.biz.common.model;
 
+import java.util.List;
+
 public class WrapStructures {
 
 	private String stockCode;
 
-	private WrapPen pen;
+	private List<WrapPen> pen;
 
-	private WrapSegment segment;
+	private List<WrapSegment> segment;
 
-	private WrapCenter penCenter;
+	private List<WrapCenter> penCenter;
 
-	private WrapCenter segmentCenter;
+	private List<WrapCenter> segmentCenter;
 
 	public String getStockCode() {
 		return stockCode;
@@ -20,35 +22,35 @@ public class WrapStructures {
 		this.stockCode = stockCode;
 	}
 
-	public WrapPen getPen() {
+	public List<WrapPen> getPen() {
 		return pen;
 	}
 
-	public void setPen(WrapPen pen) {
+	public void setPen(List<WrapPen> pen) {
 		this.pen = pen;
 	}
 
-	public WrapSegment getSegment() {
+	public List<WrapSegment> getSegment() {
 		return segment;
 	}
 
-	public void setSegment(WrapSegment segment) {
+	public void setSegment(List<WrapSegment> segment) {
 		this.segment = segment;
 	}
 
-	public WrapCenter getPenCenter() {
+	public List<WrapCenter> getPenCenter() {
 		return penCenter;
 	}
 
-	public void setPenCenter(WrapCenter penCenter) {
+	public void setPenCenter(List<WrapCenter> penCenter) {
 		this.penCenter = penCenter;
 	}
 
-	public WrapCenter getSegmentCenter() {
+	public List<WrapCenter> getSegmentCenter() {
 		return segmentCenter;
 	}
 
-	public void setSegmentCenter(WrapCenter segmentCenter) {
+	public void setSegmentCenter(List<WrapCenter> segmentCenter) {
 		this.segmentCenter = segmentCenter;
 	}
 
