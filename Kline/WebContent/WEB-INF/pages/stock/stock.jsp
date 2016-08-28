@@ -336,21 +336,27 @@
 				return;
 			}
 			var html = '';
-			var len = data.length;
+			var length = data.length;
+			var len=length-1;
 			if(typeof(len)=='undefined' || len==0)
 				return;
-			if(typeof(data[len-1].bidGroup)!='undefined'){
+			for(var i=length-1;i>0;i--)
+				if(data[i].bidGroup!='')
+					len=i;
+			if(typeof(data[len].bidGroup)!='undefined'){
 				html += '<table>';
-				for(var i=0;i<data[len-1].bidGroup.length;i++){
-					html+='<tr><td>'+data[len-1].bidGroup[i]+'</td></tr>';
+				for(var i=0;i<data[len].bidGroup.length;i++){
+					html+='<tr><td>'+data[len].bidGroup[i]+'</td></tr>';
 				}
 				html+='</table>';
 			}
-			
-			if(typeof(data[len-1].offerGroup)!='undefined'){
+			for(var i=length-1;i>0;i--)
+				if(data[i].offerGroup!='')
+					len=i;
+			if(typeof(data[len].offerGroup)!='undefined'){
 				html += '<table>';
-				for(var i=0;i<data[len-1].offerGroup.length;i++){
-					html+='<tr><td>'+data[len-1].offerGroup[i]+'</td></tr>';
+				for(var i=0;i<data[len].offerGroup.length;i++){
+					html+='<tr><td>'+data[len].offerGroup[i]+'</td></tr>';
 				}
 				html+='</table>';
 			}
