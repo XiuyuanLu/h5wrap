@@ -46,6 +46,7 @@ public class CompositeDataController {
 			data.add(wrapStructures.getPen());
 			data.add(wrapStructures.getSegment());
 			data.add(wrapStructures.getPenCenter());
+			data.add(wrapStructures.getSalePoints());
 			return new Message(data);
 		} catch (ParseException e) {
 			return new Message("error");

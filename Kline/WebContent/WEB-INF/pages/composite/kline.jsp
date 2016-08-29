@@ -136,11 +136,11 @@
 	    	<div class="chart" id="chart"></div>
     	</div>
     	<div id="minites" class="sub-options">
-    		<span id="oneM" onclick="toKline('1')">1Min</span>
-    		<span id="fiveM" onclick="toKline('2')">5Min</span>
-    		<span id="qutrM" onclick="toKline('3')">15Min</span>
-    		<span id="thtyM" onclick="toKline('4')">30Min</span>
-    		<span id="sxtyM" onclick="toKline('5')">60Min</span>
+    		<span id="oneM" onclick="toKline('1')">1分</span>
+    		<span id="fiveM" onclick="toKline('2')">5分</span>
+    		<span id="qutrM" onclick="toKline('3')">15分</span>
+    		<span id="thtyM" onclick="toKline('4')">30分</span>
+    		<span id="sxtyM" onclick="toKline('5')">60分</span>
     	</div>
     	<div class="options">
 	    	<span onclick="toRealtime()">分时</span>
@@ -148,7 +148,7 @@
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right">指标</span>
+	    	<span style="float:right" onclick="test()">指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -158,6 +158,7 @@
 		var wrapPen;
 		var wrapSegment;
 		var wrapPenCenter;
+		var salePoints;
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -204,6 +205,7 @@
 					wrapPen=data.message[1];
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
+					salePoints=data.message[4];
 					chartInit();
 				}
 			});
@@ -300,6 +302,17 @@
 				);
 			}
 			
+			var markPoints = new Array();
+			for(var i=0;i<salePoints.length;i++){
+				markPoints.push({
+					coord: [salePoints[i].timeStamp, 0.5],
+					value: 0.5,
+					itemStyle: {
+                        normal: {color: 'rgb(41,60,85)'}
+                    }
+				});
+			}
+			
 			var data0 = splitData(ks);
 			option = {
 			   	grid:[{
@@ -375,6 +388,14 @@
 			    series: [{
 			    	type: 'candlestick',
 			    	data: data0.values,
+			    	markPoint:{
+			    		data: markPoints,
+			    		label:{
+			    			normal:{
+			    				show: true
+			    			}
+			    		}
+			    	},
 			    	markLine:{
 			    		data: penLine,
 			    		label:{
@@ -409,7 +430,7 @@
 		            }
 		        }]
 			};
-			var myChart = echarts.init(document.getElementById('chart'));
+			myChart = echarts.init(document.getElementById('chart'));
 			myChart.setOption(option);
 			myChart.on('click', function (params) {
 				if(typeof(params.value)=='undefined')
@@ -440,6 +461,12 @@
 				$('#minites-arrow').removeClass('fa-chevron-up');
 				$('#minites-arrow').addClass('fa-chevron-down');
 			}
+		}
+		
+		function test(){
+			myChart.setOption({
+				series:[]
+			});
 		}
 	</script>
 </body>

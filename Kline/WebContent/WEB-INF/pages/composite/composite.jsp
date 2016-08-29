@@ -120,11 +120,11 @@
     		<div class="chart" id="chart"></div>
     	</div>
     	<div id="minites" class="sub-options">
-    		<span id="oneM" onclick="toKline('1')">1Min</span>
-    		<span id="fiveM" onclick="toKline('2')">5Min</span>
-    		<span id="qutrM" onclick="toKline('3')">15Min</span>
-    		<span id="thtyM" onclick="toKline('4')">30Min</span>
-    		<span id="sxtyM" onclick="toKline('5')">60Min</span>
+    		<span id="oneM" onclick="toKline('1')">1分</span>
+    		<span id="fiveM" onclick="toKline('2')">5分</span>
+    		<span id="qutrM" onclick="toKline('3')">15分</span>
+    		<span id="thtyM" onclick="toKline('4')">30分</span>
+    		<span id="sxtyM" onclick="toKline('5')">60分</span>
     	</div>
     	<div class="options">
 	    	<span style="color: #f74242">分时</span>

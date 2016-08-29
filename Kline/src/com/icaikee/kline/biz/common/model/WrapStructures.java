@@ -14,6 +14,8 @@ public class WrapStructures {
 
 	private List<WrapCenter> segmentCenter;
 
+	private List<SalePoints> salePoints;
+
 	public String getStockCode() {
 		return stockCode;
 	}
@@ -52,6 +54,14 @@ public class WrapStructures {
 
 	public void setSegmentCenter(List<WrapCenter> segmentCenter) {
 		this.segmentCenter = segmentCenter;
+	}
+
+	public List<SalePoints> getSalePoints() {
+		return salePoints;
+	}
+
+	public void setSalePoints(List<SalePoints> salePoints) {
+		this.salePoints = salePoints;
 	}
 
 }

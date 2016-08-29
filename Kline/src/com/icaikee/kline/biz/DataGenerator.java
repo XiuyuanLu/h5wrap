@@ -8,6 +8,7 @@ import java.util.List;
 import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
+import com.icaikee.kline.biz.common.model.SalePoints;
 import com.icaikee.kline.biz.common.model.WrapCenter;
 import com.icaikee.kline.biz.common.model.WrapPen;
 import com.icaikee.kline.biz.common.model.WrapSegment;
@@ -133,6 +134,25 @@ public class DataGenerator {
 		} else
 			return null;
 
+	}
+
+	public static List<SalePoints> getSP(String stockCode, String candlePeriod, String candleMode, Date startDate,
+			Date endDate) throws ParseException {
+		List<SalePoints> result = new ArrayList<SalePoints>();
+		Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 3; j++) {
+				SalePoints salePoints = new SalePoints();
+				salePoints.setBuySale(true);
+				salePoints.setTimeStamp(TimeUtil.format(TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80),
+						TimeUtil.DATE_TIME_PATTERN));
+				result.add(salePoints);
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80);
+			}
+			now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		}
+		return result;
 	}
 
 }
