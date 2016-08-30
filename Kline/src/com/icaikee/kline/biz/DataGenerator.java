@@ -122,8 +122,8 @@ public class DataGenerator {
 					wrapCenter.setStartTime(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
 					wrapCenter.setEndTime(TimeUtil.format(TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40),
 							TimeUtil.DATE_TIME_PATTERN));
-					wrapCenter.setLow(NumberUtil.getRandom(1));
-					wrapCenter.setHigh(NumberUtil.getRandom(6));
+					wrapCenter.setLow(NumberUtil.getRandom(1) + 1);
+					wrapCenter.setHigh(NumberUtil.getRandom(3));
 					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80);
 					result.add(wrapCenter);
 				}

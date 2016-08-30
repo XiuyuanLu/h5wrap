@@ -31,11 +31,11 @@
 	display: inline-block;
 	float: left;
 	text-align: center;
-	padding-left: 5vw;
+	padding-left: 10vw;
 }
 
 .container .middle .chart-title .other-value{
-	width: 70%;
+	width: 66%;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -50,9 +50,26 @@
 	width: 24vw;
 }
 
+.container .middle .chart-control{
+	font-size: 2.2em;
+	text-align: center;
+}
+
+.container .middle .chart-control span{
+	margin-left: 1.5vw;
+}
+
+.container .middle .chart-control .red-control{
+	color: #fc4343;
+}
+
+.container .middle .chart-control .blue-control{
+	color: #218ab1;
+}
+
 .container .middle .chart{
 	width: 100vw;
-	height: 66vh;
+	height: 62vh;
 	display: inline-block;
 	float: left;
 }
@@ -133,6 +150,12 @@
     				</table>
     			</div>
     		</div>
+    		<div class="chart-control">
+	    		<span class="red-control" onclick="redPenClick()">红色上涨笔</span>
+	    		<span class="blue-control" onclick="bluePenClick()">蓝色下降笔</span>
+	    		<span class="red-control" onclick="redCenterClick()">红色上涨中枢</span>
+	    		<span class="blue-control" onclick="blueCenterClick()">蓝色下降中枢</span>
+	    	</div>
 	    	<div class="chart" id="chart"></div>
     	</div>
     	<div id="minites" class="sub-options">
@@ -148,7 +171,7 @@
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right" onclick="test()">指标</span>
+	    	<span style="float:right" >指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -159,6 +182,10 @@
 		var wrapSegment;
 		var wrapPenCenter;
 		var salePoints;
+		var penLine = new Array();
+		var redPen = new Array();
+		var bluePen = new Array();
+		var status = 'both';
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -252,27 +279,47 @@
 				ks.push([candlesticks[i].timeStamp,candlesticks[i].openPrice,candlesticks[i].closePrice,candlesticks[i].lowPrice,candlesticks[i].highPrice]);
 			}
 			
-			var penLine = new Array();
 			for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
 				var end=wrapPen[i+1];
-				penLine.push([{
-					coord:[start.timeStamp+'',start.value],
-					value:start.value,
-					lineStyle:{
-						normal:{
-							color: '#5e069d',
-							type: 'solid',
-							width: 2
+				if(start.value<end.value){
+					var x = [{
+						coord:[start.timeStamp+'',start.value],
+						value:start.value,
+						lineStyle:{
+							normal:{
+								color: '#fc4343',
+								type: 'solid',
+								width: 4
+							}
 						}
-					}
-				},{
-					coord:[end.timeStamp+'',end.value],
-					value:end.value
-				}]);
+					},{
+						coord:[end.timeStamp+'',end.value],
+						value:end.value
+					}];
+					redPen.push(x);
+					penLine.push(x);
+				}else{
+					var x = [{
+						coord:[start.timeStamp+'',start.value],
+						value:start.value,
+						lineStyle:{
+							normal:{
+								color: '#218ab1',
+								type: 'solid',
+								width: 4
+							}
+						}
+					},{
+						coord:[end.timeStamp+'',end.value],
+						value:end.value
+					}];
+					bluePen.push(x);
+					penLine.push(x);
+				}
 			}
 			
-			for(var i=0;i<wrapSegment.length-1;i++){
+			/* for(var i=0;i<wrapSegment.length-1;i++){
 				var start=wrapSegment[i];
 				var end=wrapSegment[i+1];
 				penLine.push([{
@@ -289,7 +336,7 @@
 					coord:[end.timeStamp+'',end.value],
 					value:end.value
 				}]);
-			}
+			} */
 			
 			var markArea = new Array();
 			for(var i=0;i<wrapPenCenter.length;i++){
@@ -307,6 +354,14 @@
 				markPoints.push({
 					coord: [salePoints[i].timeStamp, 0.5],
 					value: 0.5,
+					symbolSize: 150,
+					label:{
+						normal:{
+							textStyle:{
+								fontSize: 24
+							}
+						}
+					},
 					itemStyle: {
                         normal: {color: 'rgb(41,60,85)'}
                     }
@@ -359,12 +414,7 @@
 			    		inside: true,
 			    		show: false
 			    	},
-			    	axisTick:{},
-			    	splitLine:{
-			    		lineStyle:{
-			    			color: ['#000']
-			    		}
-			    	}
+			    	axisTick:{}
 			    },{
 			    	max: 3,
 			    	min: 0,
@@ -410,7 +460,7 @@
 			    			normal:{
 			    				borderColor: '#000',
 			    				borderWidth: 1,
-			    				opacity: 1
+			    				opacity: 0.3
 			    			}
 			    		}
 			    	},
@@ -463,11 +513,48 @@
 			}
 		}
 		
-		function test(){
-			myChart.setOption({
-				series:[]
-			});
+		function redPenClick(){
+			if(status=='both'){
+				option.series[0].markLine.data=bluePen;
+				status='blue';
+			}else if(status=='red'){
+				option.series[0].markLine.data=[];
+				status='none';
+			}else if(status=='blue'){
+				option.series[0].markLine.data=penLine;
+				status='both';
+			}else if(status=='none'){
+				option.series[0].markLine.data=redPen;
+				status='red';
+			}
+			myChart.setOption(option);
 		}
+		
+		function bluePenClick(){
+			if(status=='both'){
+				option.series[0].markLine.data=redPen;
+				status='red';
+			}else if(status=='red'){
+				option.series[0].markLine.data=penLine;
+				status='both';
+			}else if(status=='blue'){
+				option.series[0].markLine.data=[];
+				status='none';
+			}else if(status=='none'){
+				option.series[0].markLine.data=bluePen;
+				status='blue';
+			}
+			myChart.setOption(option);
+		}
+		
+		function redCenterClick(){
+			
+		}
+		
+		function blueCenterClick(){
+			
+		}
+		
 	</script>
 </body>
 </html>
