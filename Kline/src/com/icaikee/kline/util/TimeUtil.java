@@ -6,13 +6,30 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TimeUtil {
+
+	private static Logger logger = LoggerFactory.getLogger(TimeUtil.class);
 
 	public static final String DATE_PATTERN = "yyyy-MM-dd";
 
-	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
+	public static final String DATE_PATTERN_NOBAR = "yyyyMMdd";
 
-	public static final String TIME_PATTERN = "hh:mm";
+	public static final String START_MORNING = "0930";
+
+	public static final String END_MORNING = "1130";
+
+	public static final String START_AFTERNOON = "1300";
+
+	public static final String END_AFTERNOON = "1500";
+
+	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+	public static final String DATE_TIME_PATTERN_NOBAR = "yyyyMMddHHmm";
+
+	public static final String TIME_PATTERN = "HH:mm";
 
 	public static final int MINITE = 12;
 
@@ -46,6 +63,40 @@ public class TimeUtil {
 	public static String format(Date date, String pattern) {
 		SimpleDateFormat dateFormater = new SimpleDateFormat(pattern);
 		return dateFormater.format(date);
+	}
+
+	public static boolean isTradeTime(Date now) {
+		SimpleDateFormat df = new SimpleDateFormat("hh:mm:ss");
+		try {
+			Date d1 = df.parse("09:29:59");
+			Date d2 = df.parse("11:30:01");
+			Date d3 = df.parse("12:59:59");
+			Date d4 = df.parse("15:00:01");
+			return ((now.after(d1) && now.before(d2)) || (now.after(d3) && now.before(d4)));
+		} catch (ParseException e) {
+			logger.error("时间格式有误", e);
+			return false;
+		}
+	}
+
+	public static String getStartMorning() {
+		return format(new Date(), DATE_PATTERN_NOBAR) + START_MORNING;
+	}
+
+	public static String getEndMorning() {
+		return format(new Date(), DATE_PATTERN_NOBAR) + END_MORNING;
+	}
+
+	public static String getStartAfternoon() {
+		return format(new Date(), DATE_PATTERN_NOBAR) + START_AFTERNOON;
+	}
+
+	public static String getEndAfternoon() {
+		return format(new Date(), DATE_PATTERN_NOBAR) + END_AFTERNOON;
+	}
+
+	public static String getNowMinite() {
+		return format(new Date(), DATE_TIME_PATTERN_NOBAR);
 	}
 
 }

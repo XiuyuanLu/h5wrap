@@ -12,8 +12,12 @@ import com.icaikee.kline.biz.common.model.SalePoints;
 import com.icaikee.kline.biz.common.model.WrapCenter;
 import com.icaikee.kline.biz.common.model.WrapPen;
 import com.icaikee.kline.biz.common.model.WrapSegment;
+import com.icaikee.kline.http.HttpHandler;
 import com.icaikee.kline.util.NumberUtil;
 import com.icaikee.kline.util.TimeUtil;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class DataGenerator {
 
@@ -153,6 +157,23 @@ public class DataGenerator {
 			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
 		}
 		return result;
+	}
+
+	public static void main(String[] args) {
+		// prod_code=600570&candle_period=1&candle_mode=0&start_date=201501050101&end_date=201501060101
+
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("prod_code", "600570");
+		jsonParam.put("candle_period", "1");
+		jsonParam.put("candle_mode", "0");
+		jsonParam.put("start_date", "201501050101");
+		jsonParam.put("end_date", "201501060101");
+		JSONObject result = HttpHandler.httpGet("http://120.76.218.30:9090/quote/kline", jsonParam);
+		JSONObject result1 = result.getJSONObject("candle");
+		JSONArray array = result1.getJSONArray("candle_detail_data");
+		for (int i = 0; i < array.size(); i++) {
+			System.out.println(((JSONObject) array.get(i)).get("business_balance"));
+		}
 	}
 
 }

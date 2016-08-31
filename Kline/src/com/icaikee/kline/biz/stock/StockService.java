@@ -1,16 +1,16 @@
 package com.icaikee.kline.biz.stock;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.icaikee.kline.biz.DataGenerator;
+import com.icaikee.kline.biz.DataFetcher;
 import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.common.model.Candlesticks;
+import com.icaikee.kline.biz.common.model.Product;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
 import com.icaikee.kline.util.TimeUtil;
 
@@ -20,18 +20,15 @@ public class StockService {
 	@Autowired
 	private CommonService commonService;
 
-	public List<String> fuzzyQuery() {
-		List<String> result = new ArrayList<String>();
-		result.add("000001 平安銀行");
-		result.add("000002 不知道是什麼");
-		return result;
+	public List<Product> fuzzyQuery(String q) {
+		return DataFetcher.getStocks(q);
 	}
 
 	public List<RealtimeQuote> getStockRealtime(String code) throws ParseException {
-		List<RealtimeQuote> result = DataGenerator.getRealTime(code);
+		List<RealtimeQuote> result = DataFetcher.getRealQuote(code);
 		if (result.size() < 241) {
 			List<String> timeList = commonService.getTradeTime();
-			for (int i = 0; i < 241; i++) {
+			for (int i = 0; i < 240; i++) {
 				if (i >= result.size()) {
 					RealtimeQuote rq = new RealtimeQuote();
 					rq.setTimeStamp(timeList.get(i));
@@ -45,8 +42,7 @@ public class StockService {
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)
 			throws ParseException {
 		Date date = new Date();
-		return DataGenerator.getK(code, candlePeriod, null, new Date(),
-				TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
+		return DataFetcher.getK(code, candlePeriod, null, new Date(), TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
 	}
 
 }

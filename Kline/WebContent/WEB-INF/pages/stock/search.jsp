@@ -50,29 +50,26 @@
     <div class="container">
     	<div class="middle">
     		<div class="search">
-    			<input id="code" placeholder="股票代码" />
+    			<input id="q" placeholder="股票代码" />
     		</div>
     		<div class="stocks">
-    			<a href="javascript:void(0)" onclick="jump()"><span>000001&nbsp;平安银行</span></a>
+    			<a href="javascript:void(0)" onclick="jump()"><span>600570&nbsp;恒生电子</span></a>
     		</div>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
-			/* $('#code').autocomplete('api/stock/fuzzyQuery',{
+			$('#q').autocomplete('api/stock/fuzzyQuery',{
 				minChars: 0, 
 				width: 220,
 				max: 10, 
-				scrollHeight: 300,
-				formatItem: function(row, i, max) {
-					console.log(row);
-				}
-			}); */
+				dataType: 'json'
+			});
 		}
 		
 		function jump(){
-			location.href="page/stock?stockcode="+'000001';
+			location.href="page/stock?stockcode="+'600570';
 		}
 	</script>
 </body>

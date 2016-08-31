@@ -69,7 +69,7 @@
 
 .container .middle .chart{
 	width: 100vw;
-	height: 66vh;
+	height: 60vh;
 	display: inline-block;
 	float: left;
 }
@@ -277,7 +277,7 @@
 				ks.push([candlesticks[i].timeStamp,candlesticks[i].openPrice,candlesticks[i].closePrice,candlesticks[i].lowPrice,candlesticks[i].highPrice]);
 			}
 			
-			for(var i=0;i<wrapPen.length-1;i++){
+			/* for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
 				var end=wrapPen[i+1];
 				if(start.value<end.value){
@@ -315,7 +315,7 @@
 					bluePen.push(x);
 					penLine.push(x);
 				}
-			}
+			} */
 			
 			/* for(var i=0;i<wrapSegment.length-1;i++){
 				var start=wrapSegment[i];
@@ -336,7 +336,7 @@
 				}]);
 			} */
 			
-			var markArea = new Array();
+			/* var markArea = new Array();
 			for(var i=0;i<wrapPenCenter.length;i++){
 				markArea.push(
 					[{
@@ -345,7 +345,7 @@
 						coord:[wrapPenCenter[i].startTime+'',wrapPenCenter[i].low]
 					}]
 				);
-			}
+			} */
 			
 			var data0 = splitData(ks);
 			option = {
@@ -384,8 +384,7 @@
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
-			    	max: 3,
-			    	min: 0,
+			    	scale: true,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
@@ -414,7 +413,7 @@
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          start: 95,
+			          start: 80,
 			          end: 100
 			       }
 			    ],
@@ -422,7 +421,7 @@
 			    	type: 'candlestick',
 			    	data: data0.values,
 			    	markLine:{
-			    		data: penLine,
+			    		data: [],//penLine,
 			    		label:{
 			    			normal:{
 			    				show: false
@@ -430,7 +429,7 @@
 			    		}
 			    	},
 			    	markArea:{
-			    		data: markArea,
+			    		data: [],//markArea,
 			    		itemStyle:{
 			    			normal:{
 			    				borderColor: '#000',

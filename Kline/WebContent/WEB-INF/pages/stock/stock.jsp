@@ -125,20 +125,20 @@
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
-    				<span class="big-value green-value">3109.55</span>
-    				<span class="small-value green-value">-0.48&nbsp;-0.02%</span>
+    				<span id="lastPrice" class="big-value green-value">3109.55</span>
+    				<span id="chg" class="small-value green-value">-0.48&nbsp;-0.02%</span>
     			</div>
     			<div class="other-value">
     				<table>
     					<tr>
-    						<td class="medium-value">高&nbsp;<span class="red-value">3114.26</span></td>
-    						<td class="medium-value">开&nbsp;<span class="green-value">3106.99</span></td>
-    						<td class="medium-value">换手&nbsp;<span>1.05%</span></td>
+    						<td class="medium-value">高&nbsp;<span id="highPrice" class="red-value">3114.26</span></td>
+    						<td class="medium-value">开&nbsp;<span id="openPrice" class="green-value">3106.99</span></td>
+    						<td class="medium-value">换手&nbsp;<span id="changeRate">1.05%</span></td>
     					</tr>
     					<tr>
-    						<td class="medium-value">低&nbsp;<span class="green-value">3090.28</span></td>
-    						<td class="medium-value">额&nbsp;<span>2434亿</span></td>
-    						<td class="medium-value">量比&nbsp;<span class="red-value">1.00</span></td>
+    						<td class="medium-value">低&nbsp;<span id="lowPrice" class="green-value">3090.28</span></td>
+    						<td class="medium-value">额&nbsp;<span id="businessAmount">2434亿</span></td>
+    						<td class="medium-value">量比&nbsp;<span id="amountRate" class="red-value">1.00</span></td>
     					</tr>
     				</table>
     			</div>
@@ -180,13 +180,13 @@
 			$.ajax({
 				url:"api/stock/realtime",
 				data:{
-					stockcode: '000001'
+					stockcode: document.getElementById('pageCode').value
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
 					chartInit(data.message);
-					drawTable(data.message);
+					//drawTable(data.message);
 				}
 			});
 		}
@@ -212,29 +212,38 @@
 		    return result;
 		}
 		
+		function calculateAvg(data0) {
+		    var result = [];
+		    var sum = 0;
+		    for (var i = 0; i < data0.length; i++) {
+		        sum += data0[i];
+		        result.push(sum / (i+1));
+		    }
+		    return result;
+		}
+		
 		function chartInit(data){
 			if(data=='error'){
 				alert(data);
 				return;
 			}
 			
-			var myChart = document.getElementById('chart');
 			var category = new Array();
 			var posValues = new Array();
 			var negValues = new Array();
 			var prices = new Array();
 			for(var i =0;i<data.length;i++){
 				category.push(data[i].timeStamp);
-				if(data[i].color=='red'){
+				/* if(data[i].color=='red'){
 					posValues.push(data[i].businessAmount);
 					negValues.push(0);
 				}else{
 					posValues.push(0);
 					negValues.push(data[i].businessAmount);
-				}
+				} */
 				prices.push(data[i].lastPrice);
 			}
-			var ma = calculateMA(5,prices);
+			var ma = calculateAvg(prices);
 			var option = {
 			   	grid:[{
 			   			left: 30,
@@ -247,6 +256,18 @@
 			   			containLabel: true
 			   		}
 			   	],
+			   	tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'cross',
+			            crossStyle:{
+			            	color: '#000',
+			            	width: 2,
+			            	type: 'solid'
+			            }
+			        },
+			        showContent: false
+			    },
 			    xAxis: [{
 			    	type: 'category',
 			        data: category,
@@ -291,8 +312,7 @@
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
-			    	min: 0,
-			    	max: 10,
+			    	scale: true,
 			    	axisLine:{
 			    	},
 			    	gridIndex: 0,
@@ -327,7 +347,15 @@
 			        return idx * 5;
 			    }
 			};
-			echarts.init(myChart).setOption(option);
+			myChart = echarts.init(document.getElementById('chart'));
+			myChart.setOption(option);
+			myChart.on('click', function (params) {
+				if(typeof(params.value)=='undefined')
+					return;
+			    document.getElementById('lastPrice').innerHTML=params.value[0];
+			    //document.getElementById('high').innerHTML=params.value[3];
+			    //document.getElementById('low').innerHTML=params.value[2];
+			});
 		}
 		
 		function drawTable(data){
