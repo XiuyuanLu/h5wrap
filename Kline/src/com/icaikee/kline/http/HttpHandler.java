@@ -89,11 +89,10 @@ public class HttpHandler {
 		// post请求返回结果
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 		JSONObject jsonResult = null;
-		String x = url + parseJosnParams(jsonParam);
 		HttpGet method = new HttpGet(url + parseJosnParams(jsonParam));
 		try {
 			HttpResponse result = httpClient.execute(method);
-			url = URLDecoder.decode(url, "UTF-8");
+			url = URLDecoder.decode(url, "utf-8");
 			/** 请求发送成功，并得到响应 **/
 			if (result.getStatusLine().getStatusCode() == 200) {
 				String str = "";

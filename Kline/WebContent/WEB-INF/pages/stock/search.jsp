@@ -9,10 +9,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>缠论K线</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
-<link rel="stylesheet" type="text/css" href="resources/css/font-awesome/css/font-awesome.css" />
-<link rel="stylesheet" type="text/css" href="resources/js/autocomplete/autocomplete.min.css" />
 <script src="resources/js/jquery-1.9.1.min.js"></script>
-<script src="resources/js/autocomplete/autocomplete.min.js"></script>
 <script src="resources/js/common.js"></script>
 <style>
 
@@ -32,11 +29,26 @@
 
 .container .middle .stocks{
 	margin-top: 3vh;
-	text-align: center;
 }
 
-.container .middle .stocks span{
-	font-size: 3em;
+.container .middle .stocks table{
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	border-top: 1px solid #abaaaa;
+	background-color: #f6f6f6;
+}
+
+.container .middle .stocks table tr:ACTIVE{
+	background: #2c2c2c;
+}
+
+.container .middle .stocks table td{
+	font-size: 3.5em;
+	text-align: center;
+	width: 40vw;
+	border-bottom: 1px solid #abaaaa;
+	height: 6.2vh;
 }
 
 </style>
@@ -50,25 +62,52 @@
     <div class="container">
     	<div class="middle">
     		<div class="search">
-    			<input id="q" placeholder="股票代码" />
+    			<input type="number" id="query" placeholder="股票代码" onkeyup="query()"/>
     		</div>
-    		<div class="stocks">
-    			<a href="javascript:void(0)" onclick="jump()"><span>600570&nbsp;恒生电子</span></a>
+    		<div id="stocks" class="stocks">
+    			
     		</div>
     	</div>
     </div>
+    <div id="appendTo"></div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
-			$('#q').autocomplete('api/stock/fuzzyQuery',{
-				minChars: 0, 
-				width: 220,
-				max: 10, 
-				dataType: 'json'
+		}
+		
+		function query(){
+			$.ajax({
+				url:"api/stock/fuzzyQuery",
+				data:{
+					q: document.getElementById('query').value
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					drawList(data.message);
+				}
 			});
 		}
 		
-		function jump(){
+		function drawList(data){
+			if(data==null || typeof(data.length)=='undefined')
+				return;
+			var html='<table>';
+			var stocks = document.getElementById('stocks');
+			for(var i=0;i<data.length;i++){
+				html+='<tr id=i_'+i+' onclick=\"jump('+i+')\"><td>'+
+						'<span>'
+						+data[i].code+
+						'</td><td>&nbsp;'
+						+data[i].name+
+						'</span>'
+						+'</td></tr>';
+			}
+			html+='</table>';
+			stocks.innerHTML=html;
+		}
+		
+		function jump(i){
 			location.href="page/stock?stockcode="+'600570';
 		}
 	</script>

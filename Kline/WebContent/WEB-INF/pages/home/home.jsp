@@ -92,7 +92,7 @@
     <input id="code" type="hidden" value="${code}"/>
     <div class="container">
     	<div class="search">
-    		<input type="text" placeholder="股票代码" onclick="toSearch()"/>
+    		<input type="text" readonly="readonly" placeholder="股票代码" onclick="toSearch()"/>
     	</div>
     	<div class="middle">
     		<div class="chart-title">

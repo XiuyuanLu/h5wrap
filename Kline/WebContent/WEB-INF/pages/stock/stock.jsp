@@ -189,6 +189,7 @@
 					//drawTable(data.message);
 				}
 			});
+
 		}
 		
 		var textStyle = {

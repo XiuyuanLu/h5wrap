@@ -134,17 +134,17 @@
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
-    				<span class="big-value green-value">3109.55</span>
-    				<span class="small-value green-value">-0.48&nbsp;-0.02%</span>
+    				<span id="last"></span>
+    				<span id="chg"></span>
     			</div>
     			<div class="other-value">
     				<table>
     					<tr>
-    						<td class="medium-value">高&nbsp;<span id="high" class="red-value">3114.26</span></td>
-    						<td class="medium-value">开&nbsp;<span id="open" class="green-value">3106.99</span></td>
+    						<td class="medium-value">高&nbsp;<span id="high" class="red-value"></span></td>
+    						<td class="medium-value">开&nbsp;<span id="open" class="green-value"></span></td>
     					</tr>
     					<tr>
-    						<td class="medium-value">低&nbsp;<span id="low" class="green-value">3090.28</span></td>
+    						<td class="medium-value">低&nbsp;<span id="low" class="green-value"></span></td>
     						<td class="medium-value">额&nbsp;<span>2434亿</span></td>
     					</tr>
     				</table>
@@ -214,7 +214,7 @@
 				document.getElementById('week').style.color='#f74242';
 			else if(type=='8')
 				document.getElementById('month').style.color='#f74242';
-			
+			chartInit();
 			$.ajax({
 				url:"api/stock/kline",
 				data:{
@@ -231,7 +231,7 @@
 					wrapPen=data.message[1];
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
-					chartInit();
+					drawData();
 				}
 			});
 			
@@ -271,12 +271,27 @@
 		    return result;
 		}
 		
-		function chartInit(){
+		function drawData(){
 			var ks = new Array();
 			for(var i=0;i<candlesticks.length;i++){
-				ks.push([candlesticks[i].timeStamp,candlesticks[i].openPrice,candlesticks[i].closePrice,candlesticks[i].lowPrice,candlesticks[i].highPrice]);
+				var diff1=0;
+				var diff2=0;
+				var diff3=0;
+				var diff4=0;
+				if(i>0){
+					diff1=candlesticks[i].openPrice-candlesticks[i-1].openPrice;
+					diff2=candlesticks[i].closePrice-candlesticks[i-1].closePrice;
+					diff3=candlesticks[i].lowPrice-candlesticks[i-1].lowPrice;
+					diff4=candlesticks[i].highPrice-candlesticks[i-1].highPrice;
+				}
+					
+				ks.push([candlesticks[i].timeStamp,
+				         candlesticks[i].openPrice,
+				         candlesticks[i].closePrice,
+				         candlesticks[i].lowPrice,
+				         candlesticks[i].highPrice,
+				         diff1,diff2,diff3,diff4]);
 			}
-			
 			/* for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
 				var end=wrapPen[i+1];
@@ -316,7 +331,7 @@
 					penLine.push(x);
 				}
 			} */
-			
+		
 			/* for(var i=0;i<wrapSegment.length-1;i++){
 				var start=wrapSegment[i];
 				var end=wrapSegment[i+1];
@@ -335,7 +350,7 @@
 					value:end.value
 				}]);
 			} */
-			
+		
 			/* var markArea = new Array();
 			for(var i=0;i<wrapPenCenter.length;i++){
 				markArea.push(
@@ -346,9 +361,52 @@
 					}]
 				);
 			} */
-			
 			var data0 = splitData(ks);
+			option.xAxis.data=data0.categoryData;
+			option.series[0].data=data0.values;
+			option.series[1].data=calculateMA(5,data0);
+			myChart.setOption(option);
+			
+			var tail = data0.values[data0.values.length-1];
+			var chg=(tail[1]-tail[0]).toFixed(2);
+			var pchg= (chg/tail[0]*100).toFixed(2);
+			var openDom = document.getElementById('open');
+			var lastDom = document.getElementById('last');
+			var lowDom = document.getElementById('low'); 
+			var highDom = document.getElementById('high');
+			var chgDom = document.getElementById('chg');
+			
+			openDom.innerHTML=tail[0];
+			lastDom.innerHTML=tail[1];
+			lowDom.innerHTML=tail[2];
+			highDom.innerHTML=tail[3];
+			chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+			
+			if(tail[5]>0)
+				openDom.className='red-value';
+			else if(tail[5]<0)
+				openDom.className='green-value';
+			if(tail[7]>0)
+				lowDom.className='red-value';
+			else if(tail[7]<0)
+				lowDom.className='green-value';
+			if(tail[8]>0)
+				highDom.className='red-value';
+			else if(tail[8]<0)
+				highDom.className='green-value';
+			if(chg>0){
+				chgDom.className='small-value red-value';
+				lastDom.className='big-value red-value';
+			}else if(chg<0){
+				chgDom.className='small-value green-value';
+				lastDom.className='big-value green-value';
+			}
+			
+		}
+		
+		function chartInit(){
 			option = {
+				animation: false,
 			   	grid:[{
 			   			left: 30,
 			   			right: 30,
@@ -363,14 +421,17 @@
 			            crossStyle:{
 			            	color: '#000',
 			            	width: 2,
-			            	type: 'solid'
+			            	type: 'solid',
+			            	textStyle:{
+						        fontSize: 0
+						    }
 			            }
 			        },
 			        showContent: false
 			    },
 			    xAxis: [{
 			    	type: 'category',
-			    	data: data0.categoryData,
+			    	data: [],
 			    	axisTick:{
 			    		show: false
 			    	},
@@ -419,7 +480,7 @@
 			    ],
 			    series: [{
 			    	type: 'candlestick',
-			    	data: data0.values,
+			    	data: [],
 			    	markLine:{
 			    		data: [],//penLine,
 			    		label:{
@@ -447,7 +508,7 @@
 			    },{
 		            name: 'MA5',
 		            type: 'line',
-		            data: calculateMA(5,data0),
+		            data: [],
 		            smooth: true,
 		            lineStyle: {
 		                normal: {opacity: 0.5}
@@ -459,9 +520,39 @@
 			myChart.on('click', function (params) {
 				if(typeof(params.value)=='undefined')
 					return;
-			    document.getElementById('open').innerHTML=params.value[0];
-			    document.getElementById('high').innerHTML=params.value[3];
-			    document.getElementById('low').innerHTML=params.value[2];
+				var chg=(params.value[1]-params.value[0]).toFixed(2);
+				var pchg= (chg/params.value[0]*100).toFixed(2);
+				var openDom = document.getElementById('open');
+				var lastDom = document.getElementById('last');
+				var lowDom = document.getElementById('low'); 
+				var highDom = document.getElementById('high');
+				var chgDom = document.getElementById('chg');
+				
+				openDom.innerHTML=params.value[0];
+				lastDom.innerHTML=params.value[1];
+				lowDom.innerHTML=params.value[2];
+				highDom.innerHTML=params.value[3];
+				chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+				
+				if(params.value[5]>0)
+					openDom.className='red-value';
+				else if(params.value[5]<0)
+					openDom.className='green-value';
+				if(params.value[7]>0)
+					lowDom.className='red-value';
+				else if(params.value[7]<0)
+					lowDom.className='green-value';
+				if(params.value[8]>0)
+					highDom.className='red-value';
+				else if(params.value[8]<0)
+					highDom.className='green-value';
+				if(chg>0){
+					chgDom.className='small-value red-value';
+					lastDom.className='big-value red-value';
+				}else if(chg<0){
+					chgDom.className='small-value green-value';
+					lastDom.className='big-value green-value';
+				}
 			});
 		}
 		
