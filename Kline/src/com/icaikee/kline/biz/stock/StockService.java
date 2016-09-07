@@ -24,8 +24,8 @@ public class StockService {
 		return DataFetcher.getStocks(q);
 	}
 
-	public List<RealtimeQuote> getStockRealtime(String code) throws ParseException {
-		List<RealtimeQuote> result = DataFetcher.getRealQuote(code);
+	public List<RealtimeQuote> getStock(String code) throws ParseException {
+		List<RealtimeQuote> result = DataFetcher.getStockPrice(code);
 		if (result.size() < 241) {
 			List<String> timeList = commonService.getTradeTime();
 			for (int i = 0; i < 240; i++) {
@@ -37,6 +37,10 @@ public class StockService {
 			}
 		}
 		return result;
+	}
+
+	public RealtimeQuote getSnapshot(String code) {
+		return DataFetcher.getStockSnapshot(code);
 	}
 
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)

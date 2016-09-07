@@ -74,69 +74,59 @@ public class DataGenerator {
 	public static List<WrapPen> getW(String stockCode, String candlePeriod, String candleMode, Date startDate,
 			Date endDate) throws ParseException {
 		List<WrapPen> result = new ArrayList<WrapPen>();
-		if (Integer.parseInt(candlePeriod) >= 6) {
-			Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
-			for (int i = 0; i < 10; i++) {
-				for (int j = 0; j < 12; j++) {
-					WrapPen wrapPen = new WrapPen();
-					wrapPen.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
-					wrapPen.setValue(NumberUtil.getRandom(3));
-					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -20);
-					result.add(wrapPen);
-				}
-				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
-				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 12; j++) {
+				WrapPen wrapPen = new WrapPen();
+				wrapPen.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+				wrapPen.setValue(NumberUtil.getRandom(60));
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -20);
+				result.add(wrapPen);
 			}
-			return result;
-		} else
-			return null;
-
+			now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		}
+		return result;
 	}
 
 	public static List<WrapSegment> getW2(String stockCode, String candlePeriod, String candleMode, Date startDate,
 			Date endDate) throws ParseException {
 		List<WrapSegment> result = new ArrayList<WrapSegment>();
-		if (Integer.parseInt(candlePeriod) >= 6) {
-			Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
-			for (int i = 0; i < 10; i++) {
-				for (int j = 0; j < 6; j++) {
-					WrapSegment wrapSegment = new WrapSegment();
-					wrapSegment.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
-					wrapSegment.setValue(NumberUtil.getRandom(3));
-					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40);
-					result.add(wrapSegment);
-				}
-				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
-				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 6; j++) {
+				WrapSegment wrapSegment = new WrapSegment();
+				wrapSegment.setTimeStamp(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+				wrapSegment.setValue(NumberUtil.getRandom(60));
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40);
+				result.add(wrapSegment);
 			}
-			return result;
-		} else
-			return null;
+			now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		}
+		return result;
 
 	}
 
 	public static List<WrapCenter> getW3(String stockCode, String candlePeriod, String candleMode, Date startDate,
 			Date endDate) throws ParseException {
 		List<WrapCenter> result = new ArrayList<WrapCenter>();
-		if (Integer.parseInt(candlePeriod) >= 6) {
-			Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
-			for (int i = 0; i < 10; i++) {
-				for (int j = 0; j < 3; j++) {
-					WrapCenter wrapCenter = new WrapCenter();
-					wrapCenter.setStartTime(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
-					wrapCenter.setEndTime(TimeUtil.format(TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40),
-							TimeUtil.DATE_TIME_PATTERN));
-					wrapCenter.setLow(NumberUtil.getRandom(1) + 1);
-					wrapCenter.setHigh(NumberUtil.getRandom(3));
-					now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80);
-					result.add(wrapCenter);
-				}
-				now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
-				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		Date now = TimeUtil.parse("2016-08-22 15:00:00", TimeUtil.DATE_TIME_PATTERN);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 3; j++) {
+				WrapCenter wrapCenter = new WrapCenter();
+				wrapCenter.setStartTime(TimeUtil.format(now, TimeUtil.DATE_TIME_PATTERN));
+				wrapCenter.setEndTime(TimeUtil.format(TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -40),
+						TimeUtil.DATE_TIME_PATTERN));
+				wrapCenter.setLow(NumberUtil.getRandom(1) + 50);
+				wrapCenter.setHigh(NumberUtil.getRandom(10) + 50);
+				now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, -80);
+				result.add(wrapCenter);
 			}
-			return result;
-		} else
-			return null;
+			now = TimeUtil.getTimeByOffset(TimeUtil.DAY, now, -1);
+			now = TimeUtil.getTimeByOffset(TimeUtil.MINITE, now, 240);
+		}
+		return result;
 
 	}
 

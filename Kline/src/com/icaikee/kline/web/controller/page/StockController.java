@@ -18,9 +18,11 @@ public class StockController {
 	private static final String PAGE_STOCK_SEARCH = "stock/search";
 
 	@RequestMapping
-	public ModelAndView stock(@RequestParam(name = "stockcode") String code) {
+	public ModelAndView stock(@RequestParam(name = "stockcode") String code,
+			@RequestParam(name = "stockname") String name) {
 		ModelAndView mv = new ModelAndView(PAGE_STOCK);
 		mv.addObject("code", code);
+		mv.addObject("name", name);
 		return mv;
 	}
 
@@ -31,9 +33,11 @@ public class StockController {
 	}
 
 	@RequestMapping("/kline")
-	public ModelAndView kline(@RequestParam(name = "stockcode") String code, @RequestParam(name = "type") String type) {
+	public ModelAndView kline(@RequestParam(name = "stockcode") String code,
+			@RequestParam(name = "stockname") String name, @RequestParam(name = "type") String type) {
 		ModelAndView mv = new ModelAndView(PAGE_STOCK_KLINE);
 		mv.addObject("code", code);
+		mv.addObject("name", name);
 		mv.addObject("type", type);
 		return mv;
 	}

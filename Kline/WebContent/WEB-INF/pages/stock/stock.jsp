@@ -79,7 +79,8 @@
 }
 
 .container .middle .right-data .tab-detail table td{
-	font-size: 3em;
+	font-size: 2.5em;
+	height: 5vh;
 }
 
 .container .options{
@@ -116,9 +117,10 @@
 
 <body>
 	<input id="pageCode" type="hidden" value="${code}"/>
+	<input id="pageName" type="hidden" value="${name}"/>
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>${code}<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>${name}(${code})<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">
@@ -131,14 +133,14 @@
     			<div class="other-value">
     				<table>
     					<tr>
-    						<td class="medium-value">高&nbsp;<span id="highPrice" class="red-value">3114.26</span></td>
-    						<td class="medium-value">开&nbsp;<span id="openPrice" class="green-value">3106.99</span></td>
-    						<td class="medium-value">换手&nbsp;<span id="changeRate">1.05%</span></td>
+    						<td class="medium-value">高&nbsp;<span id="highPrice" class="red-value"></span></td>
+    						<td class="medium-value">开&nbsp;<span id="openPrice" class="green-value"></span></td>
+    						<td class="medium-value">换手&nbsp;<span id="turnoverRatio"></span></td>
     					</tr>
     					<tr>
-    						<td class="medium-value">低&nbsp;<span id="lowPrice" class="green-value">3090.28</span></td>
-    						<td class="medium-value">额&nbsp;<span id="businessAmount">2434亿</span></td>
-    						<td class="medium-value">量比&nbsp;<span id="amountRate" class="red-value">1.00</span></td>
+    						<td class="medium-value">低&nbsp;<span id="lowPrice" class="green-value"></span></td>
+    						<td class="medium-value">额&nbsp;<span id="businessBalance"></span></td>
+    						<td class="medium-value">量比&nbsp;<span id="volRatio" class="red-value"></span></td>
     					</tr>
     				</table>
     			</div>
@@ -178,7 +180,7 @@
 	<script>
 		function onLoad(){
 			$.ajax({
-				url:"api/stock/realtime",
+				url:"api/stock",
 				data:{
 					stockcode: document.getElementById('pageCode').value
 				},
@@ -186,10 +188,19 @@
 				dataType: 'json',
 				success:function(data){
 					chartInit(data.message);
-					//drawTable(data.message);
 				}
 			});
-
+			$.ajax({
+				url:"api/stock/snapshot",
+				data:{
+					stockcode: document.getElementById('pageCode').value
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					drawTable(data.message);
+				}
+			});
 		}
 		
 		var textStyle = {
@@ -235,6 +246,7 @@
 			var prices = new Array();
 			for(var i =0;i<data.length;i++){
 				category.push(data[i].timeStamp);
+				posValues.push(data[i].businessAmount);
 				/* if(data[i].color=='red'){
 					posValues.push(data[i].businessAmount);
 					negValues.push(0);
@@ -298,17 +310,13 @@
 			    		onZero: false
 			    	},
 			    	axisLabel:{
+			    		show: false
 			    	},
 			    	axisTick:{
-			    		interval: 60
+			    		show: false
 			    	},
 			    	splitLine:{
-			    		show: true,
-			    		interval: 60,
-			    		lineStyle:{
-			    			width: 0.5,
-			    			color: ['#000']
-			    		}
+			    		show: false
 			    	}
 			    }],
 			    yAxis: [{
@@ -327,6 +335,7 @@
 			    	splitLine:{
 			    	}
 			    },{
+			    	show: false,
 	                scale: true,
 	                gridIndex: 1,
 	                splitNumber: 2,
@@ -341,6 +350,11 @@
 			    },{
 			    	type:'line',
 			    	data: ma
+			    },{
+			    	type: 'bar',
+			    	data: posValues,
+			    	xAxisIndex: 1,
+			    	yAxisIndex: 1
 			    }
 			    ],
 			    animationEasing: 'elasticOut',
@@ -365,31 +379,49 @@
 				return;
 			}
 			var html = '';
-			var length = data.length;
-			var len=length-1;
-			if(typeof(len)=='undefined' || len==0)
-				return;
-			for(var i=length-1;i>0;i--)
-				if(data[i].bidGroup!='')
-					len=i;
-			if(typeof(data[len].bidGroup)!='undefined'){
-				html += '<table>';
-				for(var i=0;i<data[len].bidGroup.length;i++){
-					html+='<tr><td>'+data[len].bidGroup[i]+'</td></tr>';
-				}
-				html+='</table>';
+			var bids = data.bidGroup;
+			var offers = data.offerGroup;
+			html += '<table>';
+			for(var i=offers.length-1;i>=0;i--){
+				var prefix = '卖';
+				if(i==4)
+					prefix+='五';
+				else if(i==3)
+					prefix+='四';
+				else if(i==2)
+					prefix+='三';
+				else if(i==1)
+					prefix+='二';
+				else if(i==0)
+					prefix+='一';
+				html+='<tr><td>'+prefix+'&nbsp;&nbsp;'+new Number(offers[i]).toFixed(2)+'</td></tr>';
 			}
-			for(var i=length-1;i>0;i--)
-				if(data[i].offerGroup!='')
-					len=i;
-			if(typeof(data[len].offerGroup)!='undefined'){
-				html += '<table>';
-				for(var i=0;i<data[len].offerGroup.length;i++){
-					html+='<tr><td>'+data[len].offerGroup[i]+'</td></tr>';
-				}
-				html+='</table>';
+			html+='</table>';
+			html += '<table>';
+			for(var i=bids.length-1;i>=0;i--){
+				var prefix = '买';
+				if(i==4)
+					prefix+='一';
+				else if(i==3)
+					prefix+='二';
+				else if(i==2)
+					prefix+='三';
+				else if(i==1)
+					prefix+='四';
+				else if(i==0)
+					prefix+='五';
+				html+='<tr><td>'+prefix+'&nbsp;&nbsp;'+new Number(bids[i]).toFixed(2)+'</td></tr>';
 			}
+			html+='</table>';
+			
 			document.getElementById('bids').innerHTML=html;
+			document.getElementById('highPrice').innerHTML=data.highPrice;
+			document.getElementById('lowPrice').innerHTML=data.lowPrice;
+			document.getElementById('lastPrice').innerHTML=data.lastPrice;
+			document.getElementById('openPrice').innerHTML=data.openPrice;
+			document.getElementById('businessBalance').innerHTML=(data.businessBalance/100000000).toFixed(2)+'亿';
+			document.getElementById('turnoverRatio').innerHTML=(data.turnoverRatio*100).toFixed(2)+'%';
+			document.getElementById('volRatio').innerHTML=data.volRatio;
 		}
 		
 		function showMinites(){
@@ -407,7 +439,9 @@
 		}
 		
 		function toKline(type){
-			location.href="page/stock/kline?stockcode="+document.getElementById('pageCode').value+"&type="+type;
+			location.href="page/stock/kline?stockcode="+document.getElementById('pageCode').value
+					+"&stockname="+document.getElementById('pageName').value
+					+"&type="+type;
 		}
 		
 	</script>

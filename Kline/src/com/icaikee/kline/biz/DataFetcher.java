@@ -15,9 +15,11 @@ import net.sf.json.JSONObject;
 
 public class DataFetcher {
 
-	public static final String URL_KLINE = "http://120.76.218.30:9090/quote/kline";
+	public static final String URL_KLINE = "http://114.55.175.118:9090/quote/kline";
 
-	public static final String URL_FUZZY_QUERY = "http://120.76.218.30:9090/quote/fuzzyquery";
+	public static final String URL_FUZZY_QUERY = "http://114.55.175.118:9090/quote/fuzzyquery";
+
+	public static final String URL_SNAPSHOT = "http://114.55.175.118:9090/quote/snapshot";
 
 	public static List<Product> getStocks(String q) {
 		JSONObject jsonParam = new JSONObject();
@@ -36,7 +38,76 @@ public class DataFetcher {
 		return result;
 	}
 
-	public static List<RealtimeQuote> getRealQuote(String stockCode) {
+	public static RealtimeQuote getStockSnapshot(String stockCode) {
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("prod_code", stockCode);
+		jsonParam.put("fields",
+				"open_px,high_px,last_px,low_px,turnover_ratio,vol_ratio,business_balance,px_change,px_change_rate,bid_grp,offer_grp");
+		JSONObject httpResult = HttpHandler.httpGet(URL_SNAPSHOT, jsonParam);
+
+		JSONObject snapshot = httpResult.getJSONObject("snapshot");
+		JSONObject detail = snapshot.getJSONObject("snapshot_detail_data");
+
+		RealtimeQuote result = new RealtimeQuote();
+
+		double openPrice = detail.getDouble("open_px");
+		double highPrice = detail.getDouble("open_px");
+		double lowPrice = detail.getDouble("open_px");
+		double lastPrice = detail.getDouble("open_px");
+		double turnoverRatio = detail.getDouble("turnover_ratio");
+		double volRatio = detail.getDouble("vol_ratio");
+		double businessBalance = detail.getDouble("business_balance");
+		double chg = detail.getDouble("px_change");
+		double pchg = detail.getDouble("px_change_rate");
+
+		result.setOpenPrice(openPrice);
+		result.setHighPrice(highPrice);
+		result.setLowPrice(lowPrice);
+		result.setLastPrice(lastPrice);
+		result.setTurnoverRatio(turnoverRatio);
+		result.setVolRatio(volRatio);
+		result.setBusinessBalance(businessBalance);
+		result.setChg(chg);
+		result.setPchg(pchg);
+
+		String bg = detail.getString("bid_grp");
+		String[] bids = {};
+		if (bg != null)
+			bids = bg.split(",");
+		StringBuilder sb = new StringBuilder();
+		List<String> bidGrp = new ArrayList<String>();
+		for (int i = 0; i < bids.length; i++) {
+			if (i % 3 == 0) {
+				sb = new StringBuilder();
+				sb.append(bids[i]);
+			}
+			if (i % 3 == 2) {
+				bidGrp.add(sb.toString());
+			}
+		}
+
+		String og = detail.getString("offer_grp");
+		String[] offers = {};
+		if (og != null)
+			offers = og.split(",");
+		sb = new StringBuilder();
+		List<String> offerGrp = new ArrayList<String>();
+		for (int i = 0; i < offers.length; i++) {
+			if (i % 3 == 0) {
+				sb = new StringBuilder();
+				sb.append(offers[i]);
+			}
+			if (i % 3 == 2) {
+				offerGrp.add(sb.toString());
+			}
+		}
+
+		result.setBidGroup(bidGrp);
+		result.setOfferGroup(offerGrp);
+		return result;
+	}
+
+	public static List<RealtimeQuote> getStockPrice(String stockCode) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", "1");
@@ -60,7 +131,7 @@ public class DataFetcher {
 			RealtimeQuote data = new RealtimeQuote();
 			data.setTimeStamp(x.getString("min_time"));
 			data.setLastPrice(Double.parseDouble(x.getString("close_px")));
-			// data.setBusinessAmount(Double.parseDouble(x.getString("business_amount")));
+			data.setBusinessAmount(Double.parseDouble(x.getString("business_amount")));
 			result.add(data);
 		}
 

@@ -108,7 +108,7 @@
 		}
 		
 		function jump(i){
-			location.href="page/stock?stockcode="+'600570';
+			location.href="page/stock?stockcode="+'600570'+"&stockname="+'恒生电子';
 		}
 	</script>
 </body>

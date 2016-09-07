@@ -124,10 +124,11 @@
 
 <body>
 	<input id="code" type="hidden" value="${code}" />
+	<input id="name" type="hidden" value="${name}" />
     <input id="type" type="hidden" value="${type}" />
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>${code}<a><i class="fa fa-caret-right"></i></a></span>
+			<span><a><i class="fa fa-caret-left"></i></a>${name}(${code})<a><i class="fa fa-caret-right"></i></a></span>
 		</div>
 	</div>
     <div class="container">
@@ -292,7 +293,7 @@
 				         candlesticks[i].highPrice,
 				         diff1,diff2,diff3,diff4]);
 			}
-			/* for(var i=0;i<wrapPen.length-1;i++){
+			for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
 				var end=wrapPen[i+1];
 				if(start.value<end.value){
@@ -330,9 +331,9 @@
 					bluePen.push(x);
 					penLine.push(x);
 				}
-			} */
+			}
 		
-			/* for(var i=0;i<wrapSegment.length-1;i++){
+			for(var i=0;i<wrapSegment.length-1;i++){
 				var start=wrapSegment[i];
 				var end=wrapSegment[i+1];
 				penLine.push([{
@@ -349,9 +350,9 @@
 					coord:[end.timeStamp+'',end.value],
 					value:end.value
 				}]);
-			} */
+			}
 		
-			/* var markArea = new Array();
+			var markArea = new Array();
 			for(var i=0;i<wrapPenCenter.length;i++){
 				markArea.push(
 					[{
@@ -360,10 +361,12 @@
 						coord:[wrapPenCenter[i].startTime+'',wrapPenCenter[i].low]
 					}]
 				);
-			} */
+			}
 			var data0 = splitData(ks);
 			option.xAxis.data=data0.categoryData;
 			option.series[0].data=data0.values;
+			option.series[0].markLine.data=penLine;
+			option.series[0].markArea.data=markArea;
 			option.series[1].data=calculateMA(5,data0);
 			myChart.setOption(option);
 			
@@ -557,11 +560,14 @@
 		}
 		
 		function toKline(type){
-			location.href="page/stock/kline?stockcode="+document.getElementById('code').value+"&type="+type;
+			location.href="page/stock/kline?stockcode="+document.getElementById('node').value
+				+"&stockname="+document.getElementById('name').value
+				+"&type="+type;
 		}
 		
 		function toRealtime(){
-			location.href="page/stock?stockcode="+document.getElementById('code').value;
+			location.href="page/stock?stockcode="+document.getElementById('code').value
+				+"&stockname="+document.getElementById('name').value;
 		}
 		
 		function showMinites(){

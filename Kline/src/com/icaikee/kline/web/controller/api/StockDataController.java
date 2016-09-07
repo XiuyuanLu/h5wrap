@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.icaikee.kline.WebConstants;
 import com.icaikee.kline.biz.common.model.Product;
+import com.icaikee.kline.biz.common.model.WrapStructures;
 import com.icaikee.kline.biz.stock.StockService;
 import com.icaikee.kline.biz.wrap.WrapService;
 import com.icaikee.kline.core.message.Message;
@@ -33,26 +34,30 @@ public class StockDataController {
 		return new Message(result);
 	}
 
-	@RequestMapping("/realtime")
-	public Message realtime(@RequestParam(name = "stockcode") String code) {
+	@RequestMapping
+	public Message stockPrices(@RequestParam(name = "stockcode") String code) {
 		try {
-			return new Message(stockService.getStockRealtime(code));
+			return new Message(stockService.getStock(code));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			return new Message("error");
 		}
 	}
 
+	@RequestMapping("/snapshot")
+	public Message snapshot(@RequestParam(name = "stockcode") String code) {
+		return new Message(stockService.getSnapshot(code));
+	}
+
 	@RequestMapping("/kline")
 	public Message getKline(@RequestParam(name = "stockcode") String code, @RequestParam(name = "type") String type) {
 		try {
 			List<Object> data = new ArrayList<Object>();
-			// WrapStructures wrapStructures =
-			// wrapService.getWrapStructures(code, type, null);
+			WrapStructures wrapStructures = wrapService.getWrapStructures(code, type, null);
 			data.add(stockService.getCandlesticks(code, type, null));
-			// data.add(wrapStructures.getPen());
-			// data.add(wrapStructures.getSegment());
-			// data.add(wrapStructures.getPenCenter());
+			data.add(wrapStructures.getPen());
+			data.add(wrapStructures.getSegment());
+			data.add(wrapStructures.getPenCenter());
 			return new Message(data);
 		} catch (ParseException e) {
 			return new Message("error");
