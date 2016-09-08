@@ -1,6 +1,7 @@
 package com.icaikee.kline.biz.stock;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class StockService {
 
 	public List<RealtimeQuote> getStock(String code) throws ParseException {
 		List<RealtimeQuote> result = DataFetcher.getStockPrice(code);
+		if (result == null)
+			result = new ArrayList<RealtimeQuote>();
 		if (result.size() < 241) {
 			List<String> timeList = commonService.getTradeTime();
 			for (int i = 0; i < 240; i++) {
@@ -45,8 +48,40 @@ public class StockService {
 
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)
 			throws ParseException {
-		Date date = new Date();
-		return DataFetcher.getK(code, candlePeriod, null, new Date(), TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
+		Date endDate = new Date();
+		Date startDate;
+
+		String start;
+		String end;
+
+		if ("1".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -7);
+		else if ("2".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -35);
+		else if ("3".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -105);
+		else if ("4".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -210);
+		else if ("5".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -420);
+		else if ("6".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -1680);
+		else if ("7".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
+		else if ("8".equals(candlePeriod))
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
+		else
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
+
+		if ("1".equals(candlePeriod) || "2".equals(candlePeriod) || "3".equals(candlePeriod) || "4".equals(candlePeriod)
+				|| "5".equals(candlePeriod)) {
+			start = TimeUtil.format(startDate, TimeUtil.DATE_TIME_PATTERN_NOBAR);
+			end = TimeUtil.format(endDate, TimeUtil.DATE_TIME_PATTERN_NOBAR);
+		} else {
+			start = TimeUtil.format(startDate, TimeUtil.DATE_PATTERN_NOBAR);
+			end = TimeUtil.format(endDate, TimeUtil.DATE_PATTERN_NOBAR);
+		}
+		return DataFetcher.getK(code, candlePeriod, null, start, end);
 	}
 
 }

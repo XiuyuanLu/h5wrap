@@ -18,6 +18,7 @@
 .container .middle{
 	width: 100%;
 	height: 78vh;
+	text-align: center;
 }
 
 .container .middle .chart-title{
@@ -72,6 +73,10 @@
 	height: 60vh;
 	display: inline-block;
 	float: left;
+}
+
+.container .middle .pickedTime{
+	font-size: 2em;
 }
 
 .container .middle .right-data{
@@ -158,6 +163,7 @@
 	    		<span class="blue-control" onclick="blueCenterClick()">蓝色下降中枢</span>
 	    	</div>
 	    	<div class="chart" id="chart"></div>
+	    	<div class="pickedTime" id="pickedTime"></div>
     	</div>
     	<div id="minites" class="sub-options">
     		<span id="oneM" onclick="toKline('1')">1分</span>
@@ -247,8 +253,8 @@
 		    var categoryData = [];
 		    var values = []
 		    for (var i = 0; i < rawData.length; i++) {
-		        categoryData.push(rawData[i].splice(0, 1)[0]);
-		        values.push(rawData[i])
+		        values.push(rawData[i]);
+		        categoryData.push(rawData[i][8]);
 		    }
 		    return {
 		        categoryData: categoryData,
@@ -286,12 +292,11 @@
 					diff4=candlesticks[i].highPrice-candlesticks[i-1].highPrice;
 				}
 					
-				ks.push([candlesticks[i].timeStamp,
-				         candlesticks[i].openPrice,
+				ks.push([candlesticks[i].openPrice,
 				         candlesticks[i].closePrice,
 				         candlesticks[i].lowPrice,
 				         candlesticks[i].highPrice,
-				         diff1,diff2,diff3,diff4]);
+				         diff1,diff2,diff3,diff4,candlesticks[i].timeStamp]);
 			}
 			for(var i=0;i<wrapPen.length-1;i++){
 				var start=wrapPen[i];
@@ -413,7 +418,8 @@
 			   	grid:[{
 			   			left: 30,
 			   			right: 30,
-			   			height: '80%',
+			   			height: '90%',
+			   			bottom: 0,
 			   			containLabel: true
 			   		}
 			   	],
@@ -421,6 +427,7 @@
 			        trigger: 'axis',
 			        axisPointer: {
 			            type: 'cross',
+			            axis: 'x',
 			            crossStyle:{
 			            	color: '#000',
 			            	width: 2,
@@ -477,7 +484,7 @@
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          start: 80,
+			          start: 95,
 			          end: 100
 			       }
 			    ],
@@ -556,11 +563,13 @@
 					chgDom.className='small-value green-value';
 					lastDom.className='big-value green-value';
 				}
+				
+				document.getElementById('pickedTime').innerHTML = params.value[8];
 			});
 		}
 		
 		function toKline(type){
-			location.href="page/stock/kline?stockcode="+document.getElementById('node').value
+			location.href="page/stock/kline?stockcode="+document.getElementById('code').value
 				+"&stockname="+document.getElementById('name').value
 				+"&type="+type;
 		}

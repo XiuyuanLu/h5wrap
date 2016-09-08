@@ -1,7 +1,6 @@
 package com.icaikee.kline.biz;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.icaikee.kline.biz.common.model.Candlesticks;
@@ -112,17 +111,17 @@ public class DataFetcher {
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", "1");
 		jsonParam.put("candle_mode", "0");
-		// jsonParam.put("start_date", TimeUtil.getStartMorning());
-		jsonParam.put("start_date", "201501050101");
-		if (TimeUtil.isTradeTime(new Date()))
-			jsonParam.put("end_date", TimeUtil.getNowMinite());
-		else
-			// jsonParam.put("end_date", TimeUtil.getEndAfternoon());
-			jsonParam.put("end_date", "201501060101");
+		jsonParam.put("start_date", TimeUtil.getStartMorning());
+		jsonParam.put("end_date", TimeUtil.getEndAfternoon());
 		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
 
 		JSONObject candle = httpResult.getJSONObject("candle");
+		if (candle == null || candle.isNullObject())
+			return null;
 		JSONArray array = candle.getJSONArray("candle_detail_data");
+
+		if (array == null || array.isEmpty() || array.size() == 0)
+			return null;
 
 		List<RealtimeQuote> result = new ArrayList<RealtimeQuote>();
 
@@ -138,19 +137,14 @@ public class DataFetcher {
 		return result;
 	}
 
-	public static List<Candlesticks> getK(String stockCode, String candlePeriod, String candleMode, Date startDate,
-			Date endDate) {
+	public static List<Candlesticks> getK(String stockCode, String candlePeriod, String candleMode, String startDate,
+			String endDate) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", candlePeriod);
 		jsonParam.put("candle_mode", candleMode == null ? "0" : candleMode);
-		// jsonParam.put("start_date", TimeUtil.getStartMorning());
-		jsonParam.put("start_date", "201501050101");
-		if (TimeUtil.isTradeTime(new Date()))
-			jsonParam.put("end_date", TimeUtil.getNowMinite());
-		else
-			// jsonParam.put("end_date", TimeUtil.getEndAfternoon());
-			jsonParam.put("end_date", "201501060101");
+		jsonParam.put("start_date", startDate);
+		jsonParam.put("end_date", endDate);
 		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
 
 		JSONObject candle = httpResult.getJSONObject("candle");
