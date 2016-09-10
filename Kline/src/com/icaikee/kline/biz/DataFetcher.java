@@ -197,22 +197,25 @@ public class DataFetcher {
 		jsonParam.put("start_date", startDate);
 		jsonParam.put("end_date", endDate);
 		JSONObject httpResult = HttpHandler.httpGet(URL_WRAP, jsonParam);
-
-		if (httpResult == null)
-			return null;
-
-		JSONObject cstructure = httpResult.getJSONObject("cstructure");
-		if (cstructure == null || cstructure.isNullObject())
-			return null;
-		JSONArray pen = cstructure.getJSONArray("bi_data");
-		JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
-		JSONArray segment = cstructure.getJSONArray("duan_data");
-		JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
-
+		WrapStructures wrapStructures = new WrapStructures();
 		List<WrapPen> wrapPen = new ArrayList<WrapPen>();
 		List<WrapSegment> wrapSegment = new ArrayList<WrapSegment>();
 		List<WrapCenter> wrapPenCenter = new ArrayList<WrapCenter>();
 		List<WrapCenter> wrapSegmentCenter = new ArrayList<WrapCenter>();
+		wrapStructures.setPen(wrapPen);
+		wrapStructures.setPenCenter(wrapPenCenter);
+		wrapStructures.setSegment(wrapSegment);
+		wrapStructures.setSegmentCenter(wrapSegmentCenter);
+		if (httpResult == null)
+			return wrapStructures;
+
+		JSONObject cstructure = httpResult.getJSONObject("cstructure");
+		if (cstructure == null || cstructure.isNullObject())
+			return wrapStructures;
+		JSONArray pen = cstructure.getJSONArray("bi_data");
+		JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
+		JSONArray segment = cstructure.getJSONArray("duan_data");
+		JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
 
 		if (!(pen == null || pen.isEmpty() || pen.size() == 0)) {
 			for (int i = 0; i < pen.size(); i++) {
@@ -259,11 +262,6 @@ public class DataFetcher {
 			}
 		}
 
-		WrapStructures wrapStructures = new WrapStructures();
-		wrapStructures.setPen(wrapPen);
-		wrapStructures.setPenCenter(wrapPenCenter);
-		wrapStructures.setSegment(wrapSegment);
-		wrapStructures.setSegmentCenter(wrapSegmentCenter);
 		return wrapStructures;
 	}
 
