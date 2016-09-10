@@ -408,6 +408,9 @@
 			}else if(chg<0){
 				chgDom.className='small-value green-value';
 				lastDom.className='big-value green-value';
+			}else{
+				chgDom.className='small-value';
+				lastDom.className='big-value';
 			}
 			
 		}
@@ -562,6 +565,9 @@
 				}else if(chg<0){
 					chgDom.className='small-value green-value';
 					lastDom.className='big-value green-value';
+				}else{
+					chgDom.className='small-value';
+					lastDom.className='big-value';
 				}
 				
 				document.getElementById('pickedTime').innerHTML = params.value[8];

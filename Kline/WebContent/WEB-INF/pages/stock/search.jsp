@@ -69,7 +69,6 @@
     		</div>
     	</div>
     </div>
-    <div id="appendTo"></div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
@@ -108,7 +107,7 @@
 		}
 		
 		function jump(i){
-			location.href="page/stock?stockcode="+'600570'+"&stockname="+'恒生电子';
+			location.href="page/stock?stockcode="+'600570.SZ'+"&stockname="+'恒生电子';
 		}
 	</script>
 </body>

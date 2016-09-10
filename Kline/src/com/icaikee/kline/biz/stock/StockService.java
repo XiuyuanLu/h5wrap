@@ -21,12 +21,15 @@ public class StockService {
 	@Autowired
 	private CommonService commonService;
 
+	@Autowired
+	private DataFetcher dataFetcher;
+
 	public List<Product> fuzzyQuery(String q) {
-		return DataFetcher.getStocks(q);
+		return dataFetcher.getStocks(q);
 	}
 
 	public List<RealtimeQuote> getStock(String code) throws ParseException {
-		List<RealtimeQuote> result = DataFetcher.getStockPrice(code);
+		List<RealtimeQuote> result = dataFetcher.getStockPrice(code);
 		if (result == null)
 			result = new ArrayList<RealtimeQuote>();
 		if (result.size() < 241) {
@@ -43,7 +46,7 @@ public class StockService {
 	}
 
 	public RealtimeQuote getSnapshot(String code) {
-		return DataFetcher.getStockSnapshot(code);
+		return dataFetcher.getStockSnapshot(code);
 	}
 
 	public List<Candlesticks> getCandlesticks(String code, String candlePeriod, String candleMode)
@@ -81,7 +84,7 @@ public class StockService {
 			start = TimeUtil.format(startDate, TimeUtil.DATE_PATTERN_NOBAR);
 			end = TimeUtil.format(endDate, TimeUtil.DATE_PATTERN_NOBAR);
 		}
-		return DataFetcher.getK(code, candlePeriod, null, start, end);
+		return dataFetcher.getK(code, candlePeriod, null, start, end);
 	}
 
 }

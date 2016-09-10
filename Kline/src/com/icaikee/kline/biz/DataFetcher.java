@@ -3,15 +3,22 @@ package com.icaikee.kline.biz;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.icaikee.kline.biz.common.model.Candlesticks;
 import com.icaikee.kline.biz.common.model.Product;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
+import com.icaikee.kline.biz.common.model.WrapCenter;
+import com.icaikee.kline.biz.common.model.WrapPen;
+import com.icaikee.kline.biz.common.model.WrapSegment;
+import com.icaikee.kline.biz.common.model.WrapStructures;
 import com.icaikee.kline.http.HttpHandler;
 import com.icaikee.kline.util.TimeUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+@Service
 public class DataFetcher {
 
 	public static final String URL_KLINE = "http://114.55.175.118:9090/quote/kline";
@@ -20,7 +27,11 @@ public class DataFetcher {
 
 	public static final String URL_SNAPSHOT = "http://114.55.175.118:9090/quote/snapshot";
 
-	public static List<Product> getStocks(String q) {
+	public static final String URL_WRAP = "http://114.55.175.118:9090/quote/cldata";
+
+	public static final String URL_SALE_POINT = "http://114.55.175.118:9090/quote/bspoint";
+
+	public List<Product> getStocks(String q) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("query_str", q);
 		JSONObject httpResult = HttpHandler.httpGet(URL_FUZZY_QUERY, jsonParam);
@@ -37,7 +48,7 @@ public class DataFetcher {
 		return result;
 	}
 
-	public static RealtimeQuote getStockSnapshot(String stockCode) {
+	public RealtimeQuote getStockSnapshot(String stockCode) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("fields",
@@ -106,7 +117,7 @@ public class DataFetcher {
 		return result;
 	}
 
-	public static List<RealtimeQuote> getStockPrice(String stockCode) {
+	public List<RealtimeQuote> getStockPrice(String stockCode) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", "1");
@@ -114,6 +125,8 @@ public class DataFetcher {
 		jsonParam.put("start_date", TimeUtil.getStartMorning());
 		jsonParam.put("end_date", TimeUtil.getEndAfternoon());
 		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
+		if (httpResult == null)
+			return null;
 
 		JSONObject candle = httpResult.getJSONObject("candle");
 		if (candle == null || candle.isNullObject())
@@ -137,7 +150,7 @@ public class DataFetcher {
 		return result;
 	}
 
-	public static List<Candlesticks> getK(String stockCode, String candlePeriod, String candleMode, String startDate,
+	public List<Candlesticks> getK(String stockCode, String candlePeriod, String candleMode, String startDate,
 			String endDate) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
@@ -146,9 +159,16 @@ public class DataFetcher {
 		jsonParam.put("start_date", startDate);
 		jsonParam.put("end_date", endDate);
 		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
+		if (httpResult == null)
+			return null;
 
 		JSONObject candle = httpResult.getJSONObject("candle");
+		if (candle == null || candle.isNullObject())
+			return null;
 		JSONArray array = candle.getJSONArray("candle_detail_data");
+
+		if (array == null || array.isEmpty() || array.size() == 0)
+			return null;
 
 		List<Candlesticks> result = new ArrayList<Candlesticks>();
 
@@ -165,6 +185,86 @@ public class DataFetcher {
 		}
 
 		return result;
+	}
+
+	public WrapStructures getWrapData(String stockCode, String candlePeriod, String candleMode, String startDate,
+			String endDate) {
+
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("prod_code", stockCode);
+		jsonParam.put("candle_period", candlePeriod);
+		jsonParam.put("candle_mode", candleMode == null ? "0" : candleMode);
+		jsonParam.put("start_date", startDate);
+		jsonParam.put("end_date", endDate);
+		JSONObject httpResult = HttpHandler.httpGet(URL_WRAP, jsonParam);
+
+		if (httpResult == null)
+			return null;
+
+		JSONObject cstructure = httpResult.getJSONObject("cstructure");
+		if (cstructure == null || cstructure.isNullObject())
+			return null;
+		JSONArray pen = cstructure.getJSONArray("bi_data");
+		JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
+		JSONArray segment = cstructure.getJSONArray("duan_data");
+		JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
+
+		List<WrapPen> wrapPen = new ArrayList<WrapPen>();
+		List<WrapSegment> wrapSegment = new ArrayList<WrapSegment>();
+		List<WrapCenter> wrapPenCenter = new ArrayList<WrapCenter>();
+		List<WrapCenter> wrapSegmentCenter = new ArrayList<WrapCenter>();
+
+		if (!(pen == null || pen.isEmpty() || pen.size() == 0)) {
+			for (int i = 0; i < pen.size(); i++) {
+				JSONObject x = (JSONObject) pen.get(i);
+				WrapPen data = new WrapPen();
+				data.setTimeStamp(x.getString("start_time"));
+				data.setValue(x.getDouble("value"));
+				wrapPen.add(data);
+			}
+		}
+		if (!(penCenter == null || penCenter.isEmpty() || penCenter.size() == 0)) {
+			for (int i = 0; i < penCenter.size(); i++) {
+				JSONObject x = (JSONObject) penCenter.get(i);
+				WrapCenter data = new WrapCenter();
+				data.setStartTime(x.getString("start_time"));
+				data.setEndTime(x.getString("end_time"));
+				data.setHigh(x.getDouble("high_head"));
+				data.setLow(x.getDouble("low_tail"));
+				data.setMaxHigh(x.getDouble("max_high"));
+				data.setMaxLow(x.getDouble("min_low"));
+				wrapPenCenter.add(data);
+			}
+		}
+		if (!(segment == null || segment.isEmpty() || segment.size() == 0)) {
+			for (int i = 0; i < segment.size(); i++) {
+				JSONObject x = (JSONObject) segment.get(i);
+				WrapSegment data = new WrapSegment();
+				data.setTimeStamp(x.getString("start_time"));
+				data.setValue(x.getDouble("value"));
+				segment.add(data);
+			}
+		}
+		if (!(segmentCenter == null || segmentCenter.isEmpty() || segmentCenter.size() == 0)) {
+			for (int i = 0; i < segmentCenter.size(); i++) {
+				JSONObject x = (JSONObject) segmentCenter.get(i);
+				WrapCenter data = new WrapCenter();
+				data.setStartTime(x.getString("start_time"));
+				data.setEndTime(x.getString("end_time"));
+				data.setHigh(x.getDouble("high_head"));
+				data.setLow(x.getDouble("low_tail"));
+				data.setMaxHigh(x.getDouble("max_high"));
+				data.setMaxLow(x.getDouble("min_low"));
+				wrapSegmentCenter.add(data);
+			}
+		}
+
+		WrapStructures wrapStructures = new WrapStructures();
+		wrapStructures.setPen(wrapPen);
+		wrapStructures.setPenCenter(wrapPenCenter);
+		wrapStructures.setSegment(wrapSegment);
+		wrapStructures.setSegmentCenter(wrapSegmentCenter);
+		return wrapStructures;
 	}
 
 	private String timePattern(String candleMode) {
