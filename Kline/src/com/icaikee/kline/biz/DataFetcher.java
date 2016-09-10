@@ -213,9 +213,9 @@ public class DataFetcher {
 		if (cstructure == null || cstructure.isNullObject())
 			return wrapStructures;
 		JSONArray pen = cstructure.getJSONArray("bi_data");
-		JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
-		JSONArray segment = cstructure.getJSONArray("duan_data");
-		JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
+		// JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
+		// JSONArray segment = cstructure.getJSONArray("duan_data");
+		// JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
 
 		if (!(pen == null || pen.isEmpty() || pen.size() == 0)) {
 			for (int i = 0; i < pen.size(); i++) {
@@ -226,41 +226,43 @@ public class DataFetcher {
 				wrapPen.add(data);
 			}
 		}
-		if (!(penCenter == null || penCenter.isEmpty() || penCenter.size() == 0)) {
-			for (int i = 0; i < penCenter.size(); i++) {
-				JSONObject x = (JSONObject) penCenter.get(i);
-				WrapCenter data = new WrapCenter();
-				data.setStartTime(x.getString("start_time"));
-				data.setEndTime(x.getString("end_time"));
-				data.setHigh(x.getDouble("high_head"));
-				data.setLow(x.getDouble("low_tail"));
-				data.setMaxHigh(x.getDouble("max_high"));
-				data.setMaxLow(x.getDouble("min_low"));
-				wrapPenCenter.add(data);
-			}
-		}
-		if (!(segment == null || segment.isEmpty() || segment.size() == 0)) {
-			for (int i = 0; i < segment.size(); i++) {
-				JSONObject x = (JSONObject) segment.get(i);
-				WrapSegment data = new WrapSegment();
-				data.setTimeStamp(x.getString("start_time"));
-				data.setValue(x.getDouble("value"));
-				segment.add(data);
-			}
-		}
-		if (!(segmentCenter == null || segmentCenter.isEmpty() || segmentCenter.size() == 0)) {
-			for (int i = 0; i < segmentCenter.size(); i++) {
-				JSONObject x = (JSONObject) segmentCenter.get(i);
-				WrapCenter data = new WrapCenter();
-				data.setStartTime(x.getString("start_time"));
-				data.setEndTime(x.getString("end_time"));
-				data.setHigh(x.getDouble("high_head"));
-				data.setLow(x.getDouble("low_tail"));
-				data.setMaxHigh(x.getDouble("max_high"));
-				data.setMaxLow(x.getDouble("min_low"));
-				wrapSegmentCenter.add(data);
-			}
-		}
+		// if (!(penCenter == null || penCenter.isEmpty() || penCenter.size() ==
+		// 0)) {
+		// for (int i = 0; i < penCenter.size(); i++) {
+		// JSONObject x = (JSONObject) penCenter.get(i);
+		// WrapCenter data = new WrapCenter();
+		// data.setStartTime(x.getString("start_time"));
+		// data.setEndTime(x.getString("end_time"));
+		// data.setHigh(x.getDouble("high_head"));
+		// data.setLow(x.getDouble("low_tail"));
+		// data.setMaxHigh(x.getDouble("max_high"));
+		// data.setMaxLow(x.getDouble("min_low"));
+		// wrapPenCenter.add(data);
+		// }
+		// }
+		// if (!(segment == null || segment.isEmpty() || segment.size() == 0)) {
+		// for (int i = 0; i < segment.size(); i++) {
+		// JSONObject x = (JSONObject) segment.get(i);
+		// WrapSegment data = new WrapSegment();
+		// data.setTimeStamp(x.getString("start_time"));
+		// data.setValue(x.getDouble("value"));
+		// segment.add(data);
+		// }
+		// }
+		// if (!(segmentCenter == null || segmentCenter.isEmpty() ||
+		// segmentCenter.size() == 0)) {
+		// for (int i = 0; i < segmentCenter.size(); i++) {
+		// JSONObject x = (JSONObject) segmentCenter.get(i);
+		// WrapCenter data = new WrapCenter();
+		// data.setStartTime(x.getString("start_time"));
+		// data.setEndTime(x.getString("end_time"));
+		// data.setHigh(x.getDouble("high_head"));
+		// data.setLow(x.getDouble("low_tail"));
+		// data.setMaxHigh(x.getDouble("max_high"));
+		// data.setMaxLow(x.getDouble("min_low"));
+		// wrapSegmentCenter.add(data);
+		// }
+		// }
 
 		return wrapStructures;
 	}

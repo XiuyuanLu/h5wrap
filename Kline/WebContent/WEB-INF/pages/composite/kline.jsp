@@ -350,7 +350,7 @@
 			}
 			
 			var markPoints = new Array();
-			for(var i=0;i<salePoints.length;i++){
+			/* for(var i=0;i<salePoints.length;i++){
 				markPoints.push({
 					coord: [salePoints[i].timeStamp, 0.5],
 					value: 0.5,
@@ -366,7 +366,7 @@
                         normal: {color: 'rgb(41,60,85)'}
                     }
 				});
-			}
+			} */
 			
 			var data0 = splitData(ks);
 			option = {

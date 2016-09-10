@@ -221,7 +221,7 @@
 				document.getElementById('week').style.color='#f74242';
 			else if(type=='8')
 				document.getElementById('month').style.color='#f74242';
-			chartInit();
+			
 			$.ajax({
 				url:"api/stock/kline",
 				data:{
@@ -238,7 +238,8 @@
 					wrapPen=data.message[1];
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
-					drawData();
+					chartInit();
+					//drawData();
 				}
 			});
 			
@@ -337,42 +338,11 @@
 					penLine.push(x);
 				}
 			}
-		
-			for(var i=0;i<wrapSegment.length-1;i++){
-				var start=wrapSegment[i];
-				var end=wrapSegment[i+1];
-				penLine.push([{
-					coord:[start.timeStamp+'',start.value],
-					value:start.value,
-					lineStyle:{
-						normal:{
-							color: '#3b3d3e',
-							type: 'solid',
-							width: 2
-						}
-					}
-				},{
-					coord:[end.timeStamp+'',end.value],
-					value:end.value
-				}]);
-			}
-		
-			var markArea = new Array();
-			for(var i=0;i<wrapPenCenter.length;i++){
-				markArea.push(
-					[{
-						coord:[wrapPenCenter[i].endTime+'',wrapPenCenter[i].high]
-					},{
-						coord:[wrapPenCenter[i].startTime+'',wrapPenCenter[i].low]
-					}]
-				);
-			}
+			
 			var data0 = splitData(ks);
 			option.xAxis.data=data0.categoryData;
 			option.series[0].data=data0.values;
 			option.series[0].markLine.data=penLine;
-			option.series[0].markArea.data=markArea;
-			option.series[1].data=calculateMA(5,data0);
 			myChart.setOption(option);
 			
 			var tail = data0.values[data0.values.length-1];
@@ -416,6 +386,108 @@
 		}
 		
 		function chartInit(){
+			var ks = new Array();
+			for(var i=0;i<candlesticks.length;i++){
+				var diff1=0;
+				var diff2=0;
+				var diff3=0;
+				var diff4=0;
+				if(i>0){
+					diff1=candlesticks[i].openPrice-candlesticks[i-1].openPrice;
+					diff2=candlesticks[i].closePrice-candlesticks[i-1].closePrice;
+					diff3=candlesticks[i].lowPrice-candlesticks[i-1].lowPrice;
+					diff4=candlesticks[i].highPrice-candlesticks[i-1].highPrice;
+				}
+					
+				ks.push([candlesticks[i].openPrice,
+				         candlesticks[i].closePrice,
+				         candlesticks[i].lowPrice,
+				         candlesticks[i].highPrice,
+				         diff1,diff2,diff3,diff4,candlesticks[i].timeStamp]);
+			}
+			for(var i=0;i<wrapPen.length-1;i++){
+				var start=wrapPen[i];
+				var end=wrapPen[i+1];
+				if(start.value<end.value){
+					var x = [{
+						coord:[start.timeStamp+'',start.value],
+						value:start.value,
+						lineStyle:{
+							normal:{
+								color: '#fc4343',
+								type: 'solid',
+								width: 4
+							}
+						}
+					},{
+						coord:[end.timeStamp+'',end.value],
+						value:end.value
+					}];
+					redPen.push(x);
+					penLine.push(x);
+				}else{
+					var x = [{
+						coord:[start.timeStamp+'',start.value],
+						value:start.value,
+						lineStyle:{
+							normal:{
+								color: '#218ab1',
+								type: 'solid',
+								width: 4
+							}
+						}
+					},{
+						coord:[end.timeStamp+'',end.value],
+						value:end.value
+					}];
+					bluePen.push(x);
+					penLine.push(x);
+				}
+			}
+			
+			var data0 = splitData(ks);
+			/* option.xAxis.data=data0.categoryData;
+			option.series[0].data=data0.values;
+			option.series[0].markLine.data=penLine;
+			myChart.setOption(option); */
+			
+			var tail = data0.values[data0.values.length-1];
+			var chg=(tail[1]-tail[0]).toFixed(2);
+			var pchg= (chg/tail[0]*100).toFixed(2);
+			var openDom = document.getElementById('open');
+			var lastDom = document.getElementById('last');
+			var lowDom = document.getElementById('low'); 
+			var highDom = document.getElementById('high');
+			var chgDom = document.getElementById('chg');
+			
+			openDom.innerHTML=tail[0];
+			lastDom.innerHTML=tail[1];
+			lowDom.innerHTML=tail[2];
+			highDom.innerHTML=tail[3];
+			chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+			
+			if(tail[5]>0)
+				openDom.className='red-value';
+			else if(tail[5]<0)
+				openDom.className='green-value';
+			if(tail[7]>0)
+				lowDom.className='red-value';
+			else if(tail[7]<0)
+				lowDom.className='green-value';
+			if(tail[8]>0)
+				highDom.className='red-value';
+			else if(tail[8]<0)
+				highDom.className='green-value';
+			if(chg>0){
+				chgDom.className='small-value red-value';
+				lastDom.className='big-value red-value';
+			}else if(chg<0){
+				chgDom.className='small-value green-value';
+				lastDom.className='big-value green-value';
+			}else{
+				chgDom.className='small-value';
+				lastDom.className='big-value';
+			}
 			option = {
 				animation: false,
 			   	grid:[{
@@ -444,7 +516,7 @@
 			    },
 			    xAxis: [{
 			    	type: 'category',
-			    	data: [],
+			    	data: data0.categoryData,
 			    	axisTick:{
 			    		show: false
 			    	},
@@ -493,22 +565,12 @@
 			    ],
 			    series: [{
 			    	type: 'candlestick',
-			    	data: [],
+			    	data: data0.values,
 			    	markLine:{
-			    		data: [],//penLine,
+			    		data: penLine,
 			    		label:{
 			    			normal:{
 			    				show: false
-			    			}
-			    		}
-			    	},
-			    	markArea:{
-			    		data: [],//markArea,
-			    		itemStyle:{
-			    			normal:{
-			    				borderColor: '#000',
-			    				borderWidth: 1,
-			    				opacity: 0.3
 			    			}
 			    		}
 			    	},
