@@ -1,6 +1,8 @@
 package com.icaikee.kline.biz;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -117,7 +119,7 @@ public class DataFetcher {
 		return result;
 	}
 
-	public List<RealtimeQuote> getStockPrice(String stockCode) {
+	public List<RealtimeQuote> getStockPrice(String stockCode) throws ParseException {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", "1");
@@ -125,8 +127,17 @@ public class DataFetcher {
 		jsonParam.put("start_date", TimeUtil.getStartMorning());
 		jsonParam.put("end_date", TimeUtil.getEndAfternoon());
 		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
-		if (httpResult == null)
-			return null;
+		if (needGoAhead(httpResult)) {
+			Date date = new Date();
+			int count = 0;
+			while (needGoAhead(httpResult) && count <= 2000) {
+				count++;
+				date = TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -1);
+				jsonParam.put("start_date", TimeUtil.getStartMorning(TimeUtil.format(date, "yyyyMMdd")));
+				jsonParam.put("end_date", TimeUtil.getEndAfternoon(TimeUtil.format(date, "yyyyMMdd")));
+				httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
+			}
+		}
 
 		JSONObject candle = httpResult.getJSONObject("candle");
 		if (candle == null || candle.isNullObject())
@@ -141,7 +152,8 @@ public class DataFetcher {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject x = (JSONObject) array.get(i);
 			RealtimeQuote data = new RealtimeQuote();
-			data.setTimeStamp(x.getString("min_time"));
+			data.setTimeStamp(
+					TimeUtil.format(x.getString("min_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, TimeUtil.TIME_PATTERN));
 			data.setLastPrice(Double.parseDouble(x.getString("close_px")));
 			data.setBusinessAmount(Double.parseDouble(x.getString("business_amount")));
 			result.add(data);
@@ -267,13 +279,10 @@ public class DataFetcher {
 		return wrapStructures;
 	}
 
-	private String timePattern(String candleMode) {
-		Integer i = Integer.parseInt(candleMode);
-		if (i < 6) {
-			return TimeUtil.TIME_PATTERN;
-		} else {
-			return TimeUtil.DATE_PATTERN;
-		}
+	private static boolean needGoAhead(JSONObject httpResult) {
+		if (httpResult.containsKey("error_no"))
+			return "3".equals(httpResult.getString("error_no"));
+		return false;
 	}
 
 }

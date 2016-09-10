@@ -25,7 +25,7 @@ public class TimeUtil {
 
 	public static final String END_AFTERNOON = "1500";
 
-	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 
 	public static final String DATE_TIME_PATTERN_NOBAR = "yyyyMMddHHmm";
 
@@ -35,13 +35,6 @@ public class TimeUtil {
 
 	public static final int DAY = 5;
 
-	/**
-	 * 功能描述：返回分
-	 *
-	 * @param date
-	 *            日期
-	 * @return 返回分钟
-	 */
 	public static int getMinute(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -65,6 +58,12 @@ public class TimeUtil {
 		return dateFormater.format(date);
 	}
 
+	public static String format(String date, String inputPattern, String outputPattern) throws ParseException {
+		Date d = parse(date, inputPattern);
+		SimpleDateFormat dateFormater = new SimpleDateFormat(outputPattern);
+		return dateFormater.format(d);
+	}
+
 	public static boolean isTradeTime(Date now) {
 		SimpleDateFormat df = new SimpleDateFormat("hh:mm:ss");
 		try {
@@ -83,16 +82,16 @@ public class TimeUtil {
 		return format(new Date(), DATE_PATTERN_NOBAR) + START_MORNING;
 	}
 
-	public static String getEndMorning() {
-		return format(new Date(), DATE_PATTERN_NOBAR) + END_MORNING;
-	}
-
-	public static String getStartAfternoon() {
-		return format(new Date(), DATE_PATTERN_NOBAR) + START_AFTERNOON;
-	}
-
 	public static String getEndAfternoon() {
 		return format(new Date(), DATE_PATTERN_NOBAR) + END_AFTERNOON;
+	}
+
+	public static String getStartMorning(String date) {
+		return date + START_MORNING;
+	}
+
+	public static String getEndAfternoon(String date) {
+		return date + END_AFTERNOON;
 	}
 
 	public static String getNowMinite() {

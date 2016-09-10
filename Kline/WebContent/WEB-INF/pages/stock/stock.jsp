@@ -293,7 +293,7 @@
 			    	},
 			    	axisLabel:{
 			    		interval: function(index,value){
-			    			if(index==0 || index==120 || index==241)
+			    			if(index==0 || index==119 || index==240)
 			    				return true;
 			    		},
 			    		textStyle:{
