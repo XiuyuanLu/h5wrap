@@ -279,6 +279,13 @@
 		    return result;
 		}
 		
+		function macd(data0){
+			var result = [];
+			for (var i = 0, len = data0.values.length; i < len; i++)
+		       result.push((i%2==0)?data0.values[i][1]:(-data0.values[i][1]));
+			return result;
+		}
+		
 		function drawData(){
 			var ks = new Array();
 			for(var i=0;i<candlesticks.length;i++){
@@ -488,15 +495,21 @@
 				chgDom.className='small-value';
 				lastDom.className='big-value';
 			}
+			var ma =macd(data0);
 			option = {
 				animation: false,
 			   	grid:[{
-			   			left: 30,
-			   			right: 30,
-			   			height: '90%',
-			   			bottom: 0,
-			   			containLabel: true
-			   		}
+		   			left: 30,
+		   			right: 30,
+		   			height: '70%',
+		   			containLabel: true
+		   		},{
+		   			left: 30,
+		   			right: 30,
+		   			height: '16%',
+		   			top: '78%',
+		   			containLabel: true
+		   		}
 			   	],
 			   	tooltip: {
 			        trigger: 'axis',
@@ -527,6 +540,20 @@
 			    		show: false
 			    	},
 			    	z: 999
+			    },{
+			    	type: 'category',
+			    	gridIndex: 1,
+			    	data: data0.categoryData,
+			        splitNumber: 3,
+			    	axisLabel:{
+			    		show: false
+			    	},
+			    	axisTick:{
+			    		show: false
+			    	},
+			    	splitLine:{
+			    		show: false
+			    	}
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
@@ -544,22 +571,20 @@
 			    		}
 			    	}
 			    },{
-			    	max: 3,
-			    	min: 0,
-			    	axisLine:{show: false},
-			    	gridIndex: 0,
-			    	axisLabel:{
-			    		show: false,
-			    		inside: true
-			    	},
-			    	axisTick:{show: false},
-			    	splitLine:{show: false}
-			    }],
+			    	show: false,
+	                scale: true,
+	                gridIndex: 1,
+	                axisLabel: {inside: true,show: false},
+	                axisLine: {},
+	                axisTick: {show: false},
+	                splitLine: {show: false}
+	            }],
 			    dataZoom: [
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          start: 95,
+			          xAxisIndex: [0,1],
+			          start: 96,
 			          end: 100
 			       }
 			    ],
@@ -582,9 +607,13 @@
 			    	}
 			    },{
 		            name: 'MA5',
-		            type: 'line',
-		            data: [],
+		            type: 'bar',
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
+		            data: ma,
 		            smooth: true,
+		            barWidth: 1,
 		            lineStyle: {
 		                normal: {opacity: 0.5}
 		            }

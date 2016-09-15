@@ -145,6 +145,7 @@
     				</table>
     			</div>
     		</div>
+    		<span id="point"></span>
 	    	<div class="chart" id="chart"></div>
 	    	<div class="right-data">
 	    		<div class="tabs">
@@ -229,7 +230,7 @@
 		    var sum = 0;
 		    for (var i = 0; i < data0.length; i++) {
 		        sum += data0[i];
-		        result.push(sum / (i+1));
+		        result.push((sum / (i+1)));
 		    }
 		    return result;
 		}
@@ -271,15 +272,15 @@
 			   	],
 			   	tooltip: {
 			        trigger: 'axis',
-			        axisPointer: {
-			            type: 'cross',
-			            crossStyle:{
-			            	color: '#000',
-			            	width: 2,
-			            	type: 'solid'
-			            }
+			        formatter: function (params, ticket, callback){
+			        	var str = params[0].name+'</br>';
+			        	for(var i=0;i<params.length;i++)
+			        		str+=params[i].seriesName+':'+params[i].value.toFixed(2)+'</br>';
+			        	return str;
 			        },
-			        showContent: false
+			        textStyle:{
+			        	fontSize: 40
+			        }
 			    },
 			    xAxis: [{
 			    	type: 'category',
@@ -345,9 +346,11 @@
 	                splitLine: {show: false}
 	            }],
 			    series: [{
+			    	name: '价格',
 			    	type: 'line',
 			    	data: prices
 			    },{
+			    	name: '均价',
 			    	type:'line',
 			    	data: ma
 			    },{
@@ -364,13 +367,6 @@
 			};
 			myChart = echarts.init(document.getElementById('chart'));
 			myChart.setOption(option);
-			myChart.on('click', function (params) {
-				if(typeof(params.value)=='undefined')
-					return;
-			    document.getElementById('lastPrice').innerHTML=params.value[0];
-			    //document.getElementById('high').innerHTML=params.value[3];
-			    //document.getElementById('low').innerHTML=params.value[2];
-			});
 		}
 		
 		function drawTable(data){
