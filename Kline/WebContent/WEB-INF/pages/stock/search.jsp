@@ -94,7 +94,7 @@
 			var html='<table>';
 			var stocks = document.getElementById('stocks');
 			for(var i=0;i<data.length;i++){
-				html+='<tr id=i_'+i+' onclick=\"jump('+i+')\"><td>'+
+				html+='<tr onclick=\"jump(\''+data[i].code+'\',\''+data[i].name+'\')\"><td>'+
 						'<span>'
 						+data[i].code+
 						'</td><td>&nbsp;'
@@ -106,8 +106,8 @@
 			stocks.innerHTML=html;
 		}
 		
-		function jump(i){
-			location.href="page/stock?stockcode="+'600570.SZ'+"&stockname="+'恒生电子';
+		function jump(code,name){
+			location.href="page/stock?stockcode="+code+"&stockname="+name;
 		}
 	</script>
 </body>

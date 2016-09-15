@@ -64,4 +64,9 @@ public class StockDataController {
 		}
 	}
 
+	@RequestMapping("/macd")
+	public Message macd(@RequestParam(name = "stockcode") String code) {
+		return new Message(stockService.getSnapshot(code));
+	}
+
 }

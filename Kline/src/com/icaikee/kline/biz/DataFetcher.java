@@ -33,6 +33,8 @@ public class DataFetcher {
 
 	public static final String URL_SALE_POINT = "http://114.55.175.118:9090/quote/bspoint";
 
+	public static final String URL_MACD = "http://114.55.175.118:9090/quote/macd";
+
 	public List<Product> getStocks(String q) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("query_str", q);

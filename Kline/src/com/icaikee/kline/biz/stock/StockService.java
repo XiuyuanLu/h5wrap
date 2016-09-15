@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.icaikee.kline.biz.DataFetcher;
 import com.icaikee.kline.biz.common.CommonService;
 import com.icaikee.kline.biz.common.model.Candlesticks;
+import com.icaikee.kline.biz.common.model.Macd;
 import com.icaikee.kline.biz.common.model.Product;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
 import com.icaikee.kline.util.TimeUtil;
@@ -85,6 +86,10 @@ public class StockService {
 			end = TimeUtil.format(endDate, TimeUtil.DATE_PATTERN_NOBAR);
 		}
 		return dataFetcher.getK(code, candlePeriod, null, start, end);
+	}
+
+	public List<Macd> getMacd(String code, String candlePeriod, String macdMode) {
+
 	}
 
 }
