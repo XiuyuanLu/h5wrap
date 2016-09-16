@@ -174,7 +174,6 @@
 	    	<span onclick="toKline('7')">周</span>
 	    	<span onclick="toKline('8')">月</span>
 	    	<span onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right">指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>

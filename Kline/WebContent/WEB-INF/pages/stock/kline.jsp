@@ -123,6 +123,24 @@
 	margin-right: 3vw;
 }
 
+.container .macd-mode{
+	display: none;
+	position: absolute;
+	background: #2c2c3c;
+	right: 0;
+}
+
+.container .macd-mode div{
+	border: 1px solid #abaaaa;
+}
+
+.container .macd-mode span{
+	font-size: 4em;
+	color: #aaa;
+	margin-left: 3vw;
+	margin-right: 3vw;
+}
+
 </style>
 
 </head>
@@ -172,13 +190,24 @@
     		<span id="thtyM" onclick="toKline('4')">30分</span>
     		<span id="sxtyM" onclick="toKline('5')">60分</span>
     	</div>
+    	<div id="macd-mode" class="macd-mode">
+    		<div>
+    			<span id="macd-6" onclick="refreshMacd('6')">6</span>
+    		</div>
+    		<div>
+    			<span id="macd-12" onclick="refreshMacd('12')">12</span>
+    		</div>
+    		<div>
+    			<span id="macd-26" onclick="refreshMacd('26')">26</span>
+    		</div>
+    	</div>
     	<div class="options">
 	    	<span onclick="toRealtime()">分时</span>
 	    	<span id="day" onclick="toKline('6')">日</span>
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right">指标</span>
+	    	<span style="float:right" onclick="showMacds()">指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -192,6 +221,9 @@
 		var redPen = new Array();
 		var bluePen = new Array();
 		var status = 'both';
+		var macd6;
+		var macd12;
+		var macd26;
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -242,6 +274,8 @@
 					getMacdData('12');
 				}
 			});
+
+			prepareMacd();
 		}
 		
 		function getMacdData(mode){
@@ -258,12 +292,57 @@
 					var msg = data.message;
 					if(msg=="error")
 						alert(msg);
-					refreshMacd(msg);
+					macd12 = msg;
+					refreshMacd('12');
 				}
 			});
 		}
 		
-		function refreshMacd(data){
+		function prepareMacd(){
+			$.ajax({
+				url:"api/stock/macd",
+				data:{
+					stockcode: document.getElementById('code').value,
+					candlePeriod: document.getElementById('type').value,
+					macdMode: '6'
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					macd6 = msg;
+				}
+			});
+			$.ajax({
+				url:"api/stock/macd",
+				data:{
+					stockcode: document.getElementById('code').value,
+					candlePeriod: document.getElementById('type').value,
+					macdMode: '26'
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					macd26 = msg;
+				}
+			});
+		}
+		
+		function refreshMacd(mode){
+			var data;
+			if(mode=='6')
+				data=macd6;
+			else if(mode=='12')
+				data=macd12;
+			else if(mode=='26')
+				data=macd26;
+			else 
+				return;
 			if(data==null || data==undefined || data.length==0)
 				return;
 			var difLine = [];
@@ -282,6 +361,7 @@
 			opt.series[2].data=difLine;
 			opt.series[3].data=deaLine;
 			myChart.setOption(opt);
+			showMacds();
 		}
 		
 		function chartInit(){
@@ -659,8 +739,8 @@
 		}
 		
 		function showMinites(){
-			var status = document.getElementById('minites').style.display;
-			if(status=="block"){
+			var statusLocal = document.getElementById('minites').style.display;
+			if(statusLocal=="block"){
 				document.getElementById('minites').style.display="none";
 				$('#minites-arrow').removeClass('fa-chevron-down');
 				$('#minites-arrow').addClass('fa-chevron-up');
@@ -712,6 +792,17 @@
 		
 		function blueCenterClick(){
 			
+		}
+		
+		function showMacds(){
+			var macdDom = document.getElementById('macd-mode');
+			var statusLocal = macdDom.style.display;
+			if(statusLocal=='block')
+				macdDom.style.display="";
+			else{
+				$('.macd-mode').css('bottom',$('.options').height()+$('.footer').height()-5);
+				macdDom.style.display="block";
+			}
 		}
 	</script>
 </body>
