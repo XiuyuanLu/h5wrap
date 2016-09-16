@@ -226,7 +226,7 @@
 				url:"api/stock/kline",
 				data:{
 					stockcode: document.getElementById('code').value,
-					type: type
+					candlePeriod: type
 				},
 				type: 'POST',
 				dataType: 'json',
@@ -239,51 +239,49 @@
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
 					chartInit();
-					//drawData();
+					getMacdData('12');
 				}
 			});
-			
 		}
 		
-		var textStyle = {
-				fontSize: 40,
-				fontWeight: 'normal'
-		};
-		
-		function splitData(rawData) {
-		    var categoryData = [];
-		    var values = []
-		    for (var i = 0; i < rawData.length; i++) {
-		        values.push(rawData[i]);
-		        categoryData.push(rawData[i][8]);
-		    }
-		    return {
-		        categoryData: categoryData,
-		        values: values
-		    };
+		function getMacdData(mode){
+			$.ajax({
+				url:"api/stock/macd",
+				data:{
+					stockcode: document.getElementById('code').value,
+					candlePeriod: document.getElementById('type').value,
+					macdMode: mode
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					refreshMacd(msg);
+				}
+			});
 		}
 		
-		function calculateMA(dayCount,data0) {
-		    var result = [];
-		    for (var i = 0, len = data0.values.length; i < len; i++) {
-		        if (i < dayCount) {
-		            result.push('-');
-		            continue;
-		        }
-		        var sum = 0;
-		        for (var j = 0; j < dayCount; j++) {
-		            sum += data0.values[i - j][1];
-		        }
-		        result.push(sum / dayCount);
-		    }
-		    return result;
-		}
-		
-		function calculateMacd(data0){
-			var result = [];
-			for (var i = 0, len = data0.values.length; i < len; i++)
-		       result.push((i%2==0)?data0.values[i][1]:(-data0.values[i][1]));
-			return result;
+		function refreshMacd(data){
+			if(data==null || data==undefined || data.length==0)
+				return;
+			var difLine = [];
+			var deaLine = [];
+			var bar = [];
+			for(var i=0;i<data.length;i++){
+				difLine.push(data[i].dif);
+				deaLine.push(data[i].dea);
+				if('1'==data[i].barSide)
+					bar.push(data[i].bar);
+				else
+					bar.push(-data[i].bar)
+			}
+			var opt = myChart.getOption();
+			opt.series[1].data=bar;
+			opt.series[2].data=difLine;
+			opt.series[3].data=deaLine;
+			myChart.setOption(opt);
 		}
 		
 		function chartInit(){
@@ -404,19 +402,59 @@
 			   	],
 			   	tooltip: {
 			        trigger: 'axis',
-			        axisPointer: {
-			            type: 'cross',
-			            axis: 'x',
-			            crossStyle:{
-			            	color: '#000',
-			            	width: 2,
-			            	type: 'solid',
-			            	textStyle:{
-						        fontSize: 0
-						    }
-			            }
+			        formatter: function (params, ticket, callback){
+			        	var str='';
+			        	if(params[0].seriesIndex==0){
+			        		var chg=(params[0].value[1]-params[0].value[0]).toFixed(2);
+							var pchg= (chg/params[0].value[0]*100).toFixed(2);
+							var openDom = document.getElementById('open');
+							var lastDom = document.getElementById('last');
+							var lowDom = document.getElementById('low'); 
+							var highDom = document.getElementById('high');
+							var chgDom = document.getElementById('chg');
+							
+							openDom.innerHTML=params[0].value[0];
+							lastDom.innerHTML=params[0].value[1];
+							lowDom.innerHTML=params[0].value[2];
+							highDom.innerHTML=params[0].value[3];
+							chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+							
+							if(params[0].value[5]>0)
+								openDom.className='red-value';
+							else if(params[0].value[5]<0)
+								openDom.className='green-value';
+							if(params[0].value[7]>0)
+								lowDom.className='red-value';
+							else if(params[0].value[7]<0)
+								lowDom.className='green-value';
+							if(params[0].value[8]>0)
+								highDom.className='red-value';
+							else if(params[0].value[8]<0)
+								highDom.className='green-value';
+							if(chg>0){
+								chgDom.className='small-value red-value';
+								lastDom.className='big-value red-value';
+							}else if(chg<0){
+								chgDom.className='small-value green-value';
+								lastDom.className='big-value green-value';
+							}else{
+								chgDom.className='small-value';
+								lastDom.className='big-value';
+							}
+							
+							document.getElementById('pickedTime').innerHTML = params[0].value[8];
+			        		return str;
+			        		
+			        	}
+			        	str += params[0].name+'&nbsp;&nbsp;MACD:'+params[0].value;
+			        	str += '&nbsp;&nbsp;DIF:'+params[1].value;
+			        	str += '&nbsp;&nbsp;DEA:'+params[2].value;
+			        	document.getElementById('pickedTime').innerHTML = str;
+			        	return '';
 			        },
-			        showContent: false
+			        textStyle:{
+			        	fontSize: 40
+			        }
 			    },
 			    xAxis: [{
 			    	type: 'category',
@@ -505,7 +543,15 @@
 		            data: macd,
 		            barWidth: 1
 		        },{
-		            name: 'MA5',
+		            name: 'dif',
+		            type: 'line',
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
+		            data: ma5,
+		            smooth: true
+		        },{
+		            name: 'dea',
 		            type: 'line',
 		            gridIndex: 1,
 		            xAxisIndex: 1,
@@ -558,6 +604,47 @@
 				
 				document.getElementById('pickedTime').innerHTML = params.value[8];
 			});
+		}
+		
+		var textStyle = {
+				fontSize: 40,
+				fontWeight: 'normal'
+		};
+		
+		function splitData(rawData) {
+		    var categoryData = [];
+		    var values = []
+		    for (var i = 0; i < rawData.length; i++) {
+		        values.push(rawData[i]);
+		        categoryData.push(rawData[i][8]);
+		    }
+		    return {
+		        categoryData: categoryData,
+		        values: values
+		    };
+		}
+		
+		function calculateMA(dayCount,data0) {
+		    var result = [];
+		    for (var i = 0, len = data0.values.length; i < len; i++) {
+		        if (i < dayCount) {
+		            result.push('-');
+		            continue;
+		        }
+		        var sum = 0;
+		        for (var j = 0; j < dayCount; j++) {
+		            sum += data0.values[i - j][1];
+		        }
+		        result.push(sum / dayCount);
+		    }
+		    return result;
+		}
+		
+		function calculateMacd(data0){
+			var result = [];
+			for (var i = 0, len = data0.values.length; i < len; i++)
+		       result.push((i%2==0)?data0.values[i][1]:(-data0.values[i][1]));
+			return result;
 		}
 		
 		function toKline(type){

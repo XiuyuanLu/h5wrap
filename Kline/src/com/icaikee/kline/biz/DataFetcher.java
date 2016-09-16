@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.icaikee.kline.biz.common.model.Candlesticks;
+import com.icaikee.kline.biz.common.model.Macd;
 import com.icaikee.kline.biz.common.model.Product;
 import com.icaikee.kline.biz.common.model.RealtimeQuote;
 import com.icaikee.kline.biz.common.model.WrapCenter;
@@ -164,7 +165,7 @@ public class DataFetcher {
 		return result;
 	}
 
-	public List<Candlesticks> getK(String stockCode, String candlePeriod, String candleMode, String startDate,
+	public List<Candlesticks> getKline(String stockCode, String candlePeriod, String candleMode, String startDate,
 			String endDate) {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
@@ -279,6 +280,44 @@ public class DataFetcher {
 		// }
 
 		return wrapStructures;
+	}
+
+	public List<Macd> getMacd(String stockCode, String candlePeriod, String macdMode, String startDate,
+			String endDate) {
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("prod_code", stockCode);
+		jsonParam.put("candle_period", candlePeriod);
+		jsonParam.put("candle_mode", "0");
+		// jsonParam.put("macd_mode", macdMode == null ? "12" : macdMode);
+		jsonParam.put("start_date", startDate);
+		jsonParam.put("end_date", endDate);
+		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
+		if (httpResult == null)
+			return null;
+
+		JSONObject macd = httpResult.getJSONObject("candle");
+		if (macd == null || macd.isNullObject())
+			return null;
+
+		JSONArray array = macd.getJSONArray("candle_detail_data");
+
+		if (array == null || array.isEmpty() || array.size() == 0)
+			return null;
+
+		List<Macd> result = new ArrayList<Macd>();
+
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject x = (JSONObject) array.get(i);
+			Macd data = new Macd();
+			data.setTimeStamp(x.getString("min_time"));
+			data.setDif(x.getDouble("high_px"));
+			data.setDea(x.getDouble("low_px"));
+			data.setBar(x.getDouble("open_px"));
+			data.setBarSide((i % 2) + "");
+			result.add(data);
+		}
+
+		return result;
 	}
 
 	private static boolean needGoAhead(JSONObject httpResult) {

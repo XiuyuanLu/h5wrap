@@ -50,11 +50,12 @@ public class StockDataController {
 	}
 
 	@RequestMapping("/kline")
-	public Message getKline(@RequestParam(name = "stockcode") String code, @RequestParam(name = "type") String type) {
+	public Message getKline(@RequestParam(name = "stockcode") String code,
+			@RequestParam(name = "candlePeriod") String candlePeriod) {
 		try {
 			List<Object> data = new ArrayList<Object>();
-			WrapStructures wrapStructures = wrapService.getWrapStructures(code, type, null);
-			data.add(stockService.getCandlesticks(code, type, null));
+			WrapStructures wrapStructures = wrapService.getWrapStructures(code, candlePeriod, null);
+			data.add(stockService.getCandlesticks(code, candlePeriod, null));
 			data.add(wrapStructures.getPen());
 			data.add(wrapStructures.getSegment());
 			data.add(wrapStructures.getPenCenter());
@@ -65,8 +66,10 @@ public class StockDataController {
 	}
 
 	@RequestMapping("/macd")
-	public Message macd(@RequestParam(name = "stockcode") String code) {
-		return new Message(stockService.getSnapshot(code));
+	public Message macd(@RequestParam(name = "stockcode") String code,
+			@RequestParam(name = "candlePeriod") String candlePeriod,
+			@RequestParam(name = "macdMode") String macdMode) {
+		return new Message(stockService.getMacd(code, candlePeriod, macdMode));
 	}
 
 }
