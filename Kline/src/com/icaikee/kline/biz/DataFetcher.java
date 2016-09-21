@@ -195,7 +195,7 @@ public class DataFetcher {
 			data.setLowPrice(Double.parseDouble(x.getString("low_px")));
 			data.setOpenPrice(Double.parseDouble(x.getString("open_px")));
 			data.setClosePrice(Double.parseDouble(x.getString("close_px")));
-			// data.setBusinessAmount(Double.parseDouble(x.getString("business_amount")));
+			data.setBusinessAmount(Double.parseDouble(x.getString("business_amount")));
 			result.add(data);
 		}
 
@@ -288,18 +288,18 @@ public class DataFetcher {
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", candlePeriod);
 		jsonParam.put("candle_mode", "0");
-		// jsonParam.put("macd_mode", macdMode == null ? "12" : macdMode);
+		jsonParam.put("macd_mode", macdMode == null ? "9" : macdMode);
 		jsonParam.put("start_date", startDate);
 		jsonParam.put("end_date", endDate);
-		JSONObject httpResult = HttpHandler.httpGet(URL_KLINE, jsonParam);
+		JSONObject httpResult = HttpHandler.httpGet(URL_MACD, jsonParam);
 		if (httpResult == null)
 			return null;
 
-		JSONObject macd = httpResult.getJSONObject("candle");
+		JSONObject macd = httpResult.getJSONObject("macd");
 		if (macd == null || macd.isNullObject())
 			return null;
 
-		JSONArray array = macd.getJSONArray("candle_detail_data");
+		JSONArray array = macd.getJSONArray("points");
 
 		if (array == null || array.isEmpty() || array.size() == 0)
 			return null;
@@ -310,10 +310,9 @@ public class DataFetcher {
 			JSONObject x = (JSONObject) array.get(i);
 			Macd data = new Macd();
 			data.setTimeStamp(x.getString("min_time"));
-			data.setDif(x.getDouble("high_px"));
-			data.setDea(x.getDouble("low_px"));
-			data.setBar(x.getDouble("open_px"));
-			data.setBarSide((i % 2) + "");
+			data.setDif(x.getDouble("dif"));
+			data.setDea(x.getDouble("dea"));
+			data.setBar(x.getDouble("macd"));
 			result.add(data);
 		}
 

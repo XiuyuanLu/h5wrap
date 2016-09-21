@@ -10,8 +10,6 @@ public class Macd {
 
 	private Double bar;
 
-	private String barSide;
-
 	public Double getDif() {
 		return dif;
 	}
@@ -42,14 +40,6 @@ public class Macd {
 
 	public void setTimeStamp(String timeStamp) {
 		this.timeStamp = timeStamp;
-	}
-
-	public String getBarSide() {
-		return barSide;
-	}
-
-	public void setBarSide(String barSide) {
-		this.barSide = barSide;
 	}
 
 }

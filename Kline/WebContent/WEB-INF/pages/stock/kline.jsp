@@ -75,7 +75,19 @@
 	float: left;
 }
 
-.container .middle .pickedTime{
+.container .middle .volumnTip{
+	position: absolute;
+	bottom: 40vh;
+	left: 3vw;
+	z-index: 9999;
+	font-size: 2em;
+}
+
+.container .middle .macdTip{
+	position: absolute;
+	bottom: 28vh;
+	left: 3vw;
+	z-index: 9999;
 	font-size: 2em;
 }
 
@@ -181,7 +193,8 @@
 	    		<span class="blue-control" onclick="blueCenterClick()">蓝色下降中枢</span>
 	    	</div>
 	    	<div class="chart" id="chart"></div>
-	    	<div class="pickedTime" id="pickedTime"></div>
+	    	<div class="volumnTip" id="volumnTip"></div>
+	    	<div class="macdTip" id="macdTip"></div>
     	</div>
     	<div id="minites" class="sub-options">
     		<span id="oneM" onclick="toKline('1')">1分</span>
@@ -207,7 +220,7 @@
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right" onclick="showMacds()">指标</span>
+	    	<span style="float:right" >指标</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -221,7 +234,7 @@
 		var redPen = new Array();
 		var bluePen = new Array();
 		var status = 'both';
-		var macd6;
+		var macd9;
 		var macd12;
 		var macd26;
 		function onLoad(){
@@ -271,11 +284,11 @@
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
 					chartInit();
-					getMacdData('12');
+					getMacdData('9');
 				}
 			});
 
-			prepareMacd();
+			//prepareMacd();
 		}
 		
 		function getMacdData(mode){
@@ -290,10 +303,10 @@
 				dataType: 'json',
 				success:function(data){
 					var msg = data.message;
-					if(msg=="error")
+					if(msg=="error" || msg==null)
 						alert(msg);
-					macd12 = msg;
-					refreshMacd('12');
+					macd9 = msg;
+					refreshMacd('9');
 				}
 			});
 		}
@@ -335,8 +348,8 @@
 		
 		function refreshMacd(mode){
 			var data;
-			if(mode=='6')
-				data=macd6;
+			if(mode=='9')
+				data=macd9;
 			else if(mode=='12')
 				data=macd12;
 			else if(mode=='26')
@@ -348,25 +361,27 @@
 			var difLine = [];
 			var deaLine = [];
 			var bar = [];
+			macdCateData = [];
 			for(var i=0;i<data.length;i++){
 				difLine.push(data[i].dif);
 				deaLine.push(data[i].dea);
-				if('1'==data[i].barSide)
-					bar.push(data[i].bar);
-				else
-					bar.push(-data[i].bar)
+				bar.push(data[i].bar);
+				macdCateData.push(data[i].timeStamp);
 			}
 			var opt = myChart.getOption();
-			opt.series[1].data=bar;
-			opt.series[2].data=difLine;
-			opt.series[3].data=deaLine;
+			opt.series[4].data=bar;
+			opt.series[5].data=difLine;
+			opt.series[6].data=deaLine;
 			myChart.setOption(opt);
-			showMacds();
+			document.getElementById('macdTip').innerHTML = macdCateData[macdCateData.length-1]+'&nbsp;&nbsp;MACD:'+bar[bar.length-1]+'&nbsp;&nbsp;DIF:'+difLine[difLine.length-1]+'&nbsp;&nbsp;DEA:'+deaLine[deaLine.length-1];
+			//showMacds();
 		}
 		
 		function chartInit(){
-			var ks = new Array();
+			var ks = [];
+			var volumns = [];
 			for(var i=0;i<candlesticks.length;i++){
+				volumns.push(candlesticks[i].businessAmount);
 				var diff1=0;
 				var diff2=0;
 				var diff3=0;
@@ -463,20 +478,24 @@
 				chgDom.className='small-value';
 				lastDom.className='big-value';
 			}
-			var macd = calculateMacd(data0);
-			var ma5 = calculateMA(5,data0);
 			option = {
 				animation: false,
 			   	grid:[{
 		   			left: 30,
 		   			right: 30,
-		   			height: '70%',
+		   			height: '54%',
 		   			containLabel: true
 		   		},{
 		   			left: 30,
 		   			right: 30,
 		   			height: '16%',
-		   			top: '78%',
+		   			top: '65%',
+		   			containLabel: true
+		   		},{
+		   			left: 30,
+		   			right: 30,
+		   			height: '16%',
+		   			top: '85%',
 		   			containLabel: true
 		   		}
 			   	],
@@ -522,14 +541,16 @@
 								lastDom.className='big-value';
 							}
 							
-							document.getElementById('pickedTime').innerHTML = params[0].value[8];
-			        		return str;
-			        		
+							return params[0].value[8];
+			        	}else if(params[0].seriesIndex==2){
+			        		str += macdCateData[params[0].dataIndex]+'&nbsp;&nbsp;成交量:'+params[0].value;
+			        		document.getElementById('volumnTip').innerHTML = str;
+			        		return '';
 			        	}
-			        	str += params[0].name+'&nbsp;&nbsp;MACD:'+params[0].value;
+			        	str += macdCateData[params[0].dataIndex]+'&nbsp;&nbsp;MACD:'+params[0].value;
 			        	str += '&nbsp;&nbsp;DIF:'+params[1].value;
 			        	str += '&nbsp;&nbsp;DEA:'+params[2].value;
-			        	document.getElementById('pickedTime').innerHTML = str;
+			        	document.getElementById('macdTip').innerHTML = str;
 			        	return '';
 			        },
 			        textStyle:{
@@ -538,6 +559,7 @@
 			    },
 			    xAxis: [{
 			    	type: 'category',
+			    	gridIndex: 0,
 			    	data: data0.categoryData,
 			    	axisTick:{
 			    		show: false
@@ -553,7 +575,19 @@
 			    	type: 'category',
 			    	gridIndex: 1,
 			    	data: data0.categoryData,
-			        splitNumber: 3,
+			    	axisLabel:{
+			    		show: false
+			    	},
+			    	axisTick:{
+			    		show: false
+			    	},
+			    	splitLine:{
+			    		show: false
+			    	}
+			    },{
+			    	type: 'category',
+			    	gridIndex: 2,
+			    	data: data0.categoryData,
 			    	axisLabel:{
 			    		show: false
 			    	},
@@ -587,12 +621,20 @@
 	                axisLine: {},
 	                axisTick: {show: false},
 	                splitLine: {show: false}
+	            },{
+			    	show: false,
+	                scale: true,
+	                gridIndex: 2,
+	                axisLabel: {inside: true,show: false},
+	                axisLine: {},
+	                axisTick: {show: false},
+	                splitLine: {show: false}
 	            }],
 			    dataZoom: [
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          xAxisIndex: [0,1],
+			          xAxisIndex: [0,1,2],
 			          start: 96,
 			          end: 100
 			       }
@@ -615,75 +657,53 @@
 			    		}
 			    	}
 			    },{
-		            name: 'MACD',
+		            name: 'kma5',
+		            type: 'line',
+		            data: calculateMAK(5,data0.values)
+		        },{
+		            name: 'volumn',
 		            type: 'bar',
 		            gridIndex: 1,
 		            xAxisIndex: 1,
 		            yAxisIndex: 1,
-		            data: macd,
+		            data: volumns,
+		            barWidth: 10
+		        },{
+		            name: 'vma5',
+		            type: 'line',
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
+		            data: calculateMAV(5,volumns)
+		        },{
+		            name: 'MACD',
+		            type: 'bar',
+		            gridIndex: 2,
+		            xAxisIndex: 2,
+		            yAxisIndex: 2,
+		            data: [],
 		            barWidth: 1
 		        },{
 		            name: 'dif',
 		            type: 'line',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: ma5,
+		            gridIndex: 2,
+		            xAxisIndex: 2,
+		            yAxisIndex: 2,
+		            data: [],
 		            smooth: true
 		        },{
 		            name: 'dea',
 		            type: 'line',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: ma5,
+		            gridIndex: 2,
+		            xAxisIndex: 2,
+		            yAxisIndex: 2,
+		            data: [],
 		            smooth: true
 		        }]
 			};
 			myChart = echarts.init(document.getElementById('chart'));
 			myChart.setOption(option);
-			myChart.on('click', function (params) {
-				if(typeof(params.value)=='undefined')
-					return;
-				var chg=(params.value[1]-params.value[0]).toFixed(2);
-				var pchg= (chg/params.value[0]*100).toFixed(2);
-				var openDom = document.getElementById('open');
-				var lastDom = document.getElementById('last');
-				var lowDom = document.getElementById('low'); 
-				var highDom = document.getElementById('high');
-				var chgDom = document.getElementById('chg');
-				
-				openDom.innerHTML=params.value[0];
-				lastDom.innerHTML=params.value[1];
-				lowDom.innerHTML=params.value[2];
-				highDom.innerHTML=params.value[3];
-				chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
-				
-				if(params.value[5]>0)
-					openDom.className='red-value';
-				else if(params.value[5]<0)
-					openDom.className='green-value';
-				if(params.value[7]>0)
-					lowDom.className='red-value';
-				else if(params.value[7]<0)
-					lowDom.className='green-value';
-				if(params.value[8]>0)
-					highDom.className='red-value';
-				else if(params.value[8]<0)
-					highDom.className='green-value';
-				if(chg>0){
-					chgDom.className='small-value red-value';
-					lastDom.className='big-value red-value';
-				}else if(chg<0){
-					chgDom.className='small-value green-value';
-					lastDom.className='big-value green-value';
-				}else{
-					chgDom.className='small-value';
-					lastDom.className='big-value';
-				}
-				
-				document.getElementById('pickedTime').innerHTML = params.value[8];
-			});
+			document.getElementById('volumnTip').innerHTML=''+data0.categoryData[data0.categoryData.length-1]+'&nbsp;&nbsp;成交量:'+volumns[volumns.length-1];
 		}
 		
 		var textStyle = {
@@ -693,7 +713,8 @@
 		
 		function splitData(rawData) {
 		    var categoryData = [];
-		    var values = []
+		    var values = [];
+		    var volumns = [];
 		    for (var i = 0; i < rawData.length; i++) {
 		        values.push(rawData[i]);
 		        categoryData.push(rawData[i][8]);
@@ -704,16 +725,32 @@
 		    };
 		}
 		
-		function calculateMA(dayCount,data0) {
+		function calculateMAK(dayCount,data0) {
 		    var result = [];
-		    for (var i = 0, len = data0.values.length; i < len; i++) {
+		    for (var i = 0, len = data0.length; i < len; i++) {
 		        if (i < dayCount) {
 		            result.push('-');
 		            continue;
 		        }
 		        var sum = 0;
 		        for (var j = 0; j < dayCount; j++) {
-		            sum += data0.values[i - j][1];
+		            sum += data0[i - j][1];
+		        }
+		        result.push(sum / dayCount);
+		    }
+		    return result;
+		}
+		
+		function calculateMAV(dayCount,data0) {
+		    var result = [];
+		    for (var i = 0, len = data0.length; i < len; i++) {
+		        if (i < dayCount) {
+		            result.push('-');
+		            continue;
+		        }
+		        var sum = 0;
+		        for (var j = 0; j < dayCount; j++) {
+		            sum += data0[i - j];
 		        }
 		        result.push(sum / dayCount);
 		    }
