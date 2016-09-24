@@ -7,6 +7,7 @@
 <head>
 <base href="${base}">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="format-detection" content="telephone=no">
 <title>缠论K线</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
 <link rel="stylesheet" type="text/css" href="resources/css/font-awesome/css/font-awesome.css" />
@@ -27,7 +28,7 @@
 }
 
 .container .middle .chart-title .main-value{
-	width: 20%;
+	width: 20vw;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -36,7 +37,7 @@
 }
 
 .container .middle .chart-title .other-value{
-	width: 70%;
+	width: 70vw;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -73,6 +74,14 @@
 	height: 60vh;
 	display: inline-block;
 	float: left;
+}
+
+.container .middle .maTip{
+	position: absolute;
+	bottom: 76vh;
+	left: 3vw;
+	z-index: 9999;
+	font-size: 2em;
 }
 
 .container .middle .volumnTip{
@@ -159,11 +168,12 @@
 
 <body>
 	<input id="code" type="hidden" value="${code}" />
+	<input id="suffix" type="hidden" value="${suffix}"/>
 	<input id="name" type="hidden" value="${name}" />
     <input id="type" type="hidden" value="${type}" />
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>${name}(${code})<a><i class="fa fa-caret-right"></i></a></span>
+			<span>${name}(${code})</span>
 		</div>
 	</div>
     <div class="container">
@@ -181,7 +191,7 @@
     					</tr>
     					<tr>
     						<td class="medium-value">低&nbsp;<span id="low" class="green-value"></span></td>
-    						<td class="medium-value">额&nbsp;<span>2434亿</span></td>
+    						<td class="medium-value">额&nbsp;<span id="amount" ></span></td>
     					</tr>
     				</table>
     			</div>
@@ -193,6 +203,7 @@
 	    		<span class="blue-control" onclick="blueCenterClick()">蓝色下降中枢</span>
 	    	</div>
 	    	<div class="chart" id="chart"></div>
+	    	<div class="maTip" id="maTip"></div>
 	    	<div class="volumnTip" id="volumnTip"></div>
 	    	<div class="macdTip" id="macdTip"></div>
     	</div>
@@ -270,7 +281,7 @@
 			$.ajax({
 				url:"api/stock/kline",
 				data:{
-					stockcode: document.getElementById('code').value,
+					stockcode: document.getElementById('code').value+document.getElementById('suffix').value,
 					candlePeriod: type
 				},
 				type: 'POST',
@@ -295,7 +306,7 @@
 			$.ajax({
 				url:"api/stock/macd",
 				data:{
-					stockcode: document.getElementById('code').value,
+					stockcode: document.getElementById('code').value+document.getElementById('suffix').value,
 					candlePeriod: document.getElementById('type').value,
 					macdMode: mode
 				},
@@ -315,7 +326,7 @@
 			$.ajax({
 				url:"api/stock/macd",
 				data:{
-					stockcode: document.getElementById('code').value,
+					stockcode: document.getElementById('code').value+document.getElementById('suffix').value,
 					candlePeriod: document.getElementById('type').value,
 					macdMode: '6'
 				},
@@ -331,7 +342,7 @@
 			$.ajax({
 				url:"api/stock/macd",
 				data:{
-					stockcode: document.getElementById('code').value,
+					stockcode: document.getElementById('code').value+document.getElementById('suffix').value,
 					candlePeriod: document.getElementById('type').value,
 					macdMode: '26'
 				},
@@ -449,12 +460,14 @@
 			var lowDom = document.getElementById('low'); 
 			var highDom = document.getElementById('high');
 			var chgDom = document.getElementById('chg');
+			var amountDom = document.getElementById('amount');
 			
-			openDom.innerHTML=tail[0];
-			lastDom.innerHTML=tail[1];
-			lowDom.innerHTML=tail[2];
-			highDom.innerHTML=tail[3];
+			openDom.innerHTML=tail[0].toFixed(2);
+			lastDom.innerHTML=tail[1].toFixed(2);
+			lowDom.innerHTML=tail[2].toFixed(2);
+			highDom.innerHTML=tail[3].toFixed(2);
 			chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+			amountDom.innerHTML= (volumns[volumns.length-1]/100000000).toFixed(2)+'亿';
 			
 			if(tail[5]>0)
 				openDom.className='red-value';
@@ -512,10 +525,10 @@
 							var highDom = document.getElementById('high');
 							var chgDom = document.getElementById('chg');
 							
-							openDom.innerHTML=params[0].value[0];
-							lastDom.innerHTML=params[0].value[1];
-							lowDom.innerHTML=params[0].value[2];
-							highDom.innerHTML=params[0].value[3];
+							openDom.innerHTML=params[0].value[0].toFixed(2);
+							lastDom.innerHTML=params[0].value[1].toFixed(2);
+							lowDom.innerHTML=params[0].value[2].toFixed(2);
+							highDom.innerHTML=params[0].value[3].toFixed(2);
 							chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
 							
 							if(params[0].value[5]>0)
@@ -540,7 +553,7 @@
 								chgDom.className='small-value';
 								lastDom.className='big-value';
 							}
-							
+							document.getElementById('maTip').innerHTML = 'MA5:'+params[1].value.toFixed(2);
 							return params[0].value[8];
 			        	}else if(params[0].seriesIndex==2){
 			        		str += macdCateData[params[0].dataIndex]+'&nbsp;&nbsp;成交量:'+params[0].value;
@@ -766,13 +779,15 @@
 		
 		function toKline(type){
 			location.href="page/stock/kline?stockcode="+document.getElementById('code').value
-				+"&stockname="+document.getElementById('name').value
-				+"&type="+type;
+							+"&suffix="+document.getElementById('suffix').value
+							+"&stockname="+document.getElementById('name').value
+							+"&type="+type;
 		}
 		
 		function toRealtime(){
 			location.href="page/stock?stockcode="+document.getElementById('code').value
-				+"&stockname="+document.getElementById('name').value;
+					     +"&suffix="+document.getElementById('suffix').value
+					     +"&stockname="+document.getElementById('name').value;
 		}
 		
 		function showMinites(){

@@ -67,9 +67,13 @@ public class StockDataController {
 
 	@RequestMapping("/macd")
 	public Message macd(@RequestParam(name = "stockcode") String code,
-			@RequestParam(name = "candlePeriod") String candlePeriod,
-			@RequestParam(name = "macdMode") String macdMode) {
-		return new Message(stockService.getMacd(code, candlePeriod, macdMode));
+			@RequestParam(name = "candlePeriod") String candlePeriod, @RequestParam(name = "macdMode") String macdMode)
+			throws ParseException {
+		try {
+			return new Message(stockService.getMacd(code, candlePeriod, macdMode));
+		} catch (ParseException e) {
+			return new Message("error");
+		}
 	}
 
 }

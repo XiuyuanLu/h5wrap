@@ -6,6 +6,8 @@ public class Product {
 
 	private String name;
 
+	private String suffix;
+
 	public Product() {
 	}
 
@@ -28,6 +30,14 @@ public class Product {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
 	}
 
 }

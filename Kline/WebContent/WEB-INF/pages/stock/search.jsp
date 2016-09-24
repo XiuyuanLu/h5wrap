@@ -94,7 +94,7 @@
 			var html='<table>';
 			var stocks = document.getElementById('stocks');
 			for(var i=0;i<data.length;i++){
-				html+='<tr onclick=\"jump(\''+data[i].code+'\',\''+data[i].name+'\')\"><td>'+
+				html+='<tr onclick=\"jump(\''+data[i].code+'\',\''+data[i].suffix+'\',\''+data[i].name+'\')\"><td>'+
 						'<span>'
 						+data[i].code+
 						'</td><td>&nbsp;'
@@ -106,8 +106,8 @@
 			stocks.innerHTML=html;
 		}
 		
-		function jump(code,name){
-			location.href="page/stock?stockcode="+code+"&stockname="+name;
+		function jump(code,suffix,name){
+			location.href="page/stock?stockcode="+code+"&suffix="+suffix+"&stockname="+name;
 		}
 	</script>
 </body>

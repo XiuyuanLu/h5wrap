@@ -48,6 +48,7 @@ public class DataFetcher {
 			Product data = new Product();
 			data.setName(x.getString("stock_abbr_name"));
 			data.setCode(x.getString("prod_code"));
+			data.setSuffix("." + x.getString("hq_type_code"));
 			result.add(data);
 		}
 		return result;
@@ -166,7 +167,7 @@ public class DataFetcher {
 	}
 
 	public List<Candlesticks> getKline(String stockCode, String candlePeriod, String candleMode, String startDate,
-			String endDate) {
+			String endDate) throws ParseException {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", candlePeriod);
@@ -190,7 +191,11 @@ public class DataFetcher {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject x = (JSONObject) array.get(i);
 			Candlesticks data = new Candlesticks();
-			data.setTimeStamp(x.getString("min_time"));
+			String pattern = TimeUtil.DATE_TIME_PATTERN;
+			if ("6".equals(candlePeriod) || "7".equals(candlePeriod) || "8".equals(candlePeriod)
+					|| "9".equals(candlePeriod))
+				pattern = TimeUtil.DATE_PATTERN;
+			data.setTimeStamp(TimeUtil.format(x.getString("min_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, pattern));
 			data.setHighPrice(Double.parseDouble(x.getString("high_px")));
 			data.setLowPrice(Double.parseDouble(x.getString("low_px")));
 			data.setOpenPrice(Double.parseDouble(x.getString("open_px")));
@@ -203,7 +208,7 @@ public class DataFetcher {
 	}
 
 	public WrapStructures getWrapData(String stockCode, String candlePeriod, String candleMode, String startDate,
-			String endDate) {
+			String endDate) throws ParseException {
 
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
@@ -236,7 +241,12 @@ public class DataFetcher {
 			for (int i = 0; i < pen.size(); i++) {
 				JSONObject x = (JSONObject) pen.get(i);
 				WrapPen data = new WrapPen();
-				data.setTimeStamp(x.getString("start_time"));
+				String pattern = TimeUtil.DATE_TIME_PATTERN;
+				if ("6".equals(candlePeriod) || "7".equals(candlePeriod) || "8".equals(candlePeriod)
+						|| "9".equals(candlePeriod))
+					pattern = TimeUtil.DATE_PATTERN;
+				data.setTimeStamp(
+						TimeUtil.format(x.getString("start_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, pattern));
 				data.setValue(x.getDouble("value"));
 				wrapPen.add(data);
 			}
@@ -282,8 +292,8 @@ public class DataFetcher {
 		return wrapStructures;
 	}
 
-	public List<Macd> getMacd(String stockCode, String candlePeriod, String macdMode, String startDate,
-			String endDate) {
+	public List<Macd> getMacd(String stockCode, String candlePeriod, String macdMode, String startDate, String endDate)
+			throws ParseException {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("prod_code", stockCode);
 		jsonParam.put("candle_period", candlePeriod);
@@ -309,7 +319,11 @@ public class DataFetcher {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject x = (JSONObject) array.get(i);
 			Macd data = new Macd();
-			data.setTimeStamp(x.getString("min_time"));
+			String pattern = TimeUtil.DATE_TIME_PATTERN;
+			if ("6".equals(candlePeriod) || "7".equals(candlePeriod) || "8".equals(candlePeriod)
+					|| "9".equals(candlePeriod))
+				pattern = TimeUtil.DATE_PATTERN;
+			data.setTimeStamp(TimeUtil.format(x.getString("min_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, pattern));
 			data.setDif(x.getDouble("dif"));
 			data.setDea(x.getDouble("dea"));
 			data.setBar(x.getDouble("macd"));

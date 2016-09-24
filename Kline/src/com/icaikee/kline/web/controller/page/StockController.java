@@ -19,9 +19,10 @@ public class StockController {
 
 	@RequestMapping
 	public ModelAndView stock(@RequestParam(name = "stockcode") String code,
-			@RequestParam(name = "stockname") String name) {
+			@RequestParam(name = "suffix") String suffix, @RequestParam(name = "stockname") String name) {
 		ModelAndView mv = new ModelAndView(PAGE_STOCK);
 		mv.addObject("code", code);
+		mv.addObject("suffix", suffix);
 		mv.addObject("name", name);
 		return mv;
 	}
@@ -34,9 +35,11 @@ public class StockController {
 
 	@RequestMapping("/kline")
 	public ModelAndView kline(@RequestParam(name = "stockcode") String code,
-			@RequestParam(name = "stockname") String name, @RequestParam(name = "type") String type) {
+			@RequestParam(name = "suffix") String suffix, @RequestParam(name = "stockname") String name,
+			@RequestParam(name = "type") String type) {
 		ModelAndView mv = new ModelAndView(PAGE_STOCK_KLINE);
 		mv.addObject("code", code);
+		mv.addObject("suffix", suffix);
 		mv.addObject("name", name);
 		mv.addObject("type", type);
 		return mv;

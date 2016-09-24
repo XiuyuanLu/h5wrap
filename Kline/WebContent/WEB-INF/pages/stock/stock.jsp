@@ -117,10 +117,11 @@
 
 <body>
 	<input id="pageCode" type="hidden" value="${code}"/>
+	<input id="pageSuffix" type="hidden" value="${suffix}"/>
 	<input id="pageName" type="hidden" value="${name}"/>
     <div class="head">
 		<div class="head-content">
-			<span><a><i class="fa fa-caret-left"></i></a>${name}(${code})<a><i class="fa fa-caret-right"></i></a></span>
+			<span>${name}(${code})</span>
 		</div>
 	</div>
     <div class="container">
@@ -182,7 +183,7 @@
 			$.ajax({
 				url:"api/stock",
 				data:{
-					stockcode: document.getElementById('pageCode').value
+					stockcode: document.getElementById('pageCode').value+document.getElementById('pageSuffix').value
 				},
 				type: 'POST',
 				dataType: 'json',
@@ -193,7 +194,7 @@
 			$.ajax({
 				url:"api/stock/snapshot",
 				data:{
-					stockcode: document.getElementById('pageCode').value
+					stockcode: document.getElementById('pageCode').value+document.getElementById('pageSuffix').value
 				},
 				type: 'POST',
 				dataType: 'json',
@@ -228,6 +229,8 @@
 		    var result = [];
 		    var sum = 0;
 		    for (var i = 0; i < data0.length; i++) {
+		    	if(data0[i]==null)
+		    		break;
 		        sum += data0[i];
 		        result.push((sum / (i+1)));
 		    }
@@ -435,6 +438,7 @@
 		
 		function toKline(type){
 			location.href="page/stock/kline?stockcode="+document.getElementById('pageCode').value
+					+"&suffix="+document.getElementById('pageSuffix').value
 					+"&stockname="+document.getElementById('pageName').value
 					+"&type="+type;
 		}

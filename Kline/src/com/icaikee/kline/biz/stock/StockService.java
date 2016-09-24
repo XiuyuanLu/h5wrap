@@ -88,7 +88,7 @@ public class StockService {
 		return dataFetcher.getKline(code, candlePeriod, null, start, end);
 	}
 
-	public List<Macd> getMacd(String code, String candlePeriod, String macdMode) {
+	public List<Macd> getMacd(String code, String candlePeriod, String macdMode) throws ParseException {
 		Date endDate = new Date();
 		Date startDate;
 
