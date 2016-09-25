@@ -84,14 +84,6 @@
 	font-size: 2em;
 }
 
-.container .middle .volumnTip{
-	position: absolute;
-	bottom: 40vh;
-	left: 3vw;
-	z-index: 9999;
-	font-size: 2em;
-}
-
 .container .middle .macdTip{
 	position: absolute;
 	bottom: 28vh;
@@ -204,11 +196,9 @@
 	    	</div>
 	    	<div class="chart" id="chart"></div>
 	    	<div class="maTip" id="maTip"></div>
-	    	<div class="volumnTip" id="volumnTip"></div>
 	    	<div class="macdTip" id="macdTip"></div>
     	</div>
     	<div id="minites" class="sub-options">
-    		<span id="oneM" onclick="toKline('1')">1分</span>
     		<span id="fiveM" onclick="toKline('2')">5分</span>
     		<span id="qutrM" onclick="toKline('3')">15分</span>
     		<span id="thtyM" onclick="toKline('4')">30分</span>
@@ -226,12 +216,12 @@
     		</div>
     	</div>
     	<div class="options">
-	    	<span onclick="toRealtime()">分时</span>
+	    	<!-- <span onclick="toRealtime()">分时</span> -->
 	    	<span id="day" onclick="toKline('6')">日</span>
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right" >指标</span>
+	    	<span style="float:right" onclick="showMa()">均线</span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -248,6 +238,16 @@
 		var macd9;
 		var macd12;
 		var macd26;
+		var ma5;
+		var ma10;
+		var ma20;
+		var difLine = [];
+		var deaLine = [];
+		var bar = [];
+		var vma = [];
+		var volumns = [];
+		var subChartStatus = 1;
+		var maStatus = 1;
 		function onLoad(){
 			var type=document.getElementById('type').value;
 			
@@ -300,6 +300,7 @@
 			});
 
 			//prepareMacd();
+			document.getElementById('chart').addEventListener('click',shiftChart);
 		}
 		
 		function getMacdData(mode){
@@ -369,9 +370,7 @@
 				return;
 			if(data==null || data==undefined || data.length==0)
 				return;
-			var difLine = [];
-			var deaLine = [];
-			var bar = [];
+			
 			macdCateData = [];
 			for(var i=0;i<data.length;i++){
 				difLine.push(data[i].dif);
@@ -379,20 +378,32 @@
 				bar.push(data[i].bar);
 				macdCateData.push(data[i].timeStamp);
 			}
-			var opt = myChart.getOption();
-			opt.series[4].data=bar;
-			opt.series[5].data=difLine;
-			opt.series[6].data=deaLine;
-			myChart.setOption(opt);
-			document.getElementById('macdTip').innerHTML = macdCateData[macdCateData.length-1]+'&nbsp;&nbsp;MACD:'+bar[bar.length-1]+'&nbsp;&nbsp;DIF:'+difLine[difLine.length-1]+'&nbsp;&nbsp;DEA:'+deaLine[deaLine.length-1];
 			//showMacds();
 		}
 		
 		function chartInit(){
 			var ks = [];
-			var volumns = [];
 			for(var i=0;i<candlesticks.length;i++){
-				volumns.push(candlesticks[i].businessAmount);
+				if(candlesticks[i].closePrice-candlesticks[i].openPrice>0){
+					volumns.push({
+									value:candlesticks[i].businessAmount,
+									itemStyle:{
+										normal:{
+											color: 'red'
+										}
+									}
+								});
+				}else{
+					volumns.push({
+						value:candlesticks[i].businessAmount,
+						itemStyle:{
+							normal:{
+								color: 'green'
+							}
+						}
+					});
+				}
+				
 				var diff1=0;
 				var diff2=0;
 				var diff3=0;
@@ -467,7 +478,7 @@
 			lowDom.innerHTML=tail[2].toFixed(2);
 			highDom.innerHTML=tail[3].toFixed(2);
 			chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
-			amountDom.innerHTML= (volumns[volumns.length-1]/100000000).toFixed(2)+'亿';
+			amountDom.innerHTML= (volumns[volumns.length-1].value/100000000).toFixed(2)+'亿';
 			
 			if(tail[5]>0)
 				openDom.className='red-value';
@@ -491,18 +502,17 @@
 				chgDom.className='small-value';
 				lastDom.className='big-value';
 			}
+			
+			ma5 = calculateMAK(5,data0.values);
+			ma10 = calculateMAK(10,data0.values);
+			ma20 = calculateMAK(20,data0.values);
+			vma = calculateMAV(5,volumns);
 			option = {
 				animation: false,
 			   	grid:[{
 		   			left: 30,
 		   			right: 30,
-		   			height: '54%',
-		   			containLabel: true
-		   		},{
-		   			left: 30,
-		   			right: 30,
-		   			height: '16%',
-		   			top: '65%',
+		   			height: '74%',
 		   			containLabel: true
 		   		},{
 		   			left: 30,
@@ -553,17 +563,22 @@
 								chgDom.className='small-value';
 								lastDom.className='big-value';
 							}
-							document.getElementById('maTip').innerHTML = 'MA5:'+params[1].value.toFixed(2);
+							if(maStatus==1)
+								document.getElementById('maTip').innerHTML = 'MA5:'+params[1].value.toFixed(2)
+																		+'&nbsp;MA10:'+params[2].value.toFixed(2)
+																		+'&nbsp;MA20:'+params[3].value.toFixed(2);
+							var idx = params[0].dataIndex;
+							if(subChartStatus==1){
+								str += macdCateData[idx]+'&nbsp;&nbsp;成交量:'+volumns[idx].value.toFixed(2);
+					        	document.getElementById('macdTip').innerHTML = str;
+							}else{
+								str += macdCateData[idx]+'&nbsp;&nbsp;MACD:'+bar[idx].toFixed(2);
+					        	str += '&nbsp;&nbsp;DIF:'+difLine[idx].toFixed(2);
+					        	str += '&nbsp;&nbsp;DEA:'+deaLine[idx].toFixed(2);
+					        	document.getElementById('macdTip').innerHTML = str;
+							}
 							return params[0].value[8];
-			        	}else if(params[0].seriesIndex==2){
-			        		str += macdCateData[params[0].dataIndex]+'&nbsp;&nbsp;成交量:'+params[0].value;
-			        		document.getElementById('volumnTip').innerHTML = str;
-			        		return '';
 			        	}
-			        	str += macdCateData[params[0].dataIndex]+'&nbsp;&nbsp;MACD:'+params[0].value;
-			        	str += '&nbsp;&nbsp;DIF:'+params[1].value;
-			        	str += '&nbsp;&nbsp;DEA:'+params[2].value;
-			        	document.getElementById('macdTip').innerHTML = str;
 			        	return '';
 			        },
 			        textStyle:{
@@ -587,19 +602,6 @@
 			    },{
 			    	type: 'category',
 			    	gridIndex: 1,
-			    	data: data0.categoryData,
-			    	axisLabel:{
-			    		show: false
-			    	},
-			    	axisTick:{
-			    		show: false
-			    	},
-			    	splitLine:{
-			    		show: false
-			    	}
-			    },{
-			    	type: 'category',
-			    	gridIndex: 2,
 			    	data: data0.categoryData,
 			    	axisLabel:{
 			    		show: false
@@ -634,20 +636,12 @@
 	                axisLine: {},
 	                axisTick: {show: false},
 	                splitLine: {show: false}
-	            },{
-			    	show: false,
-	                scale: true,
-	                gridIndex: 2,
-	                axisLabel: {inside: true,show: false},
-	                axisLine: {},
-	                axisTick: {show: false},
-	                splitLine: {show: false}
 	            }],
 			    dataZoom: [
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          xAxisIndex: [0,1,2],
+			          xAxisIndex: [0,1],
 			          start: 96,
 			          end: 100
 			       }
@@ -672,7 +666,15 @@
 			    },{
 		            name: 'kma5',
 		            type: 'line',
-		            data: calculateMAK(5,data0.values)
+		            data: ma5
+		        },{
+		            name: 'kma10',
+		            type: 'line',
+		            data: ma10
+		        },{
+		            name: 'kma20',
+		            type: 'line',
+		            data: ma20
 		        },{
 		            name: 'volumn',
 		            type: 'bar',
@@ -680,43 +682,51 @@
 		            xAxisIndex: 1,
 		            yAxisIndex: 1,
 		            data: volumns,
-		            barWidth: 10
+		            barWidth: 10,
+		            itemStyle:{
+		            	normal:{
+		            		color:'red'
+		            	}
+		            }
 		        },{
 		            name: 'vma5',
 		            type: 'line',
 		            gridIndex: 1,
 		            xAxisIndex: 1,
 		            yAxisIndex: 1,
-		            data: calculateMAV(5,volumns)
+		            data: vma
 		        },{
 		            name: 'MACD',
 		            type: 'bar',
-		            gridIndex: 2,
-		            xAxisIndex: 2,
-		            yAxisIndex: 2,
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
 		            data: [],
 		            barWidth: 1
 		        },{
 		            name: 'dif',
 		            type: 'line',
-		            gridIndex: 2,
-		            xAxisIndex: 2,
-		            yAxisIndex: 2,
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
 		            data: [],
 		            smooth: true
 		        },{
 		            name: 'dea',
 		            type: 'line',
-		            gridIndex: 2,
-		            xAxisIndex: 2,
-		            yAxisIndex: 2,
+		            gridIndex: 1,
+		            xAxisIndex: 1,
+		            yAxisIndex: 1,
 		            data: [],
 		            smooth: true
 		        }]
 			};
 			myChart = echarts.init(document.getElementById('chart'));
 			myChart.setOption(option);
-			document.getElementById('volumnTip').innerHTML=''+data0.categoryData[data0.categoryData.length-1]+'&nbsp;&nbsp;成交量:'+volumns[volumns.length-1];
+			/* myChart.on('mouseover', function (params) {
+			    if(params==undefined || params.seriesIndex>=4)
+			    	shiftChart();
+			}); */
 		}
 		
 		var textStyle = {
@@ -727,7 +737,6 @@
 		function splitData(rawData) {
 		    var categoryData = [];
 		    var values = [];
-		    var volumns = [];
 		    for (var i = 0; i < rawData.length; i++) {
 		        values.push(rawData[i]);
 		        categoryData.push(rawData[i][8]);
@@ -763,18 +772,11 @@
 		        }
 		        var sum = 0;
 		        for (var j = 0; j < dayCount; j++) {
-		            sum += data0[i - j];
+		            sum += data0[i - j].value;
 		        }
 		        result.push(sum / dayCount);
 		    }
 		    return result;
-		}
-		
-		function calculateMacd(data0){
-			var result = [];
-			for (var i = 0, len = data0.values.length; i < len; i++)
-		       result.push((i%2==0)?data0.values[i][1]:(-data0.values[i][1]));
-			return result;
 		}
 		
 		function toKline(type){
@@ -855,6 +857,47 @@
 				$('.macd-mode').css('bottom',$('.options').height()+$('.footer').height()-5);
 				macdDom.style.display="block";
 			}
+		}
+		
+		function shiftChart(e){
+			var screenHeight=document.body.clientHeight;
+			if(e.clientY>=screenHeight*0.8 && e.clientY<=screenHeight*0.9){
+			var opt = myChart.getOption();
+				if(subChartStatus==1){
+					opt.series[4].data=[];
+					opt.series[5].data=[];
+					opt.series[6].data=bar;
+					opt.series[7].data=difLine;
+					opt.series[8].data=deaLine;
+					myChart.setOption(opt);
+					subChartStatus=2;
+				}else{
+					opt.series[4].data=volumns;
+					opt.series[5].data=vma;
+					opt.series[6].data=[];
+					opt.series[7].data=[];
+					opt.series[8].data=[];
+					myChart.setOption(opt);
+					subChartStatus=1;
+				}
+			}
+		}
+		
+		function showMa(){
+			var opt = myChart.getOption();
+			if(maStatus==2){
+				opt.series[1].data=ma5;
+				opt.series[2].data=ma10;
+				opt.series[3].data=ma20;
+				maStatus=1;
+			}else{
+				opt.series[1].data=[];
+				opt.series[2].data=[];
+				opt.series[3].data=[];
+				document.getElementById('maTip').innerHTML='';
+				maStatus=2;
+			}
+			myChart.setOption(opt);
 		}
 	</script>
 </body>

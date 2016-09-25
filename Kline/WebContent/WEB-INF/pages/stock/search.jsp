@@ -107,7 +107,7 @@
 		}
 		
 		function jump(code,suffix,name){
-			location.href="page/stock?stockcode="+code+"&suffix="+suffix+"&stockname="+name;
+			location.href="page/stock/kline?stockcode="+code+"&suffix="+suffix+"&stockname="+name+"&type=6";
 		}
 	</script>
 </body>
