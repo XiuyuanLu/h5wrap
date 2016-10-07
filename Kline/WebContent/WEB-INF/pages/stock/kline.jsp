@@ -8,7 +8,7 @@
 <base href="${base}">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="format-detection" content="telephone=no">
-<title>缠论K线</title>
+<title>缠论君</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
 <link rel="stylesheet" type="text/css" href="resources/css/font-awesome/css/font-awesome.css" />
 <script src="resources/js/jquery-1.9.1.min.js"></script>
@@ -23,38 +23,47 @@
 }
 
 .container .middle .chart-title{
-	width: 98vw;
-	height: 10vh;
+	width: 96vw;
+	height: 9vh;
+	padding-top: 0.5vh;
+	padding-left: 4vw;
+	background-color: #f1f4f9;
+	border-bottom: 1px solid #b2b2b3;
 }
 
 .container .middle .chart-title .main-value{
-	width: 20vw;
+	width: 20%;
 	height: 100%;
 	display: inline-block;
 	float: left;
 	text-align: center;
-	padding-left: 5vw;
 }
 
 .container .middle .chart-title .other-value{
-	width: 70vw;
+	width: 70%;
 	height: 100%;
 	display: inline-block;
 	float: left;
+	margin-left: 3vw;
+	margin-top: 0.3vh;
 }
 
 .container .middle .chart-title .other-value table{
-	margin-left: 8vw;
+	margin-left: 3vw;
 	margin-top: 0.3vh;
 }
 
 .container .middle .chart-title .other-value table td{
 	width: 24vw;
+	font-size: 2.2em;
 }
 
 .container .middle .chart-control{
 	font-size: 2.2em;
 	text-align: center;
+	padding-top: 0.5vh;
+	padding-bottom: 0.5vh;
+	border-bottom: 1px solid #b2b2b3;
 }
 
 .container .middle .chart-control span{
@@ -78,7 +87,7 @@
 
 .container .middle .maTip{
 	position: absolute;
-	bottom: 76vh;
+	bottom: 78.2vh;
 	left: 3vw;
 	z-index: 9999;
 	font-size: 2em;
@@ -86,7 +95,7 @@
 
 .container .middle .macdTip{
 	position: absolute;
-	bottom: 28vh;
+	bottom: 30.5vh;
 	left: 3vw;
 	z-index: 9999;
 	font-size: 2em;
@@ -111,12 +120,15 @@
 .container .options{
 	width: 100%;
 	height: 5vh;
-	background: #2c2c2c;
+	background: #f1f4f9;
+	position: absolute;
+	bottom: 9vh;
+	border-top: 1px solid #b2b2b3;
 }
 
 .container .options span{
 	font-size: 3em;
-	color: #aaa;
+	color: #000;
 	margin-left: 3vw;
 	margin-right: 3vw;
 }
@@ -124,14 +136,15 @@
 .container .sub-options{
 	display: none;
 	position: absolute;
-	bottom: 14.6vh;
+	bottom: 14vh;
 	width: 100%;
-	background: #2c2c3c;
+	background: #f1f4f9;
+	border-top: 1px solid #b2b2b3;
 }
 
 .container .sub-options span{
 	font-size: 3em;
-	color: #aaa;
+	color: #000;
 	margin-left: 3vw;
 	margin-right: 3vw;
 }
@@ -169,6 +182,7 @@
 		</div>
 	</div>
     <div class="container">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -180,20 +194,22 @@
     					<tr>
     						<td class="medium-value">高&nbsp;<span id="high" class="red-value"></span></td>
     						<td class="medium-value">开&nbsp;<span id="open" class="green-value"></span></td>
+    						<td class="medium-value">换手&nbsp;<span id="turnover"></span></td>
     					</tr>
     					<tr>
     						<td class="medium-value">低&nbsp;<span id="low" class="green-value"></span></td>
     						<td class="medium-value">额&nbsp;<span id="amount" ></span></td>
+    						<td class="medium-value">量比&nbsp;<span id="v-ratio"></span></td>
     					</tr>
     				</table>
     			</div>
     		</div>
-    		<div class="chart-control">
+    		<!-- <div class="chart-control">
 	    		<span class="red-control" onclick="redPenClick()">红色上涨笔</span>
 	    		<span class="blue-control" onclick="bluePenClick()">蓝色下降笔</span>
 	    		<span class="red-control" onclick="redCenterClick()">红色上涨中枢</span>
 	    		<span class="blue-control" onclick="blueCenterClick()">蓝色下降中枢</span>
-	    	</div>
+	    	</div> -->
 	    	<div class="chart" id="chart"></div>
 	    	<div class="maTip" id="maTip"></div>
 	    	<div class="macdTip" id="macdTip"></div>
@@ -221,7 +237,7 @@
 	    	<span id="week" onclick="toKline('7')">周</span>
 	    	<span id="month" onclick="toKline('8')">月</span>
 	    	<span id="minite" onclick="showMinites()">分钟&nbsp;<i id="minites-arrow" class="fa fa-chevron-up"></i></span>
-	    	<span style="float:right" onclick="showMa()">均线</span>
+	    	<span style="float:right" onclick="showMa()">均线&nbsp;<i id="ma-picked" class="fa fa-check-square"></i></span>
 	    </div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -248,7 +264,9 @@
 		var volumns = [];
 		var subChartStatus = 1;
 		var maStatus = 1;
+		var penCenterMarkArea = [];
 		function onLoad(){
+			//highlight('pick');
 			var type=document.getElementById('type').value;
 			
 			if(type=='1'){
@@ -299,6 +317,22 @@
 				}
 			});
 
+			$.ajax({
+				url:"api/stock/snapshot",
+				data:{
+					stockcode: document.getElementById('code').value+document.getElementById('suffix').value
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					document.getElementById('turnover').innerHTML=(msg.turnoverRatio*100).toFixed(2)+'%';
+					document.getElementById('v-ratio').innerHTML=msg.volRatio.toFixed(2);
+				}
+			});
+			
 			//prepareMacd();
 			document.getElementById('chart').addEventListener('click',shiftChart);
 		}
@@ -389,7 +423,8 @@
 									value:candlesticks[i].businessAmount,
 									itemStyle:{
 										normal:{
-											color: 'red'
+											color: '#fff',
+											borderColor:'red'
 										}
 									}
 								});
@@ -431,7 +466,7 @@
 						lineStyle:{
 							normal:{
 								color: '#fc4343',
-								type: 'solid',
+								type: 'dashed',
 								width: 4
 							}
 						}
@@ -448,7 +483,7 @@
 						lineStyle:{
 							normal:{
 								color: '#218ab1',
-								type: 'solid',
+								type: 'dashed',
 								width: 4
 							}
 						}
@@ -459,6 +494,13 @@
 					bluePen.push(x);
 					penLine.push(x);
 				}
+			}
+			
+			for(var i=0;i<wrapPenCenter.length;i++){
+				penCenterMarkArea.push([
+					{coord: [wrapPenCenter[i].startTime+'',wrapPenCenter[i].maxHigh]},
+					{coord: [wrapPenCenter[i].endTime+'',wrapPenCenter[i].maxLow]}
+				]);
 			}
 			
 			var data0 = splitData(ks);
@@ -651,15 +693,27 @@
 			    	data: data0.values,
 			    	markLine:{
 			    		data: penLine,
+			    		symbol: 'none',
 			    		label:{
 			    			normal:{
 			    				show: false
 			    			}
 			    		}
 			    	},
+			    	markArea:{
+			    		data: penCenterMarkArea,
+			    		itemStyle:{
+			    			normal:{
+			    				borderColor: '#795548',
+			    				borderWidth: 3,
+			    				borderType: 'dashed',
+			    				opacity: 1
+			    			}
+			    		}
+			    	},
 			    	itemStyle:{
 			    		normal:{
-			    			color: '#e51818',
+			    			color: '#fff',
 			    			color0: '#179b09'
 			    		}
 			    	}
@@ -682,12 +736,7 @@
 		            xAxisIndex: 1,
 		            yAxisIndex: 1,
 		            data: volumns,
-		            barWidth: 10,
-		            itemStyle:{
-		            	normal:{
-		            		color:'red'
-		            	}
-		            }
+		            barWidth: 10
 		        },{
 		            name: 'vma5',
 		            type: 'line',
@@ -890,14 +939,20 @@
 				opt.series[2].data=ma10;
 				opt.series[3].data=ma20;
 				maStatus=1;
+				document.getElementById('ma-picked').className='fa fa-check-square';
 			}else{
 				opt.series[1].data=[];
 				opt.series[2].data=[];
 				opt.series[3].data=[];
 				document.getElementById('maTip').innerHTML='';
 				maStatus=2;
+				document.getElementById('ma-picked').className='fa fa-square-o';
 			}
 			myChart.setOption(opt);
+		}
+		
+		function toSearch(){
+			location.href="page/stock/search";
 		}
 	</script>
 </body>

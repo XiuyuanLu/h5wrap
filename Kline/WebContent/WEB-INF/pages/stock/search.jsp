@@ -7,7 +7,7 @@
 <head>
 <base href="${base}">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>缠论K线</title>
+<title>缠论君</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
 <script src="resources/js/jquery-1.9.1.min.js"></script>
 <script src="resources/js/common.js"></script>
@@ -60,6 +60,7 @@
     <input id="type" type="hidden" value="${type}" />
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <div class="container">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     	<div class="middle">
     		<div class="search">
     			<input type="number" id="query" placeholder="股票代码" onkeyup="query()"/>
@@ -72,6 +73,7 @@
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
+			//highlight('pick');
 		}
 		
 		function query(){

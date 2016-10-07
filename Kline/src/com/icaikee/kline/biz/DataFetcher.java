@@ -86,40 +86,42 @@ public class DataFetcher {
 		result.setChg(chg);
 		result.setPchg(pchg);
 
-		String bg = detail.getString("bid_grp");
-		String[] bids = {};
-		if (bg != null)
-			bids = bg.split(",");
-		StringBuilder sb = new StringBuilder();
-		List<String> bidGrp = new ArrayList<String>();
-		for (int i = 0; i < bids.length; i++) {
-			if (i % 3 == 0) {
-				sb = new StringBuilder();
-				sb.append(bids[i]);
+		if (detail.containsKey("bid_grp")) {
+			String bg = detail.getString("bid_grp");
+			String[] bids = {};
+			if (bg != null)
+				bids = bg.split(",");
+			StringBuilder sb = new StringBuilder();
+			List<String> bidGrp = new ArrayList<String>();
+			for (int i = 0; i < bids.length; i++) {
+				if (i % 3 == 0) {
+					sb = new StringBuilder();
+					sb.append(bids[i]);
+				}
+				if (i % 3 == 2) {
+					bidGrp.add(sb.toString());
+				}
 			}
-			if (i % 3 == 2) {
-				bidGrp.add(sb.toString());
-			}
+			result.setBidGroup(bidGrp);
 		}
-
-		String og = detail.getString("offer_grp");
-		String[] offers = {};
-		if (og != null)
-			offers = og.split(",");
-		sb = new StringBuilder();
-		List<String> offerGrp = new ArrayList<String>();
-		for (int i = 0; i < offers.length; i++) {
-			if (i % 3 == 0) {
-				sb = new StringBuilder();
-				sb.append(offers[i]);
+		if (detail.containsKey("offer_grp")) {
+			String og = detail.getString("offer_grp");
+			String[] offers = {};
+			if (og != null)
+				offers = og.split(",");
+			StringBuilder sb = new StringBuilder();
+			List<String> offerGrp = new ArrayList<String>();
+			for (int i = 0; i < offers.length; i++) {
+				if (i % 3 == 0) {
+					sb = new StringBuilder();
+					sb.append(offers[i]);
+				}
+				if (i % 3 == 2) {
+					offerGrp.add(sb.toString());
+				}
 			}
-			if (i % 3 == 2) {
-				offerGrp.add(sb.toString());
-			}
+			result.setOfferGroup(offerGrp);
 		}
-
-		result.setBidGroup(bidGrp);
-		result.setOfferGroup(offerGrp);
 		return result;
 	}
 
@@ -233,7 +235,7 @@ public class DataFetcher {
 		if (cstructure == null || cstructure.isNullObject())
 			return wrapStructures;
 		JSONArray pen = cstructure.getJSONArray("bi_data");
-		// JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
+		JSONArray penCenter = cstructure.getJSONArray("bi_zs_data");
 		// JSONArray segment = cstructure.getJSONArray("duan_data");
 		// JSONArray segmentCenter = cstructure.getJSONArray("duan_zs_data");
 
@@ -251,20 +253,24 @@ public class DataFetcher {
 				wrapPen.add(data);
 			}
 		}
-		// if (!(penCenter == null || penCenter.isEmpty() || penCenter.size() ==
-		// 0)) {
-		// for (int i = 0; i < penCenter.size(); i++) {
-		// JSONObject x = (JSONObject) penCenter.get(i);
-		// WrapCenter data = new WrapCenter();
-		// data.setStartTime(x.getString("start_time"));
-		// data.setEndTime(x.getString("end_time"));
-		// data.setHigh(x.getDouble("high_head"));
-		// data.setLow(x.getDouble("low_tail"));
-		// data.setMaxHigh(x.getDouble("max_high"));
-		// data.setMaxLow(x.getDouble("min_low"));
-		// wrapPenCenter.add(data);
-		// }
-		// }
+		if (!(penCenter == null || penCenter.isEmpty() || penCenter.size() == 0)) {
+			for (int i = 0; i < penCenter.size(); i++) {
+				JSONObject x = (JSONObject) penCenter.get(i);
+				WrapCenter data = new WrapCenter();
+				String pattern = TimeUtil.DATE_TIME_PATTERN;
+				if ("6".equals(candlePeriod) || "7".equals(candlePeriod) || "8".equals(candlePeriod)
+						|| "9".equals(candlePeriod))
+					pattern = TimeUtil.DATE_PATTERN;
+				data.setStartTime(
+						TimeUtil.format(x.getString("start_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, pattern));
+				data.setEndTime(TimeUtil.format(x.getString("end_time"), TimeUtil.DATE_TIME_PATTERN_NOBAR, pattern));
+				data.setHigh(x.getDouble("high_head"));
+				data.setLow(x.getDouble("low_tail"));
+				data.setMaxHigh(x.getDouble("max_high"));
+				data.setMaxLow(x.getDouble("min_low"));
+				wrapPenCenter.add(data);
+			}
+		}
 		// if (!(segment == null || segment.isEmpty() || segment.size() == 0)) {
 		// for (int i = 0; i < segment.size(); i++) {
 		// JSONObject x = (JSONObject) segment.get(i);

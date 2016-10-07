@@ -7,23 +7,14 @@
 <head>
 <base href="${base}">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>缠论K线</title>
+<title>缠论君</title>
 <link rel="stylesheet" type="text/css" href="resources/css/main.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/slides.css" />
 <script src="resources/js/jquery-1.9.1.min.js"></script>
+<script src="resources/js/slidesjs/jquery.SuperSlide.2.1.1.js"></script>
 <script src="resources/js/common.js"></script>
 <script src="resources/js/echarts.js"></script>
 <style>
-
-.container .search{
-	width: 100%;
-	height: 7vh;
-	text-align: center;
-	padding-top: 2vh;
-}
-
-.container .search input{
-	font-size: 3em;
-}
 
 .container .middle{
 	width: 100%;
@@ -31,9 +22,12 @@
 }
 
 .container .middle .chart-title{
-	width: 98vw;
+	width: 96vw;
 	height: 10vh;
-	padding-left: 2vw;
+	padding-top: 1.5vh;
+	padding-left: 4vw;
+	background-color: #f1f4f9;
+	border-bottom: 1px solid #b2b2b3;
 }
 
 .container .middle .chart-title .main-value{
@@ -45,10 +39,12 @@
 }
 
 .container .middle .chart-title .other-value{
-	width: 80%;
+	width: 70%;
 	height: 100%;
 	display: inline-block;
 	float: left;
+	margin-left: 3vw;
+	margin-top: 0.3vh;
 }
 
 .container .middle .chart-title .other-value table{
@@ -58,25 +54,40 @@
 
 .container .middle .chart-title .other-value table td{
 	width: 24vw;
+	font-size: 2.2em;
 }
 
 .container .middle .chart{
 	width: 93vw;
-	height: 50vh;
+	height: 55vh;
 	display: inline-block;
 	float: left;
 }
 
-.container .middle .right-bar{
-	height: 10vh;
-	width: 6vw;
-	display: inline-block;
-	float: right;
-	margin-top: 5vh;
+.container .middle .right-bar-hu img,
+.container .middle .right-bar-shen img,
+.container .middle .right-bar-chuang img{
+	height:4.5vh;
 }
 
-.container .middle .right-bar span{
-	font-size: 3.5em;
+.container .middle .right-bar-hu{
+	position: absolute;
+	right: 0;
+	top: 28vh;
+}
+
+.container .middle .right-bar-shen{
+	position: absolute;
+	height: 3vh;
+	right: 0;
+	top: 40vh;
+}
+
+.container .middle .right-bar-chuang{
+	position: absolute;
+	height: 3vh;
+	right: 0;
+	top: 52vh;
 }
 
 .container .middle .right-bar span a{
@@ -91,9 +102,7 @@
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <input id="code" type="hidden" value="${code}"/>
     <div class="container">
-    	<div class="search">
-    		<input type="text" readonly="readonly" placeholder="股票代码" onclick="toSearch()"/>
-    	</div>
+    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -110,22 +119,32 @@
     					<tr>
     						<td class="medium-value">低&nbsp;<span id="low" class="green-value"></span></td>
     						<td class="medium-value">额&nbsp;<span id="amount" ></span></td>
-    						<td class="medium-value">量比&nbsp;<span id="turnover-ratio" class="red-value"></span></td>
+    						<td class="medium-value">量比&nbsp;<span id="v-ratio"></span></td>
     					</tr>
     				</table>
     			</div>
     		</div>
 	    	<div class="chart" id="chart"></div>
-	    	<div class="right-bar">
-		    	<span><a href="page/home?stockcode=000001">沪</a></span>
+	    	<div class="right-bar-hu">
+		    	<span><a href="page/home?stockcode=000001"><img id="right-img-hu" src="resources/img/hu.png"></a></span>
 	    	</div>
-	    	<div class="right-bar">
-		    	<span><a href="page/home?stockcode=399001">深</a></span>
+	    	<div class="right-bar-shen">
+		    	<span><a href="page/home?stockcode=399001"><img id="right-img-shen" src="resources/img/shen.png"></a></span>
 	    	</div>
-	    	<div class="right-bar">
-		    	<span><a href="page/home?stockcode=399006">创</a></span>
+	    	<div class="right-bar-chuang">
+		    	<span><a href="page/home?stockcode=399006"><img id="right-img-chuang" src="resources/img/chuang.png"></a></span>
 	    	</div>
     	</div>
+    	<img src="resources/img/under-chart.png" style="width:100%;height: 25vh;position:absolute;bottom: 9vh;left:0;" />
+    	<!-- <div id="slideBox" class="slideBox">
+				<div class="bd">
+					<ul>
+						<li><img src="resources/img/under-chart.png" onclick="" /></li>
+					</ul>
+				</div>
+				<a class="prev" href="javascript:void(0)"></a>
+				<a class="next" href="javascript:void(0)"></a>
+		</div> -->
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
@@ -150,8 +169,11 @@
 		var bar = [];
 		var vma = [];
 		var volumns = [];
+		//jQuery(".slideBox").slide({mainCell:".bd ul",autoPlay:true,titCell: ".hd li",trigger:"click"});
 		function onLoad(){
+			highlight('home');
 			var code =document.getElementById('code').value;
+			markRightBar();
 			if(code=='000001')
 				code+='.XSHG.MRI';
 			else
@@ -173,6 +195,22 @@
 					wrapSegment=data.message[2];
 					wrapPenCenter=data.message[3];
 					chartInit();
+				}
+			});
+			
+			$.ajax({
+				url:"api/stock/snapshot",
+				data:{
+					stockcode: code
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					if(msg=="error")
+						alert(msg);
+					document.getElementById('turnover').innerHTML=(msg.turnoverRatio*100).toFixed(2)+'%';
+					document.getElementById('v-ratio').innerHTML=msg.volRatio.toFixed(2);
 				}
 			});
 			
@@ -235,7 +273,8 @@
 									value:candlesticks[i].businessAmount,
 									itemStyle:{
 										normal:{
-											color: 'red'
+											color: '#fff',
+											borderColor: 'red'
 										}
 									}
 								});
@@ -277,7 +316,7 @@
 						lineStyle:{
 							normal:{
 								color: '#fc4343',
-								type: 'solid',
+								type: 'dashed',
 								width: 4
 							}
 						}
@@ -294,7 +333,7 @@
 						lineStyle:{
 							normal:{
 								color: '#218ab1',
-								type: 'solid',
+								type: 'dashed',
 								width: 4
 							}
 						}
@@ -356,15 +395,10 @@
 			option = {
 				animation: false,
 			   	grid:[{
+			   		top: 16,
 		   			left: 30,
 		   			right: 30,
-		   			height: '74%',
-		   			containLabel: true
-		   		},{
-		   			left: 30,
-		   			right: 30,
-		   			height: '16%',
-		   			top: '85%',
+		   			height: '80%',
 		   			containLabel: true
 		   		}
 			   	],
@@ -446,17 +480,18 @@
 			    	z: 999
 			    },{
 			    	type: 'category',
-			    	gridIndex: 1,
+			    	gridIndex: 0,
 			    	data: data0.categoryData,
-			    	axisLabel:{
-			    		show: false
-			    	},
 			    	axisTick:{
 			    		show: false
 			    	},
 			    	splitLine:{
 			    		show: false
-			    	}
+			    	},
+			    	axisLabel:{
+			    		show: false
+			    	},
+			    	z: 999
 			    }],
 			    yAxis: [{
 			    	splitNumber: 3,
@@ -466,27 +501,38 @@
 			    	gridIndex: 0,
 			    	axisLabel:{
 			    		inside: true,
-			    		show: false
+			    		textStyle:{
+			    			fontSize: 24
+			    		}
 			    	},
-			    	axisTick:{},
+			    	axisTick:{show: false},
 			    	splitLine:{
 			    		lineStyle:{
 			    		}
 			    	}
 			    },{
-			    	show: false,
-	                scale: true,
-	                gridIndex: 1,
-	                axisLabel: {inside: true,show: false},
-	                axisLine: {},
-	                axisTick: {show: false},
-	                splitLine: {show: false}
-	            }],
+			    	splitNumber: 3,
+			    	scale: true,
+			    	axisLine:{
+			    	},
+			    	gridIndex: 0,
+			    	axisLabel:{
+			    		inside: true,
+			    		show: false
+			    	},
+			    	axisTick:{
+			    		show: false
+			    	},
+			    	splitLine:{
+			    		show: false,
+			    		lineStyle:{
+			    		}
+			    	}
+			    }],
 			    dataZoom: [
 			       {
 			          type: 'inside',
 			          filterMode: 'filter',
-			          xAxisIndex: [0,1],
 			          start: 96,
 			          end: 100
 			       }
@@ -496,6 +542,7 @@
 			    	data: data0.values,
 			    	markLine:{
 			    		data: penLine,
+						symbol: 'none',
 			    		label:{
 			    			normal:{
 			    				show: false
@@ -504,7 +551,7 @@
 			    	},
 			    	itemStyle:{
 			    		normal:{
-			    			color: '#e51818',
+			    			color: '#fff',
 			    			color0: '#179b09'
 			    		}
 			    	}
@@ -520,50 +567,6 @@
 		            name: 'kma20',
 		            type: 'line',
 		            data: ma20
-		        },{
-		            name: 'volumn',
-		            type: 'bar',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: volumns,
-		            barWidth: 10,
-		            itemStyle:{
-		            	normal:{
-		            		color:'red'
-		            	}
-		            }
-		        },{
-		            name: 'vma5',
-		            type: 'line',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: vma
-		        },{
-		            name: 'MACD',
-		            type: 'bar',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: [],
-		            barWidth: 1
-		        },{
-		            name: 'dif',
-		            type: 'line',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: [],
-		            smooth: true
-		        },{
-		            name: 'dea',
-		            type: 'line',
-		            gridIndex: 1,
-		            xAxisIndex: 1,
-		            yAxisIndex: 1,
-		            data: [],
-		            smooth: true
 		        }]
 			};
 			myChart = echarts.init(document.getElementById('chart'));
@@ -576,6 +579,23 @@
 		
 		function toSearch(){
 			location.href="page/stock/search";
+		}
+		
+		function markRightBar(){
+			var code =document.getElementById('code').value;
+			if(code=='000001'){
+				document.getElementById('right-img-hu').src="resources/img/hu-pick.png";
+				document.getElementById('right-img-shen').src="resources/img/shen.png";
+				document.getElementById('right-img-chuang').src="resources/img/chuang.png"
+			}else if(code=='399001'){
+				document.getElementById('right-img-hu').src="resources/img/hu.png";
+				document.getElementById('right-img-shen').src="resources/img/shen-pick.png";
+				document.getElementById('right-img-chuang').src="resources/img/chuang.png"
+			}else {
+				document.getElementById('right-img-hu').src="resources/img/hu.png";
+				document.getElementById('right-img-shen').src="resources/img/shen.png";
+				document.getElementById('right-img-chuang').src="resources/img/chuang-pick.png"
+			}
 		}
 	</script>
 </body>
