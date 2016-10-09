@@ -59,19 +59,19 @@ public class StockService {
 		String end;
 
 		if ("1".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -7);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -3);
 		else if ("2".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -35);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -15);
 		else if ("3".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -105);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -45);
 		else if ("4".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -210);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -90);
 		else if ("5".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -420);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -180);
 		else if ("6".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -1680);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -730);
 		else if ("7".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -3650);
 		else if ("8".equals(candlePeriod))
 			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
 		else
@@ -96,19 +96,19 @@ public class StockService {
 		String end;
 
 		if ("1".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -7);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -3);
 		else if ("2".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -35);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -15);
 		else if ("3".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -105);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -45);
 		else if ("4".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -210);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -90);
 		else if ("5".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -420);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -180);
 		else if ("6".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -1680);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -730);
 		else if ("7".equals(candlePeriod))
-			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
+			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -3650);
 		else if ("8".equals(candlePeriod))
 			startDate = TimeUtil.getTimeByOffset(TimeUtil.DAY, endDate, -11760);
 		else

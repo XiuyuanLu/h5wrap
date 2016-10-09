@@ -498,8 +498,8 @@
 			
 			for(var i=0;i<wrapPenCenter.length;i++){
 				penCenterMarkArea.push([
-					{coord: [wrapPenCenter[i].startTime+'',wrapPenCenter[i].maxHigh]},
-					{coord: [wrapPenCenter[i].endTime+'',wrapPenCenter[i].maxLow]}
+					{coord: [wrapPenCenter[i].endTime+'',wrapPenCenter[i].high]},
+					{coord: [wrapPenCenter[i].startTime+'',wrapPenCenter[i].low]}
 				]);
 			}
 			
