@@ -176,6 +176,9 @@
 			}
 		}
 		
+		function toSearch(){
+			location.href="page/stock/search";
+		}
 	</script>
 </body>
 </html>
