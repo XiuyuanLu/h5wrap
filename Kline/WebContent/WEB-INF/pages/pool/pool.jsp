@@ -148,6 +148,25 @@
 		function onLoad(){
 			highlight('pick');
 			buy(1);
+			getData();
+		}
+		
+		function getData(){
+			$.ajax({
+				url:"api/authenticate/login",
+				data:{
+					username: username,
+					password: password
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					if(data.message=="success")
+						location.href="page/pool/pool";
+					else
+						alert(data.message);
+				}
+			});
 		}
 		
 		function tab(type){
