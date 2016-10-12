@@ -31,10 +31,10 @@ public class BaseInterceptor implements HandlerInterceptor {
 			return true;
 		String servletPath = request.getServletPath();
 		if (servletPath.startsWith("/" + WebConstants.PAGE + "/")) {
-			String base = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-					+ request.getContextPath() + "/";
-			// String base = request.getScheme() + "://m.chanlunjun.com" +
-			// request.getContextPath() + "/";
+			// String base = request.getScheme() + "://" +
+			// request.getServerName() + ":" + request.getServerPort()
+			// + request.getContextPath() + "/";
+			String base = request.getScheme() + "://m.chanlunjun.com" + request.getContextPath() + "/";
 			request.getSession().setAttribute("base", base);
 		}
 		return true;

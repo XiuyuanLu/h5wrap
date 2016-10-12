@@ -21,18 +21,15 @@ import com.icaikee.kline.util.StringUtils;
 @RequestMapping(WebConstants.API + "/authenticate")
 public class AuthenticateController {
 
-	private static final String REQUEST_URL = "http://api.test.icaikee.com//api/chanlun/v1/optional/query/22?token=429913d34677b9dde13eff6aa83e90f5&appId=icaikeeApp";
-
 	@Autowired
 	private UserService userService;
 
 	@RequestMapping("/register")
 	public Message register(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(name = "username") String username, @RequestParam(name = "password") String password,
-			@RequestParam(name = "mobile") String mobile, @RequestParam(name = "verify") String verify)
-			throws IOException {
-		userService.register(username, password, mobile, verify);
-		return new Message("success");
+			@RequestParam(name = "loginName") String loginName, @RequestParam(name = "nickname") String nickname,
+			@RequestParam(name = "password") String password, @RequestParam(name = "mobile") String mobile,
+			@RequestParam(name = "verify") String verify) throws IOException {
+		return new Message(userService.register(loginName, nickname, password, mobile, verify));
 	}
 
 	@RequestMapping("/login")
@@ -41,8 +38,16 @@ public class AuthenticateController {
 			throws IOException {
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password))
 			return new Message("用户名或密码错误");
-		request.getSession().setAttribute(WebConstants.USER_ID, "22");
+		String uid = userService.login(username, password);
+		if ("error".equals(uid))
+			return new Message("用户名或密码错误");
+		request.getSession().setAttribute(WebConstants.USER_ID, uid);
+		return new Message("success");
+	}
 
+	@RequestMapping("/logout")
+	public Message logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.getSession().removeAttribute(WebConstants.USER_ID);
 		return new Message("success");
 	}
 

@@ -17,6 +17,8 @@ public class HomeController {
 
 	private static final String PAGE_REGISTER = "home/register";
 
+	private static final String PAGE_PERSON = "home/person";
+
 	@RequestMapping
 	public ModelAndView home(@RequestParam(name = "stockcode", required = false) String code) {
 		if (code == null || "".equals(code))
@@ -35,6 +37,12 @@ public class HomeController {
 	@RequestMapping("/register")
 	public ModelAndView register() {
 		ModelAndView mv = new ModelAndView(PAGE_REGISTER);
+		return mv;
+	}
+
+	@RequestMapping("/person")
+	public ModelAndView person() {
+		ModelAndView mv = new ModelAndView(PAGE_PERSON);
 		return mv;
 	}
 

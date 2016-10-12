@@ -69,9 +69,13 @@
     <div class="container">
     	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     	<div class="middle">
+	    	<div class="input-panel">
+    			<img src="resources/img/login-name.png">
+    			<input id="loginName" type="text" placeholder="登录名">
+    		</div>
     		<div class="input-panel">
     			<img src="resources/img/login-name.png">
-    			<input id="username" type="text" placeholder="昵称">
+    			<input id="nickname" type="text" placeholder="昵称">
     		</div>
     		<div class="input-panel">
     			<img src="resources/img/login-mobile.png">
@@ -98,12 +102,17 @@
 		}
 		
 		function register(){
-			var username=document.getElementById("username").value;
+			var loginName=document.getElementById("loginName").value;
+			var nickname=document.getElementById("nickname").value;
 			var mobile=document.getElementById("mobile").value;
 			var verify=document.getElementById("verify").value;
 			var password=document.getElementById("password").value;
 			var passwordConfirm=document.getElementById("passwordConfirm").value;
-			if($.trim(username)==""){
+			if($.trim(loginName)==""){
+				alert("请输入登录名");
+				return ;
+			}
+			if($.trim(nickname)==""){
 				alert("请输入昵称");
 				return ;
 			}
@@ -126,7 +135,8 @@
 			$.ajax({
 				url:"api/authenticate/register",
 				data:{
-					username: username,
+					loginName: loginName,
+					nickname: nickname,
 					password: password,
 					mobile: mobile,
 					verify: verify
@@ -135,7 +145,7 @@
 				dataType: 'json',
 				success:function(data){
 					if(data.message=="success")
-						location.href="page/pool/pool";
+						location.href="page/home/login";
 					else
 						alert(data.message);
 				}

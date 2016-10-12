@@ -16,7 +16,6 @@ public class PoolDataController {
 
 	@RequestMapping("/fuzzyQuery")
 	public Message get(HttpServletRequest request) {
-		String userId = (String) request.getSession().getAttribute(WebConstants.USER_ID);
 		return new Message(null);
 	}
 

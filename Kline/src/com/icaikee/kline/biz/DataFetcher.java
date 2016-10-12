@@ -24,35 +24,35 @@ import net.sf.json.JSONObject;
 @Service
 public class DataFetcher {
 
+	public static final String URL_KLINE = "http://10.26.95.34:9090/quote/kline";
+
+	public static final String URL_FUZZY_QUERY = "http://10.26.95.34:9090/quote/fuzzyquery";
+
+	public static final String URL_SNAPSHOT = "http://10.26.95.34:9090/quote/snapshot";
+
+	public static final String URL_WRAP = "http://10.26.95.34:9090/quote/cldata";
+
+	public static final String URL_SALE_POINT = "http://10.26.95.34:9090/quote/bspoint";
+
+	public static final String URL_MACD = "http://10.26.95.34:9090/quote/macd";
+
 	// public static final String URL_KLINE =
-	// "http://10.26.95.34:9090/quote/kline";
+	// "http://114.55.175.118:9090/quote/kline";
 	//
 	// public static final String URL_FUZZY_QUERY =
-	// "http://10.26.95.34:9090/quote/fuzzyquery";
+	// "http://114.55.175.118:9090/quote/fuzzyquery";
 	//
 	// public static final String URL_SNAPSHOT =
-	// "http://10.26.95.34:9090/quote/snapshot";
+	// "http://114.55.175.118:9090/quote/snapshot";
 	//
 	// public static final String URL_WRAP =
-	// "http://10.26.95.34:9090/quote/cldata";
+	// "http://114.55.175.118:9090/quote/cldata";
 	//
 	// public static final String URL_SALE_POINT =
-	// "http://10.26.95.34:9090/quote/bspoint";
+	// "http://114.55.175.118:9090/quote/bspoint";
 	//
 	// public static final String URL_MACD =
-	// "http://10.26.95.34:9090/quote/macd";
-
-	public static final String URL_KLINE = "http://114.55.175.118:9090/quote/kline";
-
-	public static final String URL_FUZZY_QUERY = "http://114.55.175.118:9090/quote/fuzzyquery";
-
-	public static final String URL_SNAPSHOT = "http://114.55.175.118:9090/quote/snapshot";
-
-	public static final String URL_WRAP = "http://114.55.175.118:9090/quote/cldata";
-
-	public static final String URL_SALE_POINT = "http://114.55.175.118:9090/quote/bspoint";
-
-	public static final String URL_MACD = "http://114.55.175.118:9090/quote/macd";
+	// "http://114.55.175.118:9090/quote/macd";
 
 	public List<Product> getStocks(String q) {
 		JSONObject jsonParam = new JSONObject();

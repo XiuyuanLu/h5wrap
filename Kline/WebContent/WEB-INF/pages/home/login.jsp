@@ -77,7 +77,6 @@
     			<img src="resources/img/login-password.png">
     			<input id="password" type="password" placeholder="密码">
     		</div>
-    		<div class="input-panel"></div>
     		<div class="input-panel login-btn" onclick="login()"><span>登&nbsp;&nbsp;&nbsp;&nbsp;录</span></div>
     		<div class="input-panel login-btn" onclick="toRegister()"><span>注&nbsp;&nbsp;&nbsp;&nbsp;册</span></div>
     	</div>
