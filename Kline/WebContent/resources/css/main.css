@@ -87,3 +87,12 @@ body{
 	right: 3vw;
 	height: 5vh;
 }
+
+#add-pool{
+	position: absolute;
+	top: 1.5vh;
+	left: 3vw;
+	height: 5vh;
+	color: #fff;
+	font-size: 2em;
+}

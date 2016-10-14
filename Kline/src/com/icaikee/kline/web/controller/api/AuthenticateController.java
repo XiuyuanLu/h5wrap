@@ -26,10 +26,9 @@ public class AuthenticateController {
 
 	@RequestMapping("/register")
 	public Message register(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(name = "loginName") String loginName, @RequestParam(name = "nickname") String nickname,
-			@RequestParam(name = "password") String password, @RequestParam(name = "mobile") String mobile,
+			@RequestParam(name = "loginName") String loginName, @RequestParam(name = "password") String password,
 			@RequestParam(name = "verify") String verify) throws IOException {
-		return new Message(userService.register(loginName, nickname, password, mobile, verify));
+		return new Message(userService.register(loginName, password, verify));
 	}
 
 	@RequestMapping("/login")
@@ -49,6 +48,11 @@ public class AuthenticateController {
 	public Message logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.getSession().removeAttribute(WebConstants.USER_ID);
 		return new Message("success");
+	}
+
+	@RequestMapping("/getVerify")
+	public Message getVerify(@RequestParam(name = "mobile") String mobile) throws IOException {
+		return new Message(userService.getVerify(mobile));
 	}
 
 }

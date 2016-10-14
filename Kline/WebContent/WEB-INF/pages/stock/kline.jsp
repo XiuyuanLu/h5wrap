@@ -183,6 +183,7 @@
 	</div>
     <div class="container">
     	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<span id="add-pool" onclick="addPool()">加入</br>自选</span>
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -953,6 +954,21 @@
 		
 		function toSearch(){
 			location.href="page/stock/search";
+		}
+		
+		function addPool(){
+			$.ajax({
+				url:"api/pool/create",
+				data:{
+					code: document.getElementById('code').value+document.getElementById('suffix').value
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					var msg = data.message;
+					alert(msg);
+				}
+			});
 		}
 	</script>
 </body>

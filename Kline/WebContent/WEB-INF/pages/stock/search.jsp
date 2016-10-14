@@ -99,10 +99,9 @@
 				html+='<tr onclick=\"jump(\''+data[i].code+'\',\''+data[i].suffix+'\',\''+data[i].name+'\')\"><td>'+
 						'<span>'
 						+data[i].code+
-						'</td><td>&nbsp;'
+						'</span></td><td>&nbsp;<span>'
 						+data[i].name+
-						'</span>'
-						+'</td></tr>';
+						'</span></td></tr>';
 			}
 			html+='</table>';
 			stocks.innerHTML=html;

@@ -13,6 +13,10 @@
 <script src="resources/js/common.js"></script>
 <style>
 
+body{
+	background-color: #f1f4f9;
+}
+
 .container .middle{
 	width: 100%;
 	height: 78vh;
@@ -23,8 +27,9 @@
 	width: 80vw;
 	height: 8vh;
 	margin: 3vh 10vw;
-	border: 1px solid #2c2c2c;
+	border: 0;
 	position: relative;
+	background-color: #fff;
 }
 
 .input-panel img{
@@ -45,11 +50,12 @@
 
 .login-btn {
 	border-radius:15px;
-	background: #2c2c2c;
+	background: #becfd4;
 	color: #fff;
 	text-align: center;
 	font-size: 3.5em;
 	position: relative;
+	box-shadow: -1px 3px 10px 3px #9c9c9c;
 }
 
 .login-btn span{
