@@ -48,13 +48,17 @@
 	margin-top: 0.3vh;
 }
 
+.container .middle .chart-title .other-value .medium-value .label{
+	color: #888888;
+}
+
 .container .middle .chart-title .other-value table{
 	margin-left: 3vw;
 	margin-top: 0.3vh;
 }
 
 .container .middle .chart-title .other-value table td{
-	width: 24vw;
+	width: 30vw;
 	font-size: 2.2em;
 }
 
@@ -193,14 +197,14 @@
     			<div class="other-value">
     				<table>
     					<tr>
-    						<td class="medium-value">高&nbsp;<span id="high" class="red-value"></span></td>
-    						<td class="medium-value">开&nbsp;<span id="open" class="green-value"></span></td>
-    						<td class="medium-value">换手&nbsp;<span id="turnover"></span></td>
+    						<td class="medium-value"><span class="label">高</span>&nbsp;<span id="high"></span></td>
+    						<td class="medium-value"><span class="label">开</span>&nbsp;<span id="open"></span></td>
+    						<td class="medium-value"><span class="label">换手</span>&nbsp;<span id="turnover"></span></td>
     					</tr>
     					<tr>
-    						<td class="medium-value">低&nbsp;<span id="low" class="green-value"></span></td>
-    						<td class="medium-value">额&nbsp;<span id="amount" ></span></td>
-    						<td class="medium-value">量比&nbsp;<span id="v-ratio"></span></td>
+    						<td class="medium-value"><span class="label">低</span>&nbsp;<span id="low"></span></td>
+    						<td class="medium-value"><span class="label">额</span>&nbsp;<span id="amount" ></span></td>
+    						<td class="medium-value"><span class="label">量比</span>&nbsp;<span id="v-ratio"></span></td>
     					</tr>
     				</table>
     			</div>
@@ -331,6 +335,33 @@
 						alert(msg);
 					document.getElementById('turnover').innerHTML=(msg.turnoverRatio*100).toFixed(2)+'%';
 					document.getElementById('v-ratio').innerHTML=msg.volRatio.toFixed(2);
+					
+					var chg=msg.chg.toFixed(2);
+					var pchg= (msg.pchg*100).toFixed(2);
+					var openDom = document.getElementById('open');
+					var lastDom = document.getElementById('last');
+					var lowDom = document.getElementById('low'); 
+					var highDom = document.getElementById('high');
+					var chgDom = document.getElementById('chg');
+					var amountDom = document.getElementById('amount');
+					
+					openDom.innerHTML=msg.openPrice.toFixed(2);
+					lastDom.innerHTML=msg.lastPrice.toFixed(2);
+					lowDom.innerHTML=msg.lowPrice.toFixed(2);
+					highDom.innerHTML=msg.highPrice.toFixed(2);
+					chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
+					amountDom.innerHTML= (msg.businessBalance/100000000).toFixed(2)+'亿';
+					
+					if(chg>0){
+						chgDom.className='small-value red-value';
+						lastDom.className='big-value red-value';
+					}else if(chg<0){
+						chgDom.className='small-value green-value';
+						lastDom.className='big-value green-value';
+					}else{
+						chgDom.className='small-value';
+						lastDom.className='big-value';
+					}
 				}
 			});
 			
@@ -506,46 +537,6 @@
 			
 			var data0 = splitData(ks);
 			
-			var tail = data0.values[data0.values.length-1];
-			var chg=(tail[1]-tail[0]).toFixed(2);
-			var pchg= (chg/tail[0]*100).toFixed(2);
-			var openDom = document.getElementById('open');
-			var lastDom = document.getElementById('last');
-			var lowDom = document.getElementById('low'); 
-			var highDom = document.getElementById('high');
-			var chgDom = document.getElementById('chg');
-			var amountDom = document.getElementById('amount');
-			
-			openDom.innerHTML=tail[0].toFixed(2);
-			lastDom.innerHTML=tail[1].toFixed(2);
-			lowDom.innerHTML=tail[2].toFixed(2);
-			highDom.innerHTML=tail[3].toFixed(2);
-			chgDom.innerHTML=chg+'&nbsp;'+pchg+'%';
-			amountDom.innerHTML= (volumns[volumns.length-1].value/100000000).toFixed(2)+'亿';
-			
-			if(tail[5]>0)
-				openDom.className='red-value';
-			else if(tail[5]<0)
-				openDom.className='green-value';
-			if(tail[7]>0)
-				lowDom.className='red-value';
-			else if(tail[7]<0)
-				lowDom.className='green-value';
-			if(tail[8]>0)
-				highDom.className='red-value';
-			else if(tail[8]<0)
-				highDom.className='green-value';
-			if(chg>0){
-				chgDom.className='small-value red-value';
-				lastDom.className='big-value red-value';
-			}else if(chg<0){
-				chgDom.className='small-value green-value';
-				lastDom.className='big-value green-value';
-			}else{
-				chgDom.className='small-value';
-				lastDom.className='big-value';
-			}
-			
 			ma5 = calculateMAK(5,data0.values);
 			ma10 = calculateMAK(10,data0.values);
 			ma20 = calculateMAK(20,data0.values);
@@ -685,7 +676,7 @@
 			          type: 'inside',
 			          filterMode: 'filter',
 			          xAxisIndex: [0,1],
-			          start: 96,
+			          start: 90,
 			          end: 100
 			       }
 			    ],

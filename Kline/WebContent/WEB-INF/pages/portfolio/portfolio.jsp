@@ -16,12 +16,28 @@
 .container .table table th{
 	font-size: 3em;
 	background: #f1f4f9;
-	width:33.333333vw;
+	width:25vw;
 	height:7vh;
 }
 
 .container .table .table-head th{
 	color: #2c2c5c;
+	border-bottom: 1px solid #abaaaa;
+}
+
+.container .table td{
+	font-size: 2em;
+	height: 8vh;
+	text-align: center;
+	border-bottom: 1px solid #abaaaa;
+}
+
+.container .table tr{
+}
+
+.container .table a{
+	text-decoration: none;
+	color: red;
 }
 
 </style>
@@ -40,6 +56,7 @@
     				<th>股票</th>
     				<th>最新价</th>
     				<th>涨跌幅</th>
+    				<th>操作</th>
     			</tr>
     		</table>
     	</div>
@@ -71,10 +88,30 @@
 			var html = document.getElementById('table').innerHTML;
 			if(data.length>0){
 				for(var i=0;i<data.length;i++){
-					html += '<tr><td>'+data[i].code+'</td></tr>'
+					html += '<tr><td>'+data[i].code+'</td>'
+					           +'<td>1.12</td>'
+					           +'<td>3.33%</td>'
+					           +'<td><a href=\"javascript:void(0)\" onclick=\"remove(\''+data[i].code+'\')\">移除</a></td></tr>';
 				}
 			}
 			document.getElementById('table').innerHTML=html;
+		}
+		
+		function remove(code){
+			$.ajax({
+				url:"api/portfolio/delete",
+				data:{
+					code: code
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					if(data.message==undefined || data.message=='' )
+						alert('error');
+					else
+						getStocks();
+				}
+			});
 		}
 		
 		function toSearch(){
