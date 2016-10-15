@@ -106,7 +106,7 @@
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <input id="code" type="hidden" value="${code}"/>
     <div class="container">
-    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -567,10 +567,6 @@
 		
 		function jump(code){
 			location.href="page/composite?stockcode="+code;
-		}
-		
-		function toSearch(){
-			location.href="page/stock/search";
 		}
 		
 		function markRightBar(){

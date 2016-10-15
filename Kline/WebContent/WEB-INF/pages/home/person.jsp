@@ -33,24 +33,38 @@
 	width: 100%;
 }
 
-.container .middle .option-list{
+.container .middle .info-panel{
 	width: 100%;
 	height: auto;
 	background-color: #f1f4f9;
 	border-bottom: 1px solid #b2b2b3;
 }
 
-.container .middle .option-list .option{
+.container .middle .info-panel .sub-info-panel{
 	display: inline-block;
 	height: 10vh;
-	width: 32vw;
+	width: 49vw;
 	text-align: center;
+	padding-top: 1vh;
 }
 
-.container .middle .option-list .option span{
-	font-size: 4em;
+.container .middle .info-panel .sub-info-panel span{
+	font-size: 3em;
 	color: #2c2c2c;
 }
+
+.option-list .option{
+	padding-left: 5vw;
+	padding-top: 2vh;
+	height: 6vh;
+	border-bottom: 1px solid #abaaaa;
+}
+
+.option-list .option span{
+	font-size: 3em;
+}
+
+
 
 </style>
 
@@ -60,14 +74,22 @@
 	<input id="code" type="hidden" value="${code}" />
     <input id="type" type="hidden" value="${type}" />
     <div class="container">
-    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     	<div class="middle">
     		<div class="middle-img">
     			<div class="background" id="background">
     				<img src="resources/img/pool-head-back.png">
     			</div>
     		</div>
+    		<div class="info-panel">
+    			<div class="sub-info-panel" style="border-right: 1px solid #abaaaa;"><span>${stockCount}</br>我的股票</span></div>
+    			<div class="sub-info-panel"><span>${vipEnddate}</br>会员有效期</span></div>
+    		</div>
     		<div class="option-list">
+    			<div class="option" onclick="redirect('page/home/password')"><span>修改密码</span></div>
+    			<div class="option" onclick="redirect('page/portfolio/portfolio')"><span>我的自选</span></div>
+    			<div class="option" onclick="logout()"><span>购买记录</span></div>
+    			<div class="option" onclick="logout()"><span>系统消息</span></div>
     			<div class="option" onclick="logout()"><span>登出</span></div>
     		</div>
     	</div>
@@ -94,9 +116,6 @@
 			});
 		}
 		
-		function toSearch(){
-			location.href="page/stock/search";
-		}
 	</script>
 </body>
 </html>

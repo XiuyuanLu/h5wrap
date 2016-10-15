@@ -60,7 +60,7 @@
     <input id="type" type="hidden" value="${type}" />
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <div class="container">
-    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     	<div class="middle">
     		<div class="search">
     			<input type="number" id="query" placeholder="股票代码" onkeyup="query()"/>

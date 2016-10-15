@@ -29,7 +29,6 @@ body{
 	margin: 3vh 10vw;
 	border: 0;
 	position: relative;
-	background-color: #fff;
 }
 
 .input-panel img{
@@ -43,9 +42,16 @@ body{
 	height: 6vh;
 	position: absolute;
 	top: 0.5vh;
-	left: 13vw;
+	left: 25vw;
 	border: 0;
 	font-size: 2.5em;
+	background-color: #fff;
+}
+
+.input-panel label{
+	position: absolute;
+	font-size: 2.5em;
+	top: 2.5vh;
 }
 
 .verify-panel{
@@ -103,26 +109,18 @@ body{
     	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     	<div class="middle">
     		<div class="input-panel">
-    			<img src="resources/img/login-mobile.png">
-    			<input id="loginName" type="text" placeholder="手机" >
+    			<label>原密码</label>
+    			<input id="oldPassword" type="text" placeholder="请输入原密码" >
     		</div>
     		<div class="input-panel">
-    			<img src="resources/img/login-verify.png">
-    			<input id="verify" type="text" placeholder="手机验证码">
-    			<div class="verify-panel">
-    				<span onclick="getVerify()">获取验证码</span>
-    			</div>
+    			<label>新密码</label>
+    			<input id="newPassword" type="text" placeholder="请输入新密码" >
     		</div>
     		<div class="input-panel">
-    			<img src="resources/img/login-password.png">
-    			<input id="password" type="password" placeholder="密码">
+    			<label>确认新密码</label>
+    			<input id="newPasswordConfirm" type="text" placeholder="请确认新密码" >
     		</div>
-    		<div class="input-panel">
-    			<img src="resources/img/login-password-c.png">
-    			<input id="passwordConfirm" type="password" placeholder="确认密码">
-    		</div>
-    		<div class="input-panel login-btn" onclick="register()"><span>注&nbsp;&nbsp;&nbsp;&nbsp;册</span></div>
-    		<div class="already-panel" onclick="toLogin()"><span>已有账号</span></div>
+    		<div class="input-panel login-btn" onclick="submit()"><span>提&nbsp;&nbsp;&nbsp;&nbsp;交</span></div>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
@@ -130,29 +128,24 @@ body{
 		function onLoad(){
 		}
 		
-		function register(){
-			var loginName=document.getElementById("loginName").value;
-			var verify=document.getElementById("verify").value;
-			var password=document.getElementById("password").value;
-			var passwordConfirm=document.getElementById("passwordConfirm").value;
-			if($.trim(loginName)==""){
-				alert("请输入手机号");
+		function submit(){
+			var oldPassword=document.getElementById("oldPassword").value;
+			var newPassword=document.getElementById("newPassword").value;
+			var newPasswordConfirm=document.getElementById("newPasswordConfirm").value;
+			if($.trim(oldPassword)==""){
+				alert("请输入原密码");
 				return ;
 			}
-			if($.trim(password)==""){
-				alert("请输入密码");
+			if($.trim(newPassword)==""){
+				alert("请输入新密码");
 				return ;
 			}
-			if($.trim(verify)==""){
-				alert("请输入验证码");
-				return ;
-			}
-			if($.trim(passwordConfirm)==""){
-				alert("请输入密码确认");
+			if($.trim(newPasswordConfirm)==""){
+				alert("请确认新密码");
 				return ;
 			}
 			$.ajax({
-				url:"api/authenticate/register",
+				url:"",
 				data:{
 					loginName: loginName,
 					password: password,

@@ -118,7 +118,7 @@
 	<input id="code" type="hidden" value="${code}" />
     <input id="type" type="hidden" value="${type}" />
     <div class="container">
-    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     	<div class="middle">
     		<div class="middle-img">
     			<div class="background" id="background">
@@ -156,6 +156,7 @@
 		var candlePeriod = '6';
 		function onLoad(){
 			highlight('pick');
+			tab('30');
 			buy(1);
 		}
 		
@@ -227,9 +228,6 @@
 			}
 		}
 		
-		function toSearch(){
-			location.href="page/stock/search";
-		}
 	</script>
 </body>
 </html>

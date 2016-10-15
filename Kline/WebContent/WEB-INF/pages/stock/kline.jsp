@@ -186,7 +186,7 @@
 		</div>
 	</div>
     <div class="container">
-    	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    	<img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     	<span id="add-portfolio" onclick="addToPortfolio()">加入</br>自选</span>
     	<div class="middle">
     		<div class="chart-title">
@@ -941,10 +941,6 @@
 				document.getElementById('ma-picked').className='fa fa-square-o';
 			}
 			myChart.setOption(opt);
-		}
-		
-		function toSearch(){
-			location.href="page/stock/search";
 		}
 		
 		function addToPortfolio(){

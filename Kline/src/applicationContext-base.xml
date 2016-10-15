@@ -30,7 +30,11 @@
 		<mvc:interceptor>  
 	    	<mvc:mapping path="/page/**" /> 
 	    	<bean class="com.icaikee.kline.web.interceptor.BaseInterceptor" />  
-		</mvc:interceptor> 
+		</mvc:interceptor>
+		<mvc:interceptor>  
+	    	<mvc:mapping path="/page/home/person/**" /> 
+	    	<bean class="com.icaikee.kline.web.interceptor.PermissionInterceptor" />  
+		</mvc:interceptor>
 		<mvc:interceptor>  
 	    	<mvc:mapping path="/page/pool/**" /> 
 	    	<bean class="com.icaikee.kline.web.interceptor.PermissionInterceptor" />  

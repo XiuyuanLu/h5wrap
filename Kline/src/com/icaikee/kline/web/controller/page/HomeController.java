@@ -1,5 +1,8 @@
 package com.icaikee.kline.web.controller.page;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +21,8 @@ public class HomeController {
 	private static final String PAGE_REGISTER = "home/register";
 
 	private static final String PAGE_PERSON = "home/person";
+
+	private static final String PAGE_PASSWORD = "home/password";
 
 	@RequestMapping
 	public ModelAndView home(@RequestParam(name = "stockcode", required = false) String code) {
@@ -41,8 +46,18 @@ public class HomeController {
 	}
 
 	@RequestMapping("/person")
-	public ModelAndView person() {
+	public ModelAndView person(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView(PAGE_PERSON);
+		HttpSession session = request.getSession();
+		mv.addObject(WebConstants.LOGIN_NAME, session.getAttribute(WebConstants.LOGIN_NAME));
+		mv.addObject(WebConstants.STOCK_COUNT, session.getAttribute(WebConstants.STOCK_COUNT));
+		mv.addObject(WebConstants.VIP_ENDDATE, session.getAttribute(WebConstants.VIP_ENDDATE));
+		return mv;
+	}
+
+	@RequestMapping("/password")
+	public ModelAndView password(HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView(PAGE_PASSWORD);
 		return mv;
 	}
 

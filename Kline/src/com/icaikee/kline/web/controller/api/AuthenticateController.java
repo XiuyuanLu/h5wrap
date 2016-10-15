@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.icaikee.kline.WebConstants;
+import com.icaikee.kline.biz.user.UserDto;
 import com.icaikee.kline.biz.user.UserService;
 import com.icaikee.kline.core.message.Message;
 import com.icaikee.kline.util.StringUtils;
@@ -37,10 +39,14 @@ public class AuthenticateController {
 			throws IOException {
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password))
 			return new Message("用户名或密码错误");
-		String uid = userService.login(username, password);
-		if ("error".equals(uid))
+		UserDto user = userService.login(username, password);
+		if (StringUtils.isEmpty(user.getUid()))
 			return new Message("用户名或密码错误");
-		request.getSession().setAttribute(WebConstants.USER_ID, uid);
+		HttpSession session = request.getSession();
+		session.setAttribute(WebConstants.USER_ID, user.getUid());
+		session.setAttribute(WebConstants.LOGIN_NAME, user.getLoginName());
+		session.setAttribute(WebConstants.STOCK_COUNT, user.getStockCount());
+		session.setAttribute(WebConstants.VIP_ENDDATE, user.getVipEnddate());
 		return new Message("success");
 	}
 

@@ -45,7 +45,7 @@
 	<input id="code" type="hidden" value="${code}" />
     <input id="type" type="hidden" value="${type}" />
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
-    <img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
+    <img id="head-search" src="resources/img/head-search.png" onclick="redirect('page/stock/search')">
     <div class="container">
     	<div class="table">
     		<table id="table">
@@ -111,9 +111,6 @@
 			});
 		}
 		
-		function toSearch(){
-			location.href="page/stock/search";
-		}
 	</script>
 </body>
 </html>
