@@ -34,8 +34,8 @@
     <%@include file="/WEB-INF/pages/common/header.jsp" %>
     <img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
     <div class="container">
-    	<div class="table" id="table">
-    		<table>
+    	<div class="table">
+    		<table id="table">
     			<tr class="table-head">
     				<th>股票</th>
     				<th>最新价</th>
@@ -48,6 +48,33 @@
 	<script>
 		function onLoad(){
 			highlight('private');
+			getStocks();
+		}
+		
+		function getStocks(){
+			$.ajax({
+				url:"api/portfolio/query",
+				data:{
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					if(data.message==undefined || data.message=='' )
+						alert('error');
+					else
+						drawTable(data.message);
+				}
+			});
+		}
+		
+		function drawTable(data){
+			var html = document.getElementById('table').innerHTML;
+			if(data.length>0){
+				for(var i=0;i<data.length;i++){
+					html += '<tr><td>'+data[i].code+'</td></tr>'
+				}
+			}
+			document.getElementById('table').innerHTML=html;
 		}
 		
 		function toSearch(){

@@ -2,17 +2,11 @@ package com.icaikee.kline.biz.wrap;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.icaikee.kline.biz.DataFetcher;
-import com.icaikee.kline.biz.DataGenerator;
-import com.icaikee.kline.biz.common.model.SalePoints;
-import com.icaikee.kline.biz.common.model.WrapCenter;
-import com.icaikee.kline.biz.common.model.WrapPen;
-import com.icaikee.kline.biz.common.model.WrapSegment;
 import com.icaikee.kline.biz.common.model.WrapStructures;
 import com.icaikee.kline.util.TimeUtil;
 
@@ -21,27 +15,6 @@ public class WrapService {
 
 	@Autowired
 	private DataFetcher dataFetcher;
-
-	public List<WrapPen> getWrapPen(String code, String candlePeriod, String candleMode) throws ParseException {
-		Date date = new Date();
-		return DataGenerator.getW(code, candlePeriod, null, date, TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
-	}
-
-	public List<WrapSegment> getWrapSegment(String code, String candlePeriod, String candleMode) throws ParseException {
-		Date date = new Date();
-		return DataGenerator.getW2(code, candlePeriod, null, date, TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
-	}
-
-	public List<WrapCenter> getWrapPenCenter(String code, String candlePeriod, String candleMode)
-			throws ParseException {
-		Date date = new Date();
-		return DataGenerator.getW3(code, candlePeriod, null, date, TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
-	}
-
-	public List<SalePoints> getSalePoints(String code, String candlePeriod, String candleMode) throws ParseException {
-		Date date = new Date();
-		return DataGenerator.getSP(code, candlePeriod, null, date, TimeUtil.getTimeByOffset(TimeUtil.DAY, date, -7));
-	}
 
 	public WrapStructures getWrapStructures(String stockCode, String candlePeriod, String candleMode)
 			throws ParseException {

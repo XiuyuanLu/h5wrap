@@ -183,7 +183,7 @@
 	</div>
     <div class="container">
     	<img id="head-search" src="resources/img/head-search.png" onclick="toSearch()">
-    	<span id="add-pool" onclick="addPool()">加入</br>自选</span>
+    	<span id="add-portfolio" onclick="addToPortfolio()">加入</br>自选</span>
     	<div class="middle">
     		<div class="chart-title">
     			<div class="main-value">
@@ -956,9 +956,9 @@
 			location.href="page/stock/search";
 		}
 		
-		function addPool(){
+		function addToPortfolio(){
 			$.ajax({
-				url:"api/pool/create",
+				url:"api/portfolio/create",
 				data:{
 					code: document.getElementById('code').value+document.getElementById('suffix').value
 				},

@@ -10,22 +10,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.icaikee.kline.WebConstants;
-import com.icaikee.kline.biz.user.UserService;
+import com.icaikee.kline.biz.portfolio.PortfolioService;
 import com.icaikee.kline.core.message.Message;
 
 @ResponseBody
-@RequestMapping(WebConstants.API + "/pool")
+@RequestMapping(WebConstants.API + "/portfolio")
 @Controller
-public class PoolDataController {
+public class PortfolioDataController {
 
 	@Autowired
-	private UserService userService;
+	private PortfolioService portfolioService;
 
 	@RequestMapping("/create")
 	public Message create(HttpServletRequest request, @RequestParam(name = "code") String code) {
 		HttpSession session = request.getSession();
 		String uid = (String) session.getAttribute(WebConstants.USER_ID);
-		return new Message(userService.create(uid, code));
+		return new Message(portfolioService.create(uid, code));
+	}
+
+	@RequestMapping("/query")
+	public Message query(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String uid = (String) session.getAttribute(WebConstants.USER_ID);
+		return new Message(portfolioService.query(uid));
 	}
 
 }
