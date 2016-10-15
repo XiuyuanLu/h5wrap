@@ -85,9 +85,9 @@ public class DataFetcher {
 		RealtimeQuote result = new RealtimeQuote();
 
 		double openPrice = detail.getDouble("open_px");
-		double highPrice = detail.getDouble("open_px");
-		double lowPrice = detail.getDouble("open_px");
-		double lastPrice = detail.getDouble("open_px");
+		double highPrice = detail.getDouble("high_px");
+		double lowPrice = detail.getDouble("low_px");
+		double lastPrice = detail.getDouble("last_px");
 		double turnoverRatio = detail.getDouble("turnover_ratio");
 		double volRatio = detail.getDouble("vol_ratio");
 		double businessBalance = detail.getDouble("business_balance");

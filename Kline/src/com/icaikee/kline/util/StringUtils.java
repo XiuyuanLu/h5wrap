@@ -9,9 +9,8 @@ public class StringUtils {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(MD5("appId=icaikeeApp&appSecret=icaikee2016&u_id=22").toLowerCase());
 		System.out.println(
-				MD5("appId=icaikeeApp&appSecret=icaikee2016&login_name=1111&login_password=1111&nickname=aaa&user_type=mobile")
+				MD5("appId=icaikeeApp&appSecret=icaikee2016&candle_mode=1&candle_period=6&end_date=20161015&start_date=20161008&trade_type=B1&u_id=68")
 						.toLowerCase());
 	}
 

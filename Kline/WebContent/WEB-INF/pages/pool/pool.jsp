@@ -103,6 +103,13 @@
 	color: #fff;
 }
 
+.container .table td{
+	font-size: 2em;
+	height: 8vh;
+	text-align: center;
+	border-bottom: 1px solid #abaaaa;
+}
+
 </style>
 
 </head>
@@ -131,8 +138,8 @@
     			<div id="tab-day" class="tab-day" onclick="tab('day')"><span>日线</span></div>
     			<div id="tab-30" class="tab-30" onclick="tab('30')"><span>30分</span></div>
     		</div>
-    		<div class="table" id="table">
-    			<table>
+    		<div class="table">
+    			<table id="table">
     				<tr class="table-head">
     					<th>股票</th>
     					<th>入选时间</th>
@@ -145,37 +152,56 @@
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
+		var tradeType = 'B1';
+		var candlePeriod = '6';
 		function onLoad(){
 			highlight('pick');
 			buy(1);
-			getData();
 		}
 		
 		function getData(){
 			$.ajax({
-				url:"api/authenticate/login",
+				url:"api/pool/query",
 				data:{
-					username: username,
-					password: password
+					tradeType: tradeType,
+					candlePeriod: candlePeriod,
+					candleMode: '1'
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					if(data.message=="success")
-						location.href="page/pool/pool";
-					else
+					if(data.message=="error")
 						alert(data.message);
+					else
+						drawTable(data.message);
 				}
 			});
+		}
+		
+		function drawTable(data){
+			var html = '<tr class="table-head"><th>股票</th><th>入选时间</th><th>进入价格</th><th>累计收益</th></tr>';
+			if(data.length>0){
+				for(var i=0;i<data.length;i++){
+					html += '<tr><td>'+data[i].name+'</td>'
+					           +'<td>'+data[i].entryDate+'</td>'
+					           +'<td>'+data[i].entryPrice+'</td>'
+					           +'<td>'+data[i].accReturn+'</td></tr>';
+				}
+			}
+			document.getElementById('table').innerHTML=html;
 		}
 		
 		function tab(type){
 			if(type=='day'){
 				document.getElementById('tab-day').style.background='#f74242';
 				document.getElementById('tab-30').style.background='#2c2c2c';
+				candlePeriod='6';
+				getData();
 			}else if(type="30"){
 				document.getElementById('tab-day').style.background='#2c2c2c';
 				document.getElementById('tab-30').style.background='#f74242';
+				candlePeriod='4';
+				getData();
 			}
 		}
 		
@@ -184,14 +210,20 @@
 				document.getElementById('buy1img').src='resources/img/buy-1-pick.png';
 				document.getElementById('buy2img').src='resources/img/buy-2.png';
 				document.getElementById('buy3img').src='resources/img/buy-3.png';
+				tradeType = 'B1';
+				getData();
 			}else if(type=="2"){
 				document.getElementById('buy1img').src='resources/img/buy-1.png';
 				document.getElementById('buy2img').src='resources/img/buy-2-pick.png';
 				document.getElementById('buy3img').src='resources/img/buy-3.png';
+				tradeType = 'B2';
+				getData();
 			}else if(type=="3"){
 				document.getElementById('buy1img').src='resources/img/buy-1.png';
 				document.getElementById('buy2img').src='resources/img/buy-2.png';
 				document.getElementById('buy3img').src='resources/img/buy-3-pick.png';
+				tradeType = 'B3';
+				getData();
 			}
 		}
 		

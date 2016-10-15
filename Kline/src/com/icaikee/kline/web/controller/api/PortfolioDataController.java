@@ -28,6 +28,13 @@ public class PortfolioDataController {
 		return new Message(portfolioService.create(uid, code));
 	}
 
+	@RequestMapping("/delete")
+	public Message delete(HttpServletRequest request, @RequestParam(name = "code") String code) {
+		HttpSession session = request.getSession();
+		String uid = (String) session.getAttribute(WebConstants.USER_ID);
+		return new Message(portfolioService.delete(uid, code));
+	}
+
 	@RequestMapping("/query")
 	public Message query(HttpServletRequest request) {
 		HttpSession session = request.getSession();

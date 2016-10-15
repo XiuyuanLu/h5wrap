@@ -32,9 +32,6 @@
 	border-bottom: 1px solid #abaaaa;
 }
 
-.container .table tr{
-}
-
 .container .table a{
 	text-decoration: none;
 	color: red;

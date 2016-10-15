@@ -17,6 +17,8 @@ public class PortfolioService {
 
 	private static final String CREATE_URL = "api/chanlun/v1/optional/create";
 
+	private static final String DELETE_URL = "api/chanlun/v1/optional/delete";
+
 	private static final String QUERY_URL = "api/chanlun/v1/optional/query";
 
 	public String create(String uid, String code) {
@@ -31,6 +33,22 @@ public class PortfolioService {
 		String status = result.getString("status");
 		if ("200".equals(status)) {
 			return "添加成功";
+		} else
+			return "error";
+	}
+
+	public String delete(String uid, String code) {
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("appId", "icaikeeApp");
+		jsonParam.put("code", code);
+		jsonParam.put("u_id", uid);
+		jsonParam.put("token", getCreateToken(code, uid));
+		JSONObject result = HttpHandler.httpGet(UrlConstants.PREFIX + DELETE_URL, jsonParam);
+		if (result == null)
+			return "error";
+		String status = result.getString("status");
+		if ("200".equals(status)) {
+			return "删除成功";
 		} else
 			return "error";
 	}
