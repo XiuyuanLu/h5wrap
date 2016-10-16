@@ -21,12 +21,14 @@ public class PortfolioService {
 
 	private static final String QUERY_URL = "api/chanlun/v1/optional/query";
 
-	public String create(String uid, String code) {
+	public String create(String uid, String code, String name) {
+		name = StringUtils.enUnicode(name);
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("appId", "icaikeeApp");
 		jsonParam.put("code", code);
+		jsonParam.put("stock_name", name);
 		jsonParam.put("u_id", uid);
-		jsonParam.put("token", getCreateToken(code, uid));
+		jsonParam.put("token", getCreateToken(code, name, uid));
 		JSONObject result = HttpHandler.httpGet(UrlConstants.PREFIX + CREATE_URL, jsonParam);
 		if (result == null)
 			return "error";
@@ -42,15 +44,16 @@ public class PortfolioService {
 		jsonParam.put("appId", "icaikeeApp");
 		jsonParam.put("code", code);
 		jsonParam.put("u_id", uid);
-		jsonParam.put("token", getCreateToken(code, uid));
+		jsonParam.put("token", getDeleteToken(code, uid));
 		JSONObject result = HttpHandler.httpGet(UrlConstants.PREFIX + DELETE_URL, jsonParam);
 		if (result == null)
 			return "error";
 		String status = result.getString("status");
 		if ("200".equals(status)) {
-			return "É¾³ý³É¹¦";
-		} else
-			return "error";
+			JSONObject data = result.getJSONObject("data");
+			return data.getString("msg");
+		}
+		return "error";
 	}
 
 	public List<PortfolioDto> query(String uid) {
@@ -70,6 +73,7 @@ public class PortfolioService {
 					JSONObject x = (JSONObject) data.get(i);
 					PortfolioDto item = new PortfolioDto();
 					item.setCode(x.getString("code"));
+					item.setName(StringUtils.deUnicode(x.getString("stock_name")));
 					portfolio.add(item);
 				}
 			}
@@ -77,8 +81,13 @@ public class PortfolioService {
 		return portfolio;
 	}
 
-	public static String getCreateToken(String code, String uid) {
+	public static String getDeleteToken(String code, String uid) {
 		return StringUtils.MD5(UrlConstants.TOKEN_PREFIX + "code=" + code + "&u_id=" + uid).toLowerCase();
+	}
+
+	public static String getCreateToken(String code, String name, String uid) {
+		return StringUtils.MD5(UrlConstants.TOKEN_PREFIX + "code=" + code + "&stock_name=" + name + "&u_id=" + uid)
+				.toLowerCase();
 	}
 
 	public static String getQueryToken(String uid) {

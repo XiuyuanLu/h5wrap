@@ -126,6 +126,7 @@ body{
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
+			highlight('self');
 		}
 		
 		function submit(){
@@ -145,38 +146,16 @@ body{
 				return ;
 			}
 			$.ajax({
-				url:"",
+				url:"api/user/password",
 				data:{
-					loginName: loginName,
-					password: password,
-					verify: verify
+					oldPassword: oldPassword,
+					newPassword: newPassword
 				},
 				type: 'POST',
 				dataType: 'json',
 				success:function(data){
-					if(data.message=="success")
-						location.href="page/home/login";
-					else
-						alert(data.message);
-				}
-			});
-		}
-		
-		function getVerify(){
-			var loginName=document.getElementById("loginName").value;
-			if($.trim(loginName)==""){
-				alert("请输入手机号");
-				return ;
-			}
-			$.ajax({
-				url:"api/authenticate/getVerify",
-				data:{
-					mobile:  loginName
-				},
-				type: 'POST',
-				dataType: 'json',
-				success:function(data){
-					
+					alert(data.message);
+					logout();
 				}
 			});
 		}
@@ -187,6 +166,22 @@ body{
 		
 		function toLogin(){
 			location.href="page/home/login";
+		}
+		
+		function logout(){
+			$.ajax({
+				url:"api/authenticate/logout",
+				data:{
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					if(data.message=="success")
+						location.href="page/home/login";
+					else
+						alert(data.message);
+				}
+			});
 		}
 	</script>
 </body>

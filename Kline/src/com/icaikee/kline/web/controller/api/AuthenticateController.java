@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.icaikee.kline.WebConstants;
-import com.icaikee.kline.biz.user.UserDto;
 import com.icaikee.kline.biz.user.UserService;
 import com.icaikee.kline.core.message.Message;
 import com.icaikee.kline.util.StringUtils;
@@ -39,14 +38,11 @@ public class AuthenticateController {
 			throws IOException {
 		if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password))
 			return new Message("用户名或密码错误");
-		UserDto user = userService.login(username, password);
-		if (StringUtils.isEmpty(user.getUid()))
+		String uid = userService.login(username, password);
+		if (StringUtils.isEmpty(uid))
 			return new Message("用户名或密码错误");
 		HttpSession session = request.getSession();
-		session.setAttribute(WebConstants.USER_ID, user.getUid());
-		session.setAttribute(WebConstants.LOGIN_NAME, user.getLoginName());
-		session.setAttribute(WebConstants.STOCK_COUNT, user.getStockCount());
-		session.setAttribute(WebConstants.VIP_ENDDATE, user.getVipEnddate());
+		session.setAttribute(WebConstants.USER_ID, uid);
 		return new Message("success");
 	}
 

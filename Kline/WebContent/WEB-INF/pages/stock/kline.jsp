@@ -947,7 +947,8 @@
 			$.ajax({
 				url:"api/portfolio/create",
 				data:{
-					code: document.getElementById('code').value+document.getElementById('suffix').value
+					code: document.getElementById('code').value+document.getElementById('suffix').value,
+					name: document.getElementById('name').value
 				},
 				type: 'POST',
 				dataType: 'json',

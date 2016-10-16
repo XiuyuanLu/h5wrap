@@ -13,28 +13,12 @@
 <script src="resources/js/common.js"></script>
 <style>
 
-.container .table table th{
-	font-size: 3em;
-	background: #f1f4f9;
-	width:25vw;
-	height:7vh;
-}
-
-.container .table .table-head th{
-	color: #2c2c5c;
-	border-bottom: 1px solid #abaaaa;
-}
-
 .container .table td{
 	font-size: 2em;
+	width: 100%;
 	height: 8vh;
 	text-align: center;
 	border-bottom: 1px solid #abaaaa;
-}
-
-.container .table td a{
-	text-decoration: none;
-	color: red;
 }
 
 </style>
@@ -49,25 +33,19 @@
     <div class="container">
     	<div class="table">
     		<table id="table">
-    			<tr class="table-head">
-    				<th>股票</th>
-    				<th>最新价</th>
-    				<th>涨跌幅</th>
-    				<th>操作</th>
-    			</tr>
     		</table>
     	</div>
     </div>
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
-			highlight('private');
-			getStocks();
+			highlight('self');
+			getMessage();
 		}
 		
-		function getStocks(){
+		function getMessage(){
 			$.ajax({
-				url:"api/portfolio/query",
+				url:"api/user/message",
 				data:{
 				},
 				type: 'POST',
@@ -81,31 +59,13 @@
 		function drawTable(data){
 			if(data=='' || data==undefined || data==null)
 				data=[];
-			var html = '<tr class="table-head"><th>股票</th><th>最新价</th><th>涨跌幅</th><th>操作</th></tr>';
+			var html = '';
 			if(data.length>0){
 				for(var i=0;i<data.length;i++){
-					html += '<tr><td>'+data[i].name+'</td>'
-					           +'<td>1.12</td>'
-					           +'<td>3.33%</td>'
-					           +'<td><a href=\"javascript:remove('+'\''+data[i].code+'\''+')" >移除</span></td></tr>';
+					html += '<tr><td>'+data[i].content+'</td></tr>';
 				}
 			}
 			document.getElementById('table').innerHTML=html;
-		}
-		
-		function remove(code){
-			$.ajax({
-				url:"api/portfolio/delete",
-				data:{
-					code: code
-				},
-				type: 'POST',
-				dataType: 'json',
-				success:function(data){
-					alert(data.message);
-					getStocks();
-				}
-			});
 		}
 		
 	</script>

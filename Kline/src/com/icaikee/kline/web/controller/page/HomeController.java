@@ -24,6 +24,10 @@ public class HomeController {
 
 	private static final String PAGE_PASSWORD = "home/password";
 
+	private static final String PAGE_SHOPPING = "home/shopping";
+
+	private static final String PAGE_MESSAGE = "home/message";
+
 	@RequestMapping
 	public ModelAndView home(@RequestParam(name = "stockcode", required = false) String code) {
 		if (code == null || "".equals(code))
@@ -58,6 +62,18 @@ public class HomeController {
 	@RequestMapping("/password")
 	public ModelAndView password(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView(PAGE_PASSWORD);
+		return mv;
+	}
+
+	@RequestMapping("/shopping")
+	public ModelAndView shopping(HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView(PAGE_SHOPPING);
+		return mv;
+	}
+
+	@RequestMapping("/message")
+	public ModelAndView message(HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView(PAGE_MESSAGE);
 		return mv;
 	}
 

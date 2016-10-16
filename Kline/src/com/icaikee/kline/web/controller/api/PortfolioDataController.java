@@ -22,10 +22,11 @@ public class PortfolioDataController {
 	private PortfolioService portfolioService;
 
 	@RequestMapping("/create")
-	public Message create(HttpServletRequest request, @RequestParam(name = "code") String code) {
+	public Message create(HttpServletRequest request, @RequestParam(name = "code") String code,
+			@RequestParam(name = "name") String name) {
 		HttpSession session = request.getSession();
 		String uid = (String) session.getAttribute(WebConstants.USER_ID);
-		return new Message(portfolioService.create(uid, code));
+		return new Message(portfolioService.create(uid, code, name));
 	}
 
 	@RequestMapping("/delete")

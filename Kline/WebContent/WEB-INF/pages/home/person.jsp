@@ -82,14 +82,14 @@
     			</div>
     		</div>
     		<div class="info-panel">
-    			<div class="sub-info-panel" style="border-right: 1px solid #abaaaa;"><span>${stockCount}</br>我的股票</span></div>
-    			<div class="sub-info-panel"><span>${vipEnddate}</br>会员有效期</span></div>
+    			<div class="sub-info-panel" style="border-right: 1px solid #abaaaa;"><span id="stockCount"></span></div>
+    			<div class="sub-info-panel"><span id="vipEnddate"></span></div>
     		</div>
     		<div class="option-list">
     			<div class="option" onclick="redirect('page/home/password')"><span>修改密码</span></div>
     			<div class="option" onclick="redirect('page/portfolio/portfolio')"><span>我的自选</span></div>
-    			<div class="option" onclick="logout()"><span>购买记录</span></div>
-    			<div class="option" onclick="logout()"><span>系统消息</span></div>
+    			<div class="option" onclick="redirect('page/home/shopping')"><span>购买记录</span></div>
+    			<div class="option" onclick="redirect('page/home/message')"><span>系统消息</span></div>
     			<div class="option" onclick="logout()"><span>登出</span></div>
     		</div>
     	</div>
@@ -98,6 +98,26 @@
 	<script>
 		function onLoad(){
 			highlight('self');
+			getInfo();
+		}
+		
+		function getInfo(){
+			$.ajax({
+				url:"api/user/info",
+				data:{
+				},
+				type: 'POST',
+				dataType: 'json',
+				success:function(data){
+					if(data.message=="error")
+						return ;
+					else{
+						document.getElementById('stockCount').innerHTML=data.message.stockCount+'</br>我的股票';
+						document.getElementById('vipEnddate').innerHTML=data.message.vipEnddate+'</br>会员有效期';
+					}
+						
+				}
+			});
 		}
 		
 		function logout(){

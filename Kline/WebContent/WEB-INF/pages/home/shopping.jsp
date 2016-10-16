@@ -16,7 +16,7 @@
 .container .table table th{
 	font-size: 3em;
 	background: #f1f4f9;
-	width:25vw;
+	width:33.33vw;
 	height:7vh;
 }
 
@@ -32,11 +32,6 @@
 	border-bottom: 1px solid #abaaaa;
 }
 
-.container .table td a{
-	text-decoration: none;
-	color: red;
-}
-
 </style>
 
 </head>
@@ -50,10 +45,9 @@
     	<div class="table">
     		<table id="table">
     			<tr class="table-head">
-    				<th>股票</th>
-    				<th>最新价</th>
-    				<th>涨跌幅</th>
-    				<th>操作</th>
+    				<th>购买名称</th>
+    				<th>金额（元）</th>
+    				<th>购买日期</th>
     			</tr>
     		</table>
     	</div>
@@ -61,13 +55,13 @@
     <%@include file="/WEB-INF/pages/common/footer.jsp" %>
 	<script>
 		function onLoad(){
-			highlight('private');
-			getStocks();
+			highlight('self');
+			getShopping();
 		}
 		
-		function getStocks(){
+		function getShopping(){
 			$.ajax({
-				url:"api/portfolio/query",
+				url:"api/user/shopping",
 				data:{
 				},
 				type: 'POST',
@@ -81,31 +75,15 @@
 		function drawTable(data){
 			if(data=='' || data==undefined || data==null)
 				data=[];
-			var html = '<tr class="table-head"><th>股票</th><th>最新价</th><th>涨跌幅</th><th>操作</th></tr>';
+			var html = '<tr class="table-head"><th>购买名称</th><th>金额（元）</th><th>购买日期</th></tr>';
 			if(data.length>0){
 				for(var i=0;i<data.length;i++){
 					html += '<tr><td>'+data[i].name+'</td>'
-					           +'<td>1.12</td>'
-					           +'<td>3.33%</td>'
-					           +'<td><a href=\"javascript:remove('+'\''+data[i].code+'\''+')" >移除</span></td></tr>';
+					           +'<td>'+data[i].buyMoney+'</td>'
+					           +'<td>'+data[i].buyDate+'</td></tr>';
 				}
 			}
 			document.getElementById('table').innerHTML=html;
-		}
-		
-		function remove(code){
-			$.ajax({
-				url:"api/portfolio/delete",
-				data:{
-					code: code
-				},
-				type: 'POST',
-				dataType: 'json',
-				success:function(data){
-					alert(data.message);
-					getStocks();
-				}
-			});
 		}
 		
 	</script>
